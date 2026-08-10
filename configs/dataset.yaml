@@ -10,9 +10,15 @@ name: NF-UNSW-NB15-v2
 source:
   url: null
   landing_page: "https://rdm.uq.edu.au/files/8c6e2a00-ef9c-11ed-827d-e762de186848"
-  kaggle: "dhoogla/nfunswnb15v2"
+  # Use this mirror. It is the complete original: 2,390,275 rows x 45 columns,
+  # matching the published figures, with IPV4_SRC_ADDR / IPV4_DST_ADDR intact.
+  kaggle: "sankurisrinath/nf-unsw-nb15-v2csv"
+  # DO NOT USE dhoogla/nfunswnb15v2 -- it is a cleaned variant for tabular
+  # benchmarking with the two IP address columns STRIPPED and rows deduplicated
+  # (1,986,745 rows x 43 cols). No IPs means no graph. See the Obsidian note
+  # "Dataset Selection - UNSW-NB15 vs NF-UNSW-NB15-v2".
   filename: NF-UNSW-NB15-v2.csv
-  sha256: null # recorded on first successful load, then verified thereafter
+  sha256: "05019e3ac8d55b3f074f9f042623bbbb1af2527b8b78558c69353ccb2ccefa3f"
 
 paths:
   raw: data/raw

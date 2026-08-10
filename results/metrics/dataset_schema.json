@@ -1,0 +1,379 @@
+{
+  "dataset": "NF-UNSW-NB15-v2",
+  "input_file": "data/interim/NF-UNSW-NB15-v2.parquet",
+  "generated_at": "2026-08-10T05:02:11.679412+00:00",
+  "schema": {
+    "n_rows": 2390275,
+    "n_columns": 45,
+    "memory_mb": 887.3,
+    "columns": [
+      {
+        "name": "IPV4_SRC_ADDR",
+        "dtype": "str",
+        "n_unique": 40,
+        "n_null": 0
+      },
+      {
+        "name": "L4_SRC_PORT",
+        "dtype": "int64",
+        "n_unique": 64601,
+        "n_null": 0
+      },
+      {
+        "name": "IPV4_DST_ADDR",
+        "dtype": "str",
+        "n_unique": 40,
+        "n_null": 0
+      },
+      {
+        "name": "L4_DST_PORT",
+        "dtype": "int64",
+        "n_unique": 64625,
+        "n_null": 0
+      },
+      {
+        "name": "PROTOCOL",
+        "dtype": "int64",
+        "n_unique": 255,
+        "n_null": 0
+      },
+      {
+        "name": "L7_PROTO",
+        "dtype": "float64",
+        "n_unique": 86,
+        "n_null": 0
+      },
+      {
+        "name": "IN_BYTES",
+        "dtype": "int64",
+        "n_unique": 14957,
+        "n_null": 0
+      },
+      {
+        "name": "IN_PKTS",
+        "dtype": "int64",
+        "n_unique": 931,
+        "n_null": 0
+      },
+      {
+        "name": "OUT_BYTES",
+        "dtype": "int64",
+        "n_unique": 19978,
+        "n_null": 0
+      },
+      {
+        "name": "OUT_PKTS",
+        "dtype": "int64",
+        "n_unique": 1251,
+        "n_null": 0
+      },
+      {
+        "name": "TCP_FLAGS",
+        "dtype": "int64",
+        "n_unique": 17,
+        "n_null": 0
+      },
+      {
+        "name": "CLIENT_TCP_FLAGS",
+        "dtype": "int64",
+        "n_unique": 16,
+        "n_null": 0
+      },
+      {
+        "name": "SERVER_TCP_FLAGS",
+        "dtype": "int64",
+        "n_unique": 15,
+        "n_null": 0
+      },
+      {
+        "name": "FLOW_DURATION_MILLISECONDS",
+        "dtype": "int64",
+        "n_unique": 116,
+        "n_null": 0
+      },
+      {
+        "name": "DURATION_IN",
+        "dtype": "int64",
+        "n_unique": 116,
+        "n_null": 0
+      },
+      {
+        "name": "DURATION_OUT",
+        "dtype": "int64",
+        "n_unique": 87,
+        "n_null": 0
+      },
+      {
+        "name": "MIN_TTL",
+        "dtype": "int64",
+        "n_unique": 13,
+        "n_null": 0
+      },
+      {
+        "name": "MAX_TTL",
+        "dtype": "int64",
+        "n_unique": 15,
+        "n_null": 0
+      },
+      {
+        "name": "LONGEST_FLOW_PKT",
+        "dtype": "int64",
+        "n_unique": 1462,
+        "n_null": 0
+      },
+      {
+        "name": "SHORTEST_FLOW_PKT",
+        "dtype": "int64",
+        "n_unique": 1147,
+        "n_null": 0
+      },
+      {
+        "name": "MIN_IP_PKT_LEN",
+        "dtype": "int64",
+        "n_unique": 130,
+        "n_null": 0
+      },
+      {
+        "name": "MAX_IP_PKT_LEN",
+        "dtype": "int64",
+        "n_unique": 1462,
+        "n_null": 0
+      },
+      {
+        "name": "SRC_TO_DST_SECOND_BYTES",
+        "dtype": "float64",
+        "n_unique": 16163,
+        "n_null": 0
+      },
+      {
+        "name": "DST_TO_SRC_SECOND_BYTES",
+        "dtype": "float64",
+        "n_unique": 21517,
+        "n_null": 0
+      },
+      {
+        "name": "RETRANSMITTED_IN_BYTES",
+        "dtype": "int64",
+        "n_unique": 10535,
+        "n_null": 0
+      },
+      {
+        "name": "RETRANSMITTED_IN_PKTS",
+        "dtype": "int64",
+        "n_unique": 537,
+        "n_null": 0
+      },
+      {
+        "name": "RETRANSMITTED_OUT_BYTES",
+        "dtype": "int64",
+        "n_unique": 15277,
+        "n_null": 0
+      },
+      {
+        "name": "RETRANSMITTED_OUT_PKTS",
+        "dtype": "int64",
+        "n_unique": 692,
+        "n_null": 0
+      },
+      {
+        "name": "SRC_TO_DST_AVG_THROUGHPUT",
+        "dtype": "int64",
+        "n_unique": 13411,
+        "n_null": 0
+      },
+      {
+        "name": "DST_TO_SRC_AVG_THROUGHPUT",
+        "dtype": "int64",
+        "n_unique": 21603,
+        "n_null": 0
+      },
+      {
+        "name": "NUM_PKTS_UP_TO_128_BYTES",
+        "dtype": "int64",
+        "n_unique": 985,
+        "n_null": 0
+      },
+      {
+        "name": "NUM_PKTS_128_TO_256_BYTES",
+        "dtype": "int64",
+        "n_unique": 111,
+        "n_null": 0
+      },
+      {
+        "name": "NUM_PKTS_256_TO_512_BYTES",
+        "dtype": "int64",
+        "n_unique": 220,
+        "n_null": 0
+      },
+      {
+        "name": "NUM_PKTS_512_TO_1024_BYTES",
+        "dtype": "int64",
+        "n_unique": 174,
+        "n_null": 0
+      },
+      {
+        "name": "NUM_PKTS_1024_TO_1514_BYTES",
+        "dtype": "int64",
+        "n_unique": 1156,
+        "n_null": 0
+      },
+      {
+        "name": "TCP_WIN_MAX_IN",
+        "dtype": "int64",
+        "n_unique": 7510,
+        "n_null": 0
+      },
+      {
+        "name": "TCP_WIN_MAX_OUT",
+        "dtype": "int64",
+        "n_unique": 5365,
+        "n_null": 0
+      },
+      {
+        "name": "ICMP_TYPE",
+        "dtype": "int64",
+        "n_unique": 1803,
+        "n_null": 0
+      },
+      {
+        "name": "ICMP_IPV4_TYPE",
+        "dtype": "int64",
+        "n_unique": 256,
+        "n_null": 0
+      },
+      {
+        "name": "DNS_QUERY_ID",
+        "dtype": "int64",
+        "n_unique": 64243,
+        "n_null": 0
+      },
+      {
+        "name": "DNS_QUERY_TYPE",
+        "dtype": "int64",
+        "n_unique": 21,
+        "n_null": 0
+      },
+      {
+        "name": "DNS_TTL_ANSWER",
+        "dtype": "int64",
+        "n_unique": 89,
+        "n_null": 0
+      },
+      {
+        "name": "FTP_COMMAND_RET_CODE",
+        "dtype": "float64",
+        "n_unique": 16,
+        "n_null": 0
+      },
+      {
+        "name": "Label",
+        "dtype": "int64",
+        "n_unique": 2,
+        "n_null": 0
+      },
+      {
+        "name": "Attack",
+        "dtype": "str",
+        "n_unique": 10,
+        "n_null": 0
+      }
+    ],
+    "columns_with_nulls": {},
+    "constant_columns": []
+  },
+  "graph_shape": {
+    "unique_src_ips": 40,
+    "unique_dst_ips": 40,
+    "unique_hosts_total": 44,
+    "unique_ordered_pairs": 293,
+    "possible_ordered_pairs": 1892,
+    "graph_density": 0.154863,
+    "flows_per_pair": {
+      "mean": 8157.94,
+      "median": 274.0,
+      "max": 23767
+    },
+    "distinct_peers_per_src": {
+      "mean": 7.33,
+      "median": 10.0,
+      "max": 10
+    },
+    "flows_per_src_ip": {
+      "mean": 59756.88,
+      "median": 591.0,
+      "max": 230357
+    },
+    "top_10_talkers": {
+      "59.166.0.1": 230357,
+      "59.166.0.2": 230214,
+      "59.166.0.4": 230209,
+      "59.166.0.0": 230068,
+      "59.166.0.3": 228573,
+      "59.166.0.5": 228093,
+      "59.166.0.9": 221404,
+      "59.166.0.8": 220524,
+      "59.166.0.6": 219536,
+      "59.166.0.7": 219433
+    }
+  },
+  "time": {
+    "verdict": "none",
+    "implication": "No time column and no monotonic numeric column. Fall back to row order for temporal splitting (D5). Granger causality (D6 Tier 2) is almost certainly not viable -- write up why instead.",
+    "named_candidates_found": {},
+    "monotonic_numeric_columns": []
+  },
+  "labels": {
+    "binary": {
+      "column": "Label",
+      "counts": {
+        "0": 2295222,
+        "1": 95053
+      },
+      "attack_prevalence": 0.039767,
+      "imbalance_ratio": 24.15
+    },
+    "multiclass": {
+      "column": "Attack",
+      "n_classes": 10,
+      "counts": {
+        "Benign": 2295222,
+        "Exploits": 31551,
+        "Fuzzers": 22310,
+        "Generic": 16560,
+        "Reconnaissance": 12779,
+        "DoS": 5794,
+        "Analysis": 2299,
+        "Backdoor": 2169,
+        "Shellcode": 1427,
+        "Worms": 164
+      },
+      "proportions": {
+        "Benign": 0.960233,
+        "Exploits": 0.0132,
+        "Fuzzers": 0.009334,
+        "Generic": 0.006928,
+        "Reconnaissance": 0.005346,
+        "DoS": 0.002424,
+        "Analysis": 0.000962,
+        "Backdoor": 0.000907,
+        "Shellcode": 0.000597,
+        "Worms": 6.9e-05
+      },
+      "suggested_class_weights": {
+        "Benign": 0.0005,
+        "Exploits": 0.0392,
+        "Fuzzers": 0.0555,
+        "Generic": 0.0747,
+        "Reconnaissance": 0.0968,
+        "DoS": 0.2135,
+        "Analysis": 0.5382,
+        "Backdoor": 0.5704,
+        "Shellcode": 0.867,
+        "Worms": 7.5441
+      },
+      "families_under_1000": [
+        "Worms"
+      ]
+    }
+  }
+}

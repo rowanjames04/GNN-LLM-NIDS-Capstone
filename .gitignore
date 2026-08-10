@@ -19,11 +19,18 @@ dist/
 .mypy_cache/
 .ipynb_checkpoints/
 
-# --- Data (never commit; see scripts/download_data.py) ---
+# --- Data ---
+# The full dataset never enters git: GitHub hard-rejects files over 100 MB, and
+# git keeps every version of a binary forever. Fetched by download_data.py and
+# pinned by checksum instead -- see configs/dataset.yaml.
 data/raw/*
 data/interim/*
 data/processed/*
 !data/**/.gitkeep
+
+# data/sample/ is deliberately NOT ignored. It holds a small stratified sample
+# (scripts/make_sample.py) so tests run against real data and the repo can be
+# cloned and run without a 1 GB download.
 
 # --- Results: keep metrics + figures, ignore heavy artefacts ---
 results/checkpoints/*
@@ -46,3 +53,6 @@ secrets/
 .vscode/
 .idea/
 *.swp
+
+# Download staging folders (Kaggle archives etc.)
+archive*/
