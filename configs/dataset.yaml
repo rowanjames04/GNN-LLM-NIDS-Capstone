@@ -1,0 +1,42 @@
+# Dataset configuration for NF-UNSW-NB15-v2.
+# See Obsidian: "01 - Dataset/Dataset Selection - UNSW-NB15 vs NF-UNSW-NB15-v2"
+
+name: NF-UNSW-NB15-v2
+
+# The NF-v2 collection (Sarhan, Layeghy & Portmann) is distributed via UQ's
+# research data manager and mirrored on Kaggle. Both may require accepting
+# terms in a browser, so a direct URL is not guaranteed to work unattended.
+# Leave `url` null and place the CSV in data/raw/ manually if so.
+source:
+  url: null
+  landing_page: "https://rdm.uq.edu.au/files/8c6e2a00-ef9c-11ed-827d-e762de186848"
+  kaggle: "dhoogla/nfunswnb15v2"
+  filename: NF-UNSW-NB15-v2.csv
+  sha256: null # recorded on first successful load, then verified thereafter
+
+paths:
+  raw: data/raw
+  interim: data/interim
+
+# Column roles. Verified against the real file by scripts/verify_dataset.py --
+# do not trust these until that script has run and confirmed them.
+columns:
+  src_ip: IPV4_SRC_ADDR
+  dst_ip: IPV4_DST_ADDR
+  src_port: L4_SRC_PORT
+  dst_port: L4_DST_PORT
+  label_binary: Label
+  label_multiclass: Attack
+
+# Names that plausibly encode time. verify_dataset.py searches for these and
+# also probes for monotonic numeric columns, since NF-v2 may ship without an
+# absolute timestamp at all. This gates the Granger causality module (D6).
+timestamp_candidates:
+  - FLOW_START_MILLISECONDS
+  - FLOW_END_MILLISECONDS
+  - FIRST_SWITCHED
+  - LAST_SWITCHED
+  - Stime
+  - Ltime
+  - timestamp
+  - ts
