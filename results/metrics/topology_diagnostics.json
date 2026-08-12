@@ -1,0 +1,538 @@
+{
+  "generated_at": "2026-08-10T05:43:55.733180+00:00",
+  "input_file": "data/interim/NF-UNSW-NB15-v2.parquet",
+  "node_counts": {
+    "unique_src_ips": 40,
+    "unique_dst_ips": 40,
+    "unique_dst_ports": 64625,
+    "unique_services_dst_ip_port": 421347
+  },
+  "schemes": {
+    "ip": {
+      "1000": {
+        "window_size": 1000,
+        "n_windows": 2390,
+        "nodes_per_window": {
+          "mean": 28.025,
+          "std": 6.794,
+          "min": 20.0,
+          "median": 33.0,
+          "max": 39.0,
+          "cv": 0.242
+        },
+        "edges_per_window": {
+          "mean": 112.421,
+          "std": 16.355,
+          "min": 58.0,
+          "median": 116.0,
+          "max": 154.0,
+          "cv": 0.145
+        },
+        "density_per_window": {
+          "mean": 0.172,
+          "std": 0.075,
+          "min": 0.073,
+          "median": 0.117,
+          "max": 0.361,
+          "cv": 0.437
+        },
+        "max_out_degree_per_window": {
+          "mean": 9.924,
+          "std": 0.348,
+          "min": 7.0,
+          "median": 10.0,
+          "max": 10.0,
+          "cv": 0.035
+        },
+        "out_degree_cv_within_window": {
+          "mean": 0.324,
+          "std": 0.227,
+          "min": 0.0,
+          "median": 0.313,
+          "max": 0.861,
+          "cv": 0.701
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.835,
+          "std": 0.128,
+          "min": 0.423,
+          "median": 0.858,
+          "max": 1.0,
+          "cv": 0.153
+        },
+        "windows_containing_attack": 1353,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 9.923,
+            "std": 0.35,
+            "min": 7.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.035
+          },
+          "max_fanout_benign_windows": {
+            "mean": 9.925,
+            "std": 0.346,
+            "min": 7.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.035
+          },
+          "edges_attack_windows": {
+            "mean": 121.308,
+            "std": 14.555,
+            "min": 61.0,
+            "median": 126.0,
+            "max": 154.0,
+            "cv": 0.12
+          },
+          "edges_benign_windows": {
+            "mean": 100.825,
+            "std": 10.128,
+            "min": 58.0,
+            "median": 100.0,
+            "max": 137.0,
+            "cv": 0.1
+          }
+        }
+      },
+      "10000": {
+        "window_size": 10000,
+        "n_windows": 239,
+        "nodes_per_window": {
+          "mean": 31.096,
+          "std": 7.357,
+          "min": 20.0,
+          "median": 36.0,
+          "max": 41.0,
+          "cv": 0.237
+        },
+        "edges_per_window": {
+          "mean": 143.351,
+          "std": 19.981,
+          "min": 101.0,
+          "median": 149.0,
+          "max": 223.0,
+          "cv": 0.139
+        },
+        "density_per_window": {
+          "mean": 0.177,
+          "std": 0.078,
+          "min": 0.095,
+          "median": 0.128,
+          "max": 0.397,
+          "cv": 0.442
+        },
+        "max_out_degree_per_window": {
+          "mean": 10.0,
+          "std": 0.0,
+          "min": 10.0,
+          "median": 10.0,
+          "max": 10.0,
+          "cv": 0.0
+        },
+        "out_degree_cv_within_window": {
+          "mean": 0.633,
+          "std": 0.118,
+          "min": 0.215,
+          "median": 0.654,
+          "max": 0.852,
+          "cv": 0.186
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.808,
+          "std": 0.091,
+          "min": 0.555,
+          "median": 0.833,
+          "max": 0.98,
+          "cv": 0.113
+        },
+        "windows_containing_attack": 139,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 10.0,
+            "std": 0.0,
+            "min": 10.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.0
+          },
+          "max_fanout_benign_windows": {
+            "mean": 10.0,
+            "std": 0.0,
+            "min": 10.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.0
+          },
+          "edges_attack_windows": {
+            "mean": 155.115,
+            "std": 11.303,
+            "min": 142.0,
+            "median": 153.0,
+            "max": 223.0,
+            "cv": 0.073
+          },
+          "edges_benign_windows": {
+            "mean": 127.0,
+            "std": 17.802,
+            "min": 101.0,
+            "median": 125.0,
+            "max": 173.0,
+            "cv": 0.14
+          }
+        }
+      },
+      "50000": {
+        "window_size": 50000,
+        "n_windows": 47,
+        "nodes_per_window": {
+          "mean": 32.681,
+          "std": 7.936,
+          "min": 23.0,
+          "median": 38.0,
+          "max": 42.0,
+          "cv": 0.243
+        },
+        "edges_per_window": {
+          "mean": 187.511,
+          "std": 19.282,
+          "min": 144.0,
+          "median": 184.0,
+          "max": 246.0,
+          "cv": 0.103
+        },
+        "density_per_window": {
+          "mean": 0.219,
+          "std": 0.11,
+          "min": 0.109,
+          "median": 0.136,
+          "max": 0.389,
+          "cv": 0.503
+        },
+        "max_out_degree_per_window": {
+          "mean": 10.0,
+          "std": 0.0,
+          "min": 10.0,
+          "median": 10.0,
+          "max": 10.0,
+          "cv": 0.0
+        },
+        "out_degree_cv_within_window": {
+          "mean": 0.556,
+          "std": 0.189,
+          "min": 0.285,
+          "median": 0.631,
+          "max": 0.813,
+          "cv": 0.34
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.762,
+          "std": 0.076,
+          "min": 0.508,
+          "median": 0.742,
+          "max": 0.96,
+          "cv": 0.1
+        },
+        "windows_containing_attack": 28,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 10.0,
+            "std": 0.0,
+            "min": 10.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.0
+          },
+          "max_fanout_benign_windows": {
+            "mean": 10.0,
+            "std": 0.0,
+            "min": 10.0,
+            "median": 10.0,
+            "max": 10.0,
+            "cv": 0.0
+          },
+          "edges_attack_windows": {
+            "mean": 193.679,
+            "std": 20.141,
+            "min": 170.0,
+            "median": 187.5,
+            "max": 246.0,
+            "cv": 0.104
+          },
+          "edges_benign_windows": {
+            "mean": 178.421,
+            "std": 13.535,
+            "min": 144.0,
+            "median": 182.0,
+            "max": 197.0,
+            "cv": 0.076
+          }
+        }
+      }
+    },
+    "service": {
+      "1000": {
+        "window_size": 1000,
+        "n_windows": 2390,
+        "nodes_per_window": {
+          "mean": 410.483,
+          "std": 142.623,
+          "min": 20.0,
+          "median": 459.0,
+          "max": 634.0,
+          "cv": 0.347
+        },
+        "edges_per_window": {
+          "mean": 626.959,
+          "std": 209.832,
+          "min": 58.0,
+          "median": 721.0,
+          "max": 859.0,
+          "cv": 0.335
+        },
+        "density_per_window": {
+          "mean": 0.009,
+          "std": 0.024,
+          "min": 0.002,
+          "median": 0.003,
+          "max": 0.187,
+          "cv": 2.67
+        },
+        "max_out_degree_per_window": {
+          "mean": 76.229,
+          "std": 25.096,
+          "min": 7.0,
+          "median": 85.0,
+          "max": 131.0,
+          "cv": 0.329
+        },
+        "out_degree_cv_within_window": {
+          "mean": 0.546,
+          "std": 0.253,
+          "min": 0.048,
+          "median": 0.588,
+          "max": 1.187,
+          "cv": 0.464
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.113,
+          "std": 0.038,
+          "min": 0.007,
+          "median": 0.122,
+          "max": 0.208,
+          "cv": 0.334
+        },
+        "windows_containing_attack": 1353,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 73.919,
+            "std": 24.167,
+            "min": 7.0,
+            "median": 83.0,
+            "max": 131.0,
+            "cv": 0.327
+          },
+          "max_fanout_benign_windows": {
+            "mean": 79.243,
+            "std": 25.951,
+            "min": 7.0,
+            "median": 89.0,
+            "max": 131.0,
+            "cv": 0.327
+          },
+          "edges_attack_windows": {
+            "mean": 621.075,
+            "std": 207.818,
+            "min": 61.0,
+            "median": 714.0,
+            "max": 859.0,
+            "cv": 0.335
+          },
+          "edges_benign_windows": {
+            "mean": 634.637,
+            "std": 212.187,
+            "min": 58.0,
+            "median": 733.0,
+            "max": 855.0,
+            "cv": 0.334
+          }
+        }
+      },
+      "10000": {
+        "window_size": 10000,
+        "n_windows": 239,
+        "nodes_per_window": {
+          "mean": 3020.573,
+          "std": 385.459,
+          "min": 1961.0,
+          "median": 3065.0,
+          "max": 4073.0,
+          "cv": 0.128
+        },
+        "edges_per_window": {
+          "mean": 4044.715,
+          "std": 394.363,
+          "min": 2874.0,
+          "median": 4080.0,
+          "max": 5116.0,
+          "cv": 0.098
+        },
+        "density_per_window": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.001,
+          "cv": 0.174
+        },
+        "max_out_degree_per_window": {
+          "mean": 428.13,
+          "std": 46.361,
+          "min": 309.0,
+          "median": 427.0,
+          "max": 576.0,
+          "cv": 0.108
+        },
+        "out_degree_cv_within_window": {
+          "mean": 1.03,
+          "std": 0.172,
+          "min": 0.321,
+          "median": 1.044,
+          "max": 1.401,
+          "cv": 0.167
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.116,
+          "std": 0.015,
+          "min": 0.084,
+          "median": 0.114,
+          "max": 0.166,
+          "cv": 0.129
+        },
+        "windows_containing_attack": 139,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 415.576,
+            "std": 42.69,
+            "min": 309.0,
+            "median": 413.0,
+            "max": 522.0,
+            "cv": 0.103
+          },
+          "max_fanout_benign_windows": {
+            "mean": 445.58,
+            "std": 45.609,
+            "min": 331.0,
+            "median": 445.5,
+            "max": 576.0,
+            "cv": 0.102
+          },
+          "edges_attack_windows": {
+            "mean": 4008.432,
+            "std": 376.832,
+            "min": 2949.0,
+            "median": 4062.0,
+            "max": 5116.0,
+            "cv": 0.094
+          },
+          "edges_benign_windows": {
+            "mean": 4095.15,
+            "std": 412.24,
+            "min": 2874.0,
+            "median": 4144.0,
+            "max": 5094.0,
+            "cv": 0.101
+          }
+        }
+      },
+      "50000": {
+        "window_size": 50000,
+        "n_windows": 47,
+        "nodes_per_window": {
+          "mean": 14245.894,
+          "std": 1034.373,
+          "min": 12158.0,
+          "median": 14135.0,
+          "max": 16590.0,
+          "cv": 0.073
+        },
+        "edges_per_window": {
+          "mean": 16676.532,
+          "std": 1055.457,
+          "min": 14596.0,
+          "median": 16676.0,
+          "max": 18948.0,
+          "cv": 0.063
+        },
+        "density_per_window": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0,
+          "cv": 0.082
+        },
+        "max_out_degree_per_window": {
+          "mean": 1706.149,
+          "std": 126.009,
+          "min": 1418.0,
+          "median": 1721.0,
+          "max": 1953.0,
+          "cv": 0.074
+        },
+        "out_degree_cv_within_window": {
+          "mean": 1.31,
+          "std": 0.197,
+          "min": 1.061,
+          "median": 1.388,
+          "max": 1.615,
+          "cv": 0.15
+        },
+        "jaccard_consecutive_windows": {
+          "mean": 0.037,
+          "std": 0.004,
+          "min": 0.028,
+          "median": 0.037,
+          "max": 0.047,
+          "cv": 0.117
+        },
+        "windows_containing_attack": 28,
+        "structural_separation": {
+          "max_fanout_attack_windows": {
+            "mean": 1652.679,
+            "std": 108.975,
+            "min": 1418.0,
+            "median": 1652.5,
+            "max": 1912.0,
+            "cv": 0.066
+          },
+          "max_fanout_benign_windows": {
+            "mean": 1784.947,
+            "std": 106.559,
+            "min": 1598.0,
+            "median": 1786.0,
+            "max": 1953.0,
+            "cv": 0.06
+          },
+          "edges_attack_windows": {
+            "mean": 16398.357,
+            "std": 957.022,
+            "min": 14596.0,
+            "median": 16355.0,
+            "max": 18814.0,
+            "cv": 0.058
+          },
+          "edges_benign_windows": {
+            "mean": 17086.474,
+            "std": 1060.111,
+            "min": 15015.0,
+            "median": 17136.0,
+            "max": 18948.0,
+            "cv": 0.062
+          }
+        }
+      }
+    }
+  }
+}
