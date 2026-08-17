@@ -1,0 +1,44 @@
+# Phase 3 baselines -- the topology-blind reference the GNN must beat.
+# See Obsidian: "06 - Evaluation/Baseline Results" and "Vision Integrity" V2.
+
+models: [logreg, random_forest, xgboost, mlp]
+n_seeds: 3
+
+# Threshold chosen on VALIDATION, never test and never train. Phase 2 measured a
+# 2.8x base-rate shift between train (2.62%) and test (7.33%), so a threshold
+# tuned on train would not transfer. Val sits at 6.71%, close to test. (D16)
+threshold_mode: f1        # 'f1' | 'recall'
+
+logreg:
+  max_iter: 300
+
+random_forest:
+  n_estimators: 100
+  # Not -1. Each joblib worker receives its own copy of the ~600 MB training
+  # matrix, so full parallelism multiplies it by the core count and the process
+  # is killed on a 16 GB machine.
+  n_jobs: 3
+  # Capped rather than unlimited: 1.66M training rows would otherwise grow trees
+  # that memorise individual flows, and the near-duplicate structure of attack
+  # episodes makes that especially easy here.
+  max_depth: 16
+  min_samples_leaf: 20
+
+xgboost:
+  n_jobs: 4
+  n_estimators: 300
+  max_depth: 8
+  learning_rate: 0.1
+
+mlp:
+  hidden_dim: 128
+  n_blocks: 3
+  dropout: 0.1
+  lr: 0.001
+  weight_decay: 0.0001
+  batch_size: 4096
+  max_epochs: 30
+  patience: 5             # early stopping on validation PR-AUC
+  focal_alpha: 0.75       # D8 -- focal loss, not SMOTE
+  focal_gamma: 2.0
+  multiclass_weight: 0.3  # auxiliary head (D3), down-weighted below the binary
