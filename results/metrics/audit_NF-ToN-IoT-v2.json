@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-17T06:10:30.574702+00:00",
-  "dataset": "NF-UNSW-NB15-v2-selfcheck",
-  "input_file": "data/interim/NF-UNSW-NB15-v2.parquet",
-  "n_rows": 2390275,
+  "generated_at": "2026-08-17T06:12:00.144471+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "input_file": "data/interim/NF-ToN-IoT-v2.parquet",
+  "n_rows": 16940496,
   "n_columns": 45,
   "columns": [
     "IPV4_SRC_ADDR",
@@ -52,201 +52,197 @@
     "Attack"
   ],
   "has_ip_columns": true,
-  "attack_prevalence": 0.039767,
+  "attack_prevalence": 0.639947,
   "families": {
-    "Benign": 2295222,
-    "Exploits": 31551,
-    "Fuzzers": 22310,
-    "Generic": 16560,
-    "Reconnaissance": 12779,
-    "DoS": 5794,
-    "Analysis": 2299,
-    "Backdoor": 2169,
-    "Shellcode": 1427,
-    "Worms": 164
+    "Benign": 6099469,
+    "scanning": 3781419,
+    "xss": 2455020,
+    "ddos": 2026234,
+    "password": 1153323,
+    "dos": 712609,
+    "injection": 684465,
+    "backdoor": 16809,
+    "mitm": 7723,
+    "ransomware": 3425
   },
   "shortcut_threshold": 0.9,
-  "shortcut_features": [
-    "MIN_TTL",
-    "MAX_TTL",
-    "MIN_IP_PKT_LEN"
-  ],
+  "shortcut_features": [],
   "per_feature_auc": {
     "L4_SRC_PORT": {
-      "auc": 0.4269,
-      "abs_auc": 0.5731
+      "auc": 0.4613,
+      "abs_auc": 0.5387
     },
     "L4_DST_PORT": {
-      "auc": 0.3758,
-      "abs_auc": 0.6242
+      "auc": 0.2842,
+      "abs_auc": 0.7158
     },
     "PROTOCOL": {
-      "auc": 0.5795,
-      "abs_auc": 0.5795
+      "auc": 0.5469,
+      "abs_auc": 0.5469
     },
     "L7_PROTO": {
-      "auc": 0.5334,
-      "abs_auc": 0.5334
+      "auc": 0.6675,
+      "abs_auc": 0.6675
     },
     "IN_BYTES": {
-      "auc": 0.3281,
-      "abs_auc": 0.6719
+      "auc": 0.799,
+      "abs_auc": 0.799
     },
     "IN_PKTS": {
-      "auc": 0.2909,
-      "abs_auc": 0.7091
+      "auc": 0.6704,
+      "abs_auc": 0.6704
     },
     "OUT_BYTES": {
-      "auc": 0.2174,
-      "abs_auc": 0.7826
+      "auc": 0.7221,
+      "abs_auc": 0.7221
     },
     "OUT_PKTS": {
-      "auc": 0.2207,
-      "abs_auc": 0.7793
+      "auc": 0.7036,
+      "abs_auc": 0.7036
     },
     "TCP_FLAGS": {
-      "auc": 0.2768,
-      "abs_auc": 0.7232
+      "auc": 0.5856,
+      "abs_auc": 0.5856
     },
     "CLIENT_TCP_FLAGS": {
-      "auc": 0.2889,
-      "abs_auc": 0.7111
+      "auc": 0.6308,
+      "abs_auc": 0.6308
     },
     "SERVER_TCP_FLAGS": {
-      "auc": 0.2006,
-      "abs_auc": 0.7994
+      "auc": 0.6207,
+      "abs_auc": 0.6207
     },
     "FLOW_DURATION_MILLISECONDS": {
-      "auc": 0.5233,
-      "abs_auc": 0.5233
+      "auc": 0.5836,
+      "abs_auc": 0.5836
     },
     "DURATION_IN": {
-      "auc": 0.5229,
-      "abs_auc": 0.5229
+      "auc": 0.5671,
+      "abs_auc": 0.5671
     },
     "DURATION_OUT": {
-      "auc": 0.5167,
-      "abs_auc": 0.5167
+      "auc": 0.5776,
+      "abs_auc": 0.5776
     },
     "MIN_TTL": {
-      "auc": 0.9942,
-      "abs_auc": 0.9942
+      "auc": 0.6585,
+      "abs_auc": 0.6585
     },
     "MAX_TTL": {
-      "auc": 0.9937,
-      "abs_auc": 0.9937
+      "auc": 0.6585,
+      "abs_auc": 0.6585
     },
     "LONGEST_FLOW_PKT": {
-      "auc": 0.3784,
-      "abs_auc": 0.6216
+      "auc": 0.7968,
+      "abs_auc": 0.7968
     },
     "SHORTEST_FLOW_PKT": {
-      "auc": 0.3438,
-      "abs_auc": 0.6562
+      "auc": 0.6845,
+      "abs_auc": 0.6845
     },
     "MIN_IP_PKT_LEN": {
-      "auc": 0.0116,
-      "abs_auc": 0.9884
+      "auc": 0.7038,
+      "abs_auc": 0.7038
     },
     "MAX_IP_PKT_LEN": {
-      "auc": 0.3784,
-      "abs_auc": 0.6216
+      "auc": 0.7968,
+      "abs_auc": 0.7968
     },
     "SRC_TO_DST_SECOND_BYTES": {
-      "auc": 0.3162,
-      "abs_auc": 0.6838
+      "auc": 0.7968,
+      "abs_auc": 0.7968
     },
     "DST_TO_SRC_SECOND_BYTES": {
-      "auc": 0.2183,
-      "abs_auc": 0.7817
+      "auc": 0.7198,
+      "abs_auc": 0.7198
     },
     "RETRANSMITTED_IN_BYTES": {
-      "auc": 0.3479,
-      "abs_auc": 0.6521
+      "auc": 0.5049,
+      "abs_auc": 0.5049
     },
     "RETRANSMITTED_IN_PKTS": {
-      "auc": 0.315,
-      "abs_auc": 0.685
+      "auc": 0.5049,
+      "abs_auc": 0.5049
     },
     "RETRANSMITTED_OUT_BYTES": {
-      "auc": 0.2562,
-      "abs_auc": 0.7438
+      "auc": 0.5128,
+      "abs_auc": 0.5128
     },
     "RETRANSMITTED_OUT_PKTS": {
-      "auc": 0.2524,
-      "abs_auc": 0.7476
+      "auc": 0.5128,
+      "abs_auc": 0.5128
     },
     "SRC_TO_DST_AVG_THROUGHPUT": {
-      "auc": 0.3138,
-      "abs_auc": 0.6862
+      "auc": 0.6858,
+      "abs_auc": 0.6858
     },
     "DST_TO_SRC_AVG_THROUGHPUT": {
-      "auc": 0.2068,
-      "abs_auc": 0.7932
+      "auc": 0.677,
+      "abs_auc": 0.677
     },
     "NUM_PKTS_UP_TO_128_BYTES": {
-      "auc": 0.2349,
-      "abs_auc": 0.7651
+      "auc": 0.7136,
+      "abs_auc": 0.7136
     },
     "NUM_PKTS_128_TO_256_BYTES": {
-      "auc": 0.5005,
-      "abs_auc": 0.5005
+      "auc": 0.5259,
+      "abs_auc": 0.5259
     },
     "NUM_PKTS_256_TO_512_BYTES": {
-      "auc": 0.4378,
-      "abs_auc": 0.5622
+      "auc": 0.5732,
+      "abs_auc": 0.5732
     },
     "NUM_PKTS_512_TO_1024_BYTES": {
-      "auc": 0.468,
-      "abs_auc": 0.532
+      "auc": 0.5644,
+      "abs_auc": 0.5644
     },
     "NUM_PKTS_1024_TO_1514_BYTES": {
-      "auc": 0.3835,
-      "abs_auc": 0.6165
+      "auc": 0.573,
+      "abs_auc": 0.573
     },
     "TCP_WIN_MAX_IN": {
-      "auc": 0.418,
-      "abs_auc": 0.582
+      "auc": 0.7111,
+      "abs_auc": 0.7111
     },
     "TCP_WIN_MAX_OUT": {
-      "auc": 0.5506,
-      "abs_auc": 0.5506
+      "auc": 0.6671,
+      "abs_auc": 0.6671
     },
     "ICMP_TYPE": {
-      "auc": 0.4793,
-      "abs_auc": 0.5207
+      "auc": 0.5034,
+      "abs_auc": 0.5034
     },
     "ICMP_IPV4_TYPE": {
-      "auc": 0.4793,
-      "abs_auc": 0.5207
+      "auc": 0.5034,
+      "abs_auc": 0.5034
     },
     "DNS_QUERY_ID": {
-      "auc": 0.4787,
-      "abs_auc": 0.5213
+      "auc": 0.5529,
+      "abs_auc": 0.5529
     },
     "DNS_QUERY_TYPE": {
-      "auc": 0.4907,
-      "abs_auc": 0.5093
+      "auc": 0.5535,
+      "abs_auc": 0.5535
     },
     "DNS_TTL_ANSWER": {
-      "auc": 0.4227,
-      "abs_auc": 0.5773
+      "auc": 0.5018,
+      "abs_auc": 0.5018
     },
     "FTP_COMMAND_RET_CODE": {
-      "auc": 0.4486,
-      "abs_auc": 0.5514
+      "auc": 0.5024,
+      "abs_auc": 0.5024
     }
   },
   "saturation": {
     "n_sampled": 600000,
     "target_prevalence": 0.04,
     "actual_prevalence": 0.04,
-    "baseline_pr_auc": 0.07071,
-    "logreg_roc_auc": 0.99571,
-    "gbdt_roc_auc": 0.99966,
-    "logreg_pr_auc": 0.92058,
-    "gbdt_pr_auc": 0.99513,
-    "best_simple_pr_auc": 0.99513,
-    "saturated": true
+    "baseline_pr_auc": 0.09129,
+    "logreg_roc_auc": 0.60052,
+    "gbdt_roc_auc": 0.90429,
+    "logreg_pr_auc": 0.12144,
+    "gbdt_pr_auc": 0.51164,
+    "best_simple_pr_auc": 0.51164,
+    "saturated": false
   }
 }

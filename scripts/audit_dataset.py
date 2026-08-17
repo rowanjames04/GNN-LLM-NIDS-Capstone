@@ -107,12 +107,28 @@ def single_feature_auc(x: np.ndarray, y: np.ndarray) -> float:
     return float((ranks[y == 1].sum() - n_pos * (n_pos + 1) / 2) / (n_pos * n_neg))
 
 
-def stratified_indices(y: np.ndarray, n: int, seed: int) -> np.ndarray:
-    """Subsample preserving the class ratio, so PR-AUC stays interpretable."""
+def stratified_indices(
+    y: np.ndarray, n: int, seed: int, target_prevalence: float | None = None
+) -> np.ndarray:
+    """Subsample, optionally forcing a chosen attack prevalence.
+
+    PR-AUC's floor *is* the prevalence, so a raw PR-AUC cannot be compared
+    between datasets with different class balance. NF-ToN-IoT-v2 is 64% attack,
+    which puts its random baseline at 0.84 -- a model scoring 0.9989 there is
+    doing far less than one scoring 0.9954 on NF-UNSW-NB15-v2 at 7% attack.
+
+    Passing a target prevalence resamples to a common balance so the saturation
+    verdicts are comparable across datasets. Row order is preserved so the
+    contiguous split still approximates a temporal one (D5).
+    """
     rng = np.random.default_rng(seed)
     pos, neg = np.flatnonzero(y == 1), np.flatnonzero(y == 0)
-    n_pos = min(len(pos), max(1, int(n * len(pos) / len(y))))
-    n_neg = min(len(neg), n - n_pos)
+    if target_prevalence is None:
+        n_pos = min(len(pos), max(1, int(n * len(pos) / len(y))))
+        n_neg = min(len(neg), n - n_pos)
+    else:
+        n_pos = min(len(pos), max(1, int(n * target_prevalence)))
+        n_neg = min(len(neg), int(n_pos * (1 - target_prevalence) / target_prevalence))
     return np.sort(np.concatenate([
         rng.choice(pos, n_pos, replace=False), rng.choice(neg, n_neg, replace=False)
     ]))
@@ -125,6 +141,8 @@ def main() -> None:
     ap.add_argument("--sample", type=int, default=600_000,
                     help="rows for the saturation test")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--target-prevalence", type=float, default=0.04,
+                    help="resample to this attack rate so datasets are comparable")
     args = ap.parse_args()
 
     name = args.name or args.input.stem
@@ -190,15 +208,20 @@ def main() -> None:
             print(f"    (NF-UNSW-NB15-v2 shortcut {c}: |AUC| {scores[c]['abs_auc']:.4f} here)")
 
     # ---- saturation test --------------------------------------------------
-    print(f"\nSaturation test (stratified subsample of {args.sample:,})")
+    print(f"\nSaturation test (subsample of {args.sample:,}, resampled to "
+          f"{args.target_prevalence:.0%} attack for cross-dataset comparability)")
     feat_cols = [c for c, v in scores.items()]
-    idx = stratified_indices(y, min(args.sample, n_rows), args.seed)
+    idx = stratified_indices(y, min(args.sample, n_rows), args.seed, args.target_prevalence)
     X = np.empty((len(idx), len(feat_cols)), dtype=np.float32)
     for j, c in enumerate(feat_cols):
-        col = read_column(pf, c)[idx]
-        X[:, j] = np.nan_to_num(np.asarray(col, dtype="float32"))
+        col = np.asarray(read_column(pf, c)[idx], dtype="float64")
+        # Several NetFlow throughput columns exceed float32 range; clipping
+        # before the cast avoids silent inf that would corrupt the model.
+        np.clip(col, -3e38, 3e38, out=col)
+        X[:, j] = np.nan_to_num(col.astype(np.float32))
         del col
     ys = y[idx]
+    print(f"  actual prevalence in subsample: {ys.mean():.4%}")
 
     # Contiguous split on the subsample, preserving order (D5).
     cut = int(0.7 * len(idx))
@@ -213,7 +236,7 @@ def main() -> None:
     # the 0.993 Phase 3 measured with the transform in place.
     Xl = np.log1p(np.maximum(X, 0))
     sc = StandardScaler().fit(Xl[:cut])
-    lr = LogisticRegression(max_iter=200, class_weight="balanced")
+    lr = LogisticRegression(max_iter=1000, class_weight="balanced")
     lr.fit(sc.transform(Xl[:cut]), ys[:cut])
     ap_lr = average_precision_score(ys[cut:], lr.predict_proba(sc.transform(Xl[cut:]))[:, 1])
     del Xl
@@ -224,9 +247,14 @@ def main() -> None:
     ap_gb = average_precision_score(ys[cut:], gb.predict_proba(X[cut:])[:, 1])
 
     base = float(ys[cut:].mean())
-    print(f"  random baseline (= prevalence)   PR-AUC {base:.4f}")
-    print(f"  logistic regression              PR-AUC {ap_lr:.4f}")
-    print(f"  gradient boosting                PR-AUC {ap_gb:.4f}")
+    from sklearn.metrics import roc_auc_score
+    auc_lr = roc_auc_score(ys[cut:], lr.predict_proba(sc.transform(np.log1p(
+        np.maximum(X[cut:], 0))))[:, 1])
+    auc_gb = roc_auc_score(ys[cut:], gb.predict_proba(X[cut:])[:, 1])
+    print(f"  {'':30} {'PR-AUC':>9} {'ROC-AUC':>9}")
+    print(f"  {'random baseline':30} {base:>9.4f} {0.5:>9.4f}")
+    print(f"  {'logistic regression':30} {ap_lr:>9.4f} {auc_lr:>9.4f}")
+    print(f"  {'gradient boosting':30} {ap_gb:>9.4f} {auc_gb:>9.4f}")
     # Judged on the better of the two: saturation means the problem is solvable
     # without sophistication, and a tree model reaching 0.99 says that just as
     # firmly as a linear one does.
@@ -254,7 +282,11 @@ def main() -> None:
         "per_feature_auc": scores,
         "saturation": {
             "n_sampled": int(len(idx)),
+            "target_prevalence": args.target_prevalence,
+            "actual_prevalence": round(float(ys.mean()), 5),
             "baseline_pr_auc": round(base, 5),
+            "logreg_roc_auc": round(float(auc_lr), 5),
+            "gbdt_roc_auc": round(float(auc_gb), 5),
             "logreg_pr_auc": round(float(ap_lr), 5),
             "gbdt_pr_auc": round(float(ap_gb), 5),
             "best_simple_pr_auc": round(float(best), 5),
