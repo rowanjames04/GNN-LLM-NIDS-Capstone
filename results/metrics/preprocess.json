@@ -1,0 +1,461 @@
+{
+  "generated_at": "2026-08-17T02:20:58.595213+00:00",
+  "config": {
+    "dataset_config": "configs/dataset.yaml",
+    "eda_metrics": "results/metrics/eda.json",
+    "features": {
+      "drop_shortcuts": [
+        "MIN_TTL",
+        "MAX_TTL",
+        "MIN_IP_PKT_LEN"
+      ],
+      "drop_uninformative": [
+        "DNS_QUERY_ID",
+        "ICMP_IPV4_TYPE"
+      ],
+      "identity": [
+        "IPV4_SRC_ADDR",
+        "IPV4_DST_ADDR"
+      ],
+      "categorical": [
+        "PROTOCOL",
+        "L7_PROTO",
+        "TCP_FLAGS",
+        "CLIENT_TCP_FLAGS",
+        "SERVER_TCP_FLAGS"
+      ],
+      "categorical_min_frequency": 0.001,
+      "categorical_max_cardinality": 64,
+      "conditional": [
+        "ICMP_TYPE",
+        "DNS_QUERY_TYPE",
+        "DNS_TTL_ANSWER",
+        "FTP_COMMAND_RET_CODE"
+      ],
+      "ports": [
+        "L4_SRC_PORT",
+        "L4_DST_PORT"
+      ],
+      "log_transform": "from_eda",
+      "scaler": "standard"
+    },
+    "split": {
+      "method": "contiguous",
+      "train": 0.7,
+      "val": 0.1,
+      "test": 0.2,
+      "purge_gap": 10000,
+      "fit_on": "train"
+    },
+    "graph": {
+      "window": "fixed_count",
+      "window_size": 10000,
+      "window_sizes_to_sweep": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "directed": true,
+      "multigraph": true,
+      "node_identity": "ip",
+      "global_node_map": true
+    },
+    "output": {
+      "dir": "data/processed",
+      "stats": "results/metrics/preprocess.json",
+      "seed": 42
+    }
+  },
+  "n_rows": 2390275,
+  "schema": {
+    "n_continuous": 31,
+    "n_categorical": 5,
+    "n_conditional_indicators": 4,
+    "n_port_buckets": 2,
+    "n_log_transformed": 22,
+    "dropped": {
+      "shortcuts": [
+        "MIN_TTL",
+        "MAX_TTL",
+        "MIN_IP_PKT_LEN"
+      ],
+      "uninformative": [
+        "DNS_QUERY_ID",
+        "ICMP_IPV4_TYPE"
+      ]
+    },
+    "continuous": [
+      "L4_SRC_PORT",
+      "L4_DST_PORT",
+      "IN_BYTES",
+      "IN_PKTS",
+      "OUT_BYTES",
+      "OUT_PKTS",
+      "FLOW_DURATION_MILLISECONDS",
+      "DURATION_IN",
+      "DURATION_OUT",
+      "LONGEST_FLOW_PKT",
+      "SHORTEST_FLOW_PKT",
+      "MAX_IP_PKT_LEN",
+      "SRC_TO_DST_SECOND_BYTES",
+      "DST_TO_SRC_SECOND_BYTES",
+      "RETRANSMITTED_IN_BYTES",
+      "RETRANSMITTED_IN_PKTS",
+      "RETRANSMITTED_OUT_BYTES",
+      "RETRANSMITTED_OUT_PKTS",
+      "SRC_TO_DST_AVG_THROUGHPUT",
+      "DST_TO_SRC_AVG_THROUGHPUT",
+      "NUM_PKTS_UP_TO_128_BYTES",
+      "NUM_PKTS_128_TO_256_BYTES",
+      "NUM_PKTS_256_TO_512_BYTES",
+      "NUM_PKTS_512_TO_1024_BYTES",
+      "NUM_PKTS_1024_TO_1514_BYTES",
+      "TCP_WIN_MAX_IN",
+      "TCP_WIN_MAX_OUT",
+      "ICMP_TYPE",
+      "DNS_QUERY_TYPE",
+      "DNS_TTL_ANSWER",
+      "FTP_COMMAND_RET_CODE"
+    ],
+    "categorical": [
+      "PROTOCOL",
+      "L7_PROTO",
+      "TCP_FLAGS",
+      "CLIENT_TCP_FLAGS",
+      "SERVER_TCP_FLAGS"
+    ]
+  },
+  "splits": {
+    "train": {
+      "name": "train",
+      "start": 0,
+      "stop": 1663192,
+      "n_rows": 1663192
+    },
+    "val": {
+      "name": "val",
+      "start": 1683192,
+      "stop": 1902219,
+      "n_rows": 219027
+    },
+    "test": {
+      "name": "test",
+      "start": 1922219,
+      "stop": 2390275,
+      "n_rows": 468056
+    }
+  },
+  "split_attack_rates": {
+    "train": 0.026224,
+    "val": 0.067115,
+    "test": 0.073307
+  },
+  "rows_purged": 40000,
+  "categorical_cardinalities": {
+    "PROTOCOL": 3,
+    "L7_PROTO": 7,
+    "TCP_FLAGS": 8,
+    "CLIENT_TCP_FLAGS": 8,
+    "SERVER_TCP_FLAGS": 10,
+    "L4_SRC_PORT_bucket": 3,
+    "L4_DST_PORT_bucket": 3,
+    "ICMP_TYPE_present": 2,
+    "DNS_QUERY_TYPE_present": 2,
+    "DNS_TTL_ANSWER_present": 2,
+    "FTP_COMMAND_RET_CODE_present": 2
+  },
+  "gate_checks": {
+    "edge_count_equals_flow_count": true,
+    "node_count_equals_unique_ips": true,
+    "attack_count_preserved": true,
+    "node_indices_are_bijective": true,
+    "no_nan_in_features": true
+  },
+  "window_sweep": {
+    "1000": {
+      "n_windows_total": 1663,
+      "n_windows_measured": 200,
+      "nodes": {
+        "mean": 25.535,
+        "std": 6.649,
+        "min": 20.0,
+        "max": 38.0,
+        "cv": 0.2604
+      },
+      "unique_pairs": {
+        "mean": 108.42,
+        "std": 15.8904,
+        "min": 60.0,
+        "max": 141.0,
+        "cv": 0.1466
+      },
+      "density": {
+        "mean": 0.1991,
+        "std": 0.0753,
+        "min": 0.0774,
+        "max": 0.3105,
+        "cv": 0.3783
+      },
+      "max_fanout": {
+        "mean": 9.94,
+        "std": 0.2939,
+        "min": 8.0,
+        "max": 10.0,
+        "cv": 0.0296
+      },
+      "mean_fanout": {
+        "mean": 8.1578,
+        "std": 1.552,
+        "min": 4.762,
+        "max": 10.0,
+        "cv": 0.1902
+      },
+      "fanout_std_within_window": {
+        "mean": 2.3043,
+        "std": 1.6283,
+        "min": 0.0,
+        "max": 4.602,
+        "cv": 0.7067
+      },
+      "n_active_senders": {
+        "mean": 13.795,
+        "std": 3.3842,
+        "min": 10.0,
+        "max": 25.0,
+        "cv": 0.2453
+      },
+      "flows_per_node_std": {
+        "mean": 49.1724,
+        "std": 5.5292,
+        "min": 38.36,
+        "max": 66.64,
+        "cv": 0.1124
+      },
+      "attack_rate": {
+        "mean": 0.0247,
+        "std": 0.043,
+        "min": 0.0,
+        "max": 0.41,
+        "cv": 1.7391
+      },
+      "windows_with_no_attack": 123
+    },
+    "5000": {
+      "n_windows_total": 332,
+      "n_windows_measured": 200,
+      "nodes": {
+        "mean": 27.475,
+        "std": 7.037,
+        "min": 20.0,
+        "max": 40.0,
+        "cv": 0.2561
+      },
+      "unique_pairs": {
+        "mean": 127.7,
+        "std": 19.6893,
+        "min": 100.0,
+        "max": 185.0,
+        "cv": 0.1542
+      },
+      "density": {
+        "mean": 0.1995,
+        "std": 0.0734,
+        "min": 0.0968,
+        "max": 0.3737,
+        "cv": 0.3681
+      },
+      "max_fanout": {
+        "mean": 10.0,
+        "std": 0.0,
+        "min": 10.0,
+        "max": 10.0,
+        "cv": 0.0
+      },
+      "mean_fanout": {
+        "mean": 7.1058,
+        "std": 1.1963,
+        "min": 5.545,
+        "max": 10.0,
+        "cv": 0.1683
+      },
+      "fanout_std_within_window": {
+        "mean": 3.7749,
+        "std": 1.0465,
+        "min": 0.0,
+        "max": 4.602,
+        "cv": 0.2772
+      },
+      "n_active_senders": {
+        "mean": 18.48,
+        "std": 4.1267,
+        "min": 10.0,
+        "max": 33.0,
+        "cv": 0.2233
+      },
+      "flows_per_node_std": {
+        "mean": 235.7717,
+        "std": 24.9776,
+        "min": 185.52,
+        "max": 277.29,
+        "cv": 0.1059
+      },
+      "attack_rate": {
+        "mean": 0.0264,
+        "std": 0.0443,
+        "min": 0.0,
+        "max": 0.3472,
+        "cv": 1.6766
+      },
+      "windows_with_no_attack": 120
+    },
+    "10000": {
+      "n_windows_total": 166,
+      "n_windows_measured": 166,
+      "nodes": {
+        "mean": 28.4337,
+        "std": 7.3258,
+        "min": 20.0,
+        "max": 41.0,
+        "cv": 0.2576
+      },
+      "unique_pairs": {
+        "mean": 139.4217,
+        "std": 22.6767,
+        "min": 101.0,
+        "max": 223.0,
+        "cv": 0.1626
+      },
+      "density": {
+        "mean": 0.2047,
+        "std": 0.079,
+        "min": 0.0945,
+        "max": 0.3974,
+        "cv": 0.3862
+      },
+      "max_fanout": {
+        "mean": 10.0,
+        "std": 0.0,
+        "min": 10.0,
+        "max": 10.0,
+        "cv": 0.0
+      },
+      "mean_fanout": {
+        "mean": 6.4638,
+        "std": 0.8067,
+        "min": 5.094,
+        "max": 9.364,
+        "cv": 0.1248
+      },
+      "fanout_std_within_window": {
+        "mean": 4.0112,
+        "std": 0.5092,
+        "min": 2.111,
+        "max": 4.602,
+        "cv": 0.127
+      },
+      "n_active_senders": {
+        "mean": 21.8916,
+        "std": 4.3879,
+        "min": 11.0,
+        "max": 34.0,
+        "cv": 0.2004
+      },
+      "flows_per_node_std": {
+        "mean": 466.1967,
+        "std": 50.6869,
+        "min": 381.05,
+        "max": 519.33,
+        "cv": 0.1087
+      },
+      "attack_rate": {
+        "mean": 0.0262,
+        "std": 0.04,
+        "min": 0.0,
+        "max": 0.2218,
+        "cv": 1.5293
+      },
+      "windows_with_no_attack": 100
+    },
+    "50000": {
+      "n_windows_total": 33,
+      "n_windows_measured": 33,
+      "nodes": {
+        "mean": 29.8788,
+        "std": 7.9535,
+        "min": 23.0,
+        "max": 42.0,
+        "cv": 0.2662
+      },
+      "unique_pairs": {
+        "mean": 188.3636,
+        "std": 22.3862,
+        "min": 144.0,
+        "max": 246.0,
+        "cv": 0.1188
+      },
+      "density": {
+        "mean": 0.2593,
+        "std": 0.1085,
+        "min": 0.1128,
+        "max": 0.3893,
+        "cv": 0.4184
+      },
+      "max_fanout": {
+        "mean": 10.0,
+        "std": 0.0,
+        "min": 10.0,
+        "max": 10.0,
+        "cv": 0.0
+      },
+      "mean_fanout": {
+        "mean": 7.1518,
+        "std": 1.2845,
+        "min": 5.029,
+        "max": 8.955,
+        "cv": 0.1796
+      },
+      "fanout_std_within_window": {
+        "mean": 3.2742,
+        "std": 0.5762,
+        "min": 2.585,
+        "max": 4.194,
+        "cv": 0.176
+      },
+      "n_active_senders": {
+        "mean": 27.303,
+        "std": 6.3029,
+        "min": 22.0,
+        "max": 39.0,
+        "cv": 0.2308
+      },
+      "flows_per_node_std": {
+        "mean": 2293.5397,
+        "std": 266.7925,
+        "min": 1880.92,
+        "max": 2535.11,
+        "cv": 0.1163
+      },
+      "attack_rate": {
+        "mean": 0.0259,
+        "std": 0.0343,
+        "min": 0.0,
+        "max": 0.1051,
+        "cv": 1.3252
+      },
+      "windows_with_no_attack": 19
+    }
+  },
+  "attack_families": {
+    "Analysis": 0,
+    "Backdoor": 1,
+    "Benign": 2,
+    "DoS": 3,
+    "Exploits": 4,
+    "Fuzzers": 5,
+    "Generic": 6,
+    "Reconnaissance": 7,
+    "Shellcode": 8,
+    "Worms": 9
+  }
+}

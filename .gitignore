@@ -28,6 +28,13 @@ data/interim/*
 data/processed/*
 !data/**/.gitkeep
 
+# Fitted transform parameters and split boundaries are small and are provenance:
+# they pin the exact preprocessing that produced every committed result. The
+# feature arrays they generate stay out (33 MB, and regenerable from these).
+!data/processed/pipeline.json
+!data/processed/splits.json
+!data/processed/attack_families.json
+
 # data/sample/ is deliberately NOT ignored. It holds a small stratified sample
 # (scripts/make_sample.py) so tests run against real data and the repo can be
 # cloned and run without a 1 GB download.

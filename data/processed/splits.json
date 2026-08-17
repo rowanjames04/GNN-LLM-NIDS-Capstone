@@ -1,0 +1,20 @@
+{
+  "train": {
+    "name": "train",
+    "start": 0,
+    "stop": 1663192,
+    "n_rows": 1663192
+  },
+  "val": {
+    "name": "val",
+    "start": 1683192,
+    "stop": 1902219,
+    "n_rows": 219027
+  },
+  "test": {
+    "name": "test",
+    "start": 1922219,
+    "stop": 2390275,
+    "n_rows": 468056
+  }
+}

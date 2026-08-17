@@ -1,0 +1,107 @@
+# Phase 2 preprocessing and graph construction.
+# Every choice here traces to a measured finding in Phase 0/1 -- see the
+# Obsidian notes "Feature Shortcut Audit", "Feature Dictionary -
+# NF-UNSW-NB15-v2" and "Graph Construction Open Questions".
+
+dataset_config: configs/dataset.yaml
+eda_metrics: results/metrics/eda.json   # log-transform list is read from here
+
+features:
+  # --- D15: provenance shortcuts, NOT behaviour. Excluding these is the single
+  # most important preprocessing step in the project. Each separates attack
+  # from benign at |AUC| ~0.99 alone; every attack family carries the attacker's
+  # TTL at 99-100%, which would have made leave-one-attack-out meaningless.
+  drop_shortcuts:
+    - MIN_TTL           # |AUC| 0.9942
+    - MAX_TTL           # |AUC| 0.9937
+    - MIN_IP_PKT_LEN    # |AUC| 0.9884
+
+  # --- Identifiers and exact duplicates (measured, Phase 1)
+  drop_uninformative:
+    - DNS_QUERY_ID      # 64,243 distinct values, mutual information 0.0034
+    - ICMP_IPV4_TYPE    # r = 1.0 with ICMP_TYPE
+
+  # Never features. They define graph topology only -- using an address as a
+  # model input teaches "this host is the attacker", which is the same class of
+  # leak as the TTL shortcut and destroys cross-dataset generalisation.
+  identity:
+    - IPV4_SRC_ADDR
+    - IPV4_DST_ADDR
+
+  # --- Categorical, embedded rather than one-hot or treated as magnitudes.
+  # The TCP flag fields are bitmasks: value 18 (SYN+ACK) is not "twice" value 9.
+  # Phase 1 measured that splitting them into independent bits LOSES
+  # information, because the signal is in the combination. Treated as
+  # categorical, combinations are preserved for free.
+  categorical:
+    - PROTOCOL
+    - L7_PROTO
+    - TCP_FLAGS
+    - CLIENT_TCP_FLAGS
+    - SERVER_TCP_FLAGS
+  # Values rarer than this share an OTHER bucket, keeping embedding tables small
+  # and avoiding a category seen once in training and never again.
+  categorical_min_frequency: 0.001
+  categorical_max_cardinality: 64
+
+  # --- Protocol-conditional fields. A zero here means "not applicable", not
+  # "measured zero". Each gets a companion binary indicator so the model can
+  # tell the two apart instead of reading N/A as a real measurement.
+  conditional:
+    - ICMP_TYPE
+    - DNS_QUERY_TYPE
+    - DNS_TTL_ANSWER
+    - FTP_COMMAND_RET_CODE
+
+  # Ports are numeric but not magnitudes -- port 443 is not "more" than 80.
+  # Kept continuous for now, but low ports carry meaning, so they are also
+  # bucketed into a categorical companion.
+  ports:
+    - L4_SRC_PORT
+    - L4_DST_PORT
+
+  log_transform: from_eda   # use eda.json "recommend_log"; or give an explicit list
+  scaler: standard          # fitted on TRAIN ONLY -- see split.fit_on
+
+split:
+  # D5: chronological/contiguous, never random. Row order is the only ordering
+  # available (there is no timestamp column, confirmed Phase 0), so this is an
+  # order-preserving split rather than a verifiably temporal one. Stated as a
+  # limitation in the report.
+  method: contiguous
+  train: 0.70
+  val: 0.10
+  test: 0.20
+  # Drop this many rows either side of each boundary. Several NetFlow features
+  # are windowed aggregates, so rows adjacent to a boundary can carry
+  # information from the other side.
+  purge_gap: 10000
+  fit_on: train
+
+graph:
+  # Fixed-count windows: uniform memory, and no dependence on the timestamps
+  # this dataset does not have. Window size is the aperture through which the
+  # GNN sees structure -- too small and a scan's fan-out never appears in any
+  # one window, too large and the graph saturates. Swept in Phase 2.
+  window: fixed_count
+  window_size: 10000
+  window_sizes_to_sweep: [1000, 5000, 10000, 50000]
+
+  # Directed: preserves the aggressor/victim distinction, which the LLM report
+  # needs. "A scanned B" and "B scanned A" are different incidents.
+  directed: true
+
+  # Mandatory, not a choice: each flow carries its own label and we classify per
+  # flow, so flows between the same pair cannot be aggregated into one edge.
+  # This is what bounds memory and therefore window size.
+  multigraph: true
+
+  node_identity: ip   # 'ip' (D2) | 'ip_port' -- Tier 3 ablation, measured worse
+  # Maintained across windows so per-host baselines and any future temporal work
+  # have a stable identity. Cheap now, painful to retrofit.
+  global_node_map: true
+
+output:
+  dir: data/processed
+  stats: results/metrics/preprocess.json
+  seed: 42
