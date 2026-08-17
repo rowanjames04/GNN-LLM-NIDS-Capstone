@@ -16,6 +16,9 @@ torch-geometric>=2.6
 # Graphs
 networkx>=3.3
 
+# Figures
+matplotlib>=3.9
+
 # Statistics (Granger causality, stationarity tests)
 statsmodels>=0.14
 
