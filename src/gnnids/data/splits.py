@@ -72,6 +72,81 @@ def contiguous_split(
     return splits
 
 
+def window_split(
+    n_rows: int,
+    window_size: int,
+    train: float = 0.70,
+    val: float = 0.10,
+    test: float = 0.20,
+    seed: int = 42,
+) -> tuple[dict[str, Split], "np.ndarray"]:
+    """Assign whole windows to splits at random, then reorder so each split is
+    contiguous again.
+
+    For NF-ToN-IoT-v2 the contiguous split above is actively harmful. Its rows
+    are ordered by capture scenario rather than by time, so `xss` occupies
+    positions 0.81-0.98 and `ransomware` sits at 0.000. A contiguous 70/10/20
+    therefore produced train 53% / val 80% / **test 97%** attack, with the test
+    split 90% one family that barely appears in training -- a ragged accidental
+    leave-one-attack-out reported as the conventional protocol.
+
+    D5 is not being reversed; its precondition is absent. D5 chose contiguous
+    splits because consecutive flows are near-duplicates *in time*. Where the
+    ordering is not temporal, that argument does not apply and a contiguous cut
+    just partitions by attack type.
+
+    Windows rather than rows, for the D20 reason: a window is assigned as a
+    unit, so its internal topology survives and a near-duplicate episode travels
+    to one split rather than being scattered across all three.
+
+    Returns the splits and a **permutation** that groups train, then val, then
+    test. Applying it to the dataframe makes every split a contiguous range
+    again, so everything downstream is unchanged.
+
+    One property worth knowing: because assignment is random over windows, the
+    class balance it achieves carries sampling variance scaling as
+    1/sqrt(n_windows). At 100 windows the residual imbalance is around 0.13; by
+    1,000 it is under 0.03. Check the reported per-split attack rates rather
+    than assuming the balance came out even, especially at large window sizes
+    where the window count falls.
+    """
+    import numpy as np
+
+    if window_size <= 0:
+        raise ValueError(f"window_size must be positive, got {window_size}")
+    if not 0.99 < train + val + test < 1.01:
+        raise ValueError(f"fractions must sum to 1, got {train + val + test}")
+
+    n_windows = n_rows // window_size
+    if n_windows < 3:
+        raise ValueError(
+            f"{n_rows} rows at window {window_size} gives {n_windows} windows; "
+            f"need at least 3")
+
+    rng = np.random.default_rng(seed)
+    order = rng.permutation(n_windows)
+    n_tr = int(n_windows * train)
+    n_va = int(n_windows * val)
+    assigned = {
+        "train": np.sort(order[:n_tr]),
+        "val": np.sort(order[n_tr:n_tr + n_va]),
+        "test": np.sort(order[n_tr + n_va:]),
+    }
+
+    # Rows of the assigned windows, split by split, in original order within
+    # each. Trailing rows beyond the last whole window are dropped.
+    pieces, splits, cursor = [], {}, 0
+    for name in ("train", "val", "test"):
+        idx = np.concatenate([
+            np.arange(w * window_size, (w + 1) * window_size) for w in assigned[name]
+        ]) if len(assigned[name]) else np.array([], dtype=np.int64)
+        pieces.append(idx)
+        splits[name] = Split(name, cursor, cursor + len(idx))
+        cursor += len(idx)
+
+    return splits, np.concatenate(pieces).astype(np.int64)
+
+
 def assert_no_overlap(splits: dict[str, Split]) -> None:
     """Guard against the failure this whole module exists to prevent."""
     ordered = sorted(splits.values(), key=lambda s: s.start)

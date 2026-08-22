@@ -261,3 +261,75 @@ def test_snapshot_stats_reports_fanout_spread(frame):
     assert stats["n_edges"] == 500
     assert "fanout_std" in stats and stats["fanout_std"] >= 0
     assert stats["n_active_senders"] > 0
+
+
+# --------------------------------------------- window-level random splitting
+
+def test_window_split_keeps_windows_intact():
+    """A window must travel to one split as a unit, or its internal topology is
+    scattered across all three -- the D20 objection."""
+    from gnnids.data.splits import window_split
+
+    splits, perm = window_split(100_000, window_size=1000, seed=0)
+    # Every consecutive run of 1000 rows in the permutation must be one window.
+    for start in range(0, len(perm), 1000):
+        block = perm[start:start + 1000]
+        assert block.max() - block.min() == 999
+        assert np.array_equal(block, np.arange(block.min(), block.min() + 1000))
+
+
+def test_window_split_partitions_without_overlap():
+    from gnnids.data.splits import assert_no_overlap, window_split
+
+    splits, perm = window_split(100_000, window_size=1000, seed=0)
+    assert_no_overlap(splits)
+    assert len(np.unique(perm)) == len(perm)          # no row used twice
+    assert sum(len(s) for s in splits.values()) == len(perm)
+
+
+def test_window_split_balances_a_positionally_ordered_label():
+    """The failure this exists to prevent: on NF-ToN-IoT-v2 a contiguous split
+    gave train 53% / test 97% attack because families sit in narrow positional
+    bands. Random window assignment must even that out."""
+    from gnnids.data.splits import contiguous_split, window_split
+
+    # 1000 windows. Window assignment is random, so the balance it achieves has
+    # sampling variance scaling as 1/sqrt(n_windows) -- at only 100 windows the
+    # residual gap is ~0.13 and that is correct behaviour, not a defect. Real
+    # runs have hundreds to thousands of windows.
+    n = 1_000_000
+    # Label concentrated in the last 30% of the file, as `xss` is there.
+    y = np.zeros(n, dtype=int)
+    y[int(n * 0.7):] = 1
+
+    c = contiguous_split(n, purge_gap=0)
+    contiguous_gap = abs(
+        y[c["train"].start:c["train"].stop].mean() - y[c["test"].start:c["test"].stop].mean()
+    )
+
+    s, perm = window_split(n, window_size=1000, seed=0)
+    yp = y[perm]
+    window_gap = abs(
+        yp[s["train"].start:s["train"].stop].mean() - yp[s["test"].start:s["test"].stop].mean()
+    )
+
+    assert contiguous_gap > 0.5              # the pathology, reproduced
+    assert window_gap < 0.05                 # and fixed
+    assert window_gap < contiguous_gap / 10  # by an order of magnitude
+
+
+def test_window_split_is_deterministic_given_a_seed():
+    from gnnids.data.splits import window_split
+
+    a, pa = window_split(50_000, 1000, seed=7)
+    b, pb = window_split(50_000, 1000, seed=7)
+    c, pc = window_split(50_000, 1000, seed=8)
+    assert np.array_equal(pa, pb)
+    assert not np.array_equal(pa, pc)
+
+
+def test_window_split_rejects_too_few_windows():
+    from gnnids.data.splits import window_split
+
+    with pytest.raises(ValueError):
+        window_split(2000, window_size=1000)

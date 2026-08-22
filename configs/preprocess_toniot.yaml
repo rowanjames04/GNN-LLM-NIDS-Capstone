@@ -52,7 +52,7 @@ features:
   scaler: standard
 
 split:
-  method: contiguous
+  method: window_random   # D5 contiguous is unsafe here -- see splits.window_split
   train: 0.70
   val: 0.10
   test: 0.20

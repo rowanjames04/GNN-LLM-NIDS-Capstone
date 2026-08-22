@@ -35,7 +35,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.data.loader import load_capped  # noqa: E402
 from gnnids.data.schema import LABEL_BINARY, LABEL_MULTICLASS, build_schema  # noqa: E402
-from gnnids.data.splits import assert_no_overlap, contiguous_split  # noqa: E402
+from gnnids.data.splits import assert_no_overlap, contiguous_split, window_split  # noqa: E402
 from gnnids.data.transforms import FeaturePipeline  # noqa: E402
 from gnnids.graph.build import GlobalNodeMap, build_snapshot, snapshot_stats  # noqa: E402
 from gnnids.graph.windows import count_windows, fixed_count_windows  # noqa: E402
@@ -143,10 +143,21 @@ def main() -> None:
 
     # ---- 2. splits -------------------------------------------------------
     sp = cfg["split"]
-    splits = contiguous_split(len(df), sp["train"], sp["val"], sp["test"], sp["purge_gap"])
+    if sp["method"] == "window_random":
+        splits, perm = window_split(
+            len(df), cfg["graph"]["window_size"],
+            sp["train"], sp["val"], sp["test"], cfg["output"]["seed"])
+        # Reordering by whole windows makes each split contiguous again, so
+        # every downstream step is unchanged. Windows are never split internally.
+        df = df.iloc[perm].reset_index(drop=True)
+        print(f"Splits (window_random, window {cfg['graph']['window_size']:,}, "
+              f"seed {cfg['output']['seed']}) -- rows reordered by window")
+    else:
+        splits = contiguous_split(
+            len(df), sp["train"], sp["val"], sp["test"], sp["purge_gap"])
+        print("Splits (contiguous, purge gap "
+              f"{sp['purge_gap']:,} rows either side of each boundary)")
     assert_no_overlap(splits)
-    print("Splits (contiguous, purge gap "
-          f"{sp['purge_gap']:,} rows either side of each boundary)")
     for s in splits.values():
         rows = df.iloc[s.start:s.stop]
         print(f"  {s.name:<6} rows {s.start:>9,}-{s.stop:>9,}  "
@@ -239,6 +250,7 @@ def main() -> None:
         "n_rows": int(len(df)),
         "load": load_info,
         "schema": schema.summary(),
+        "split_method": sp["method"],
         "splits": {k: v.as_dict() for k, v in splits.items()},
         "split_attack_rates": {
             k: round(float(df.iloc[v.start:v.stop][LABEL_BINARY].mean()), 6)
