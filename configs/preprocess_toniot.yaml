@@ -65,7 +65,10 @@ graph:
   # graph is completely different (29,245 hosts against 44), so the window size
   # that maximises structural variation is very unlikely to be the same.
   window_size: 10000
-  window_sizes_to_sweep: [1000, 5000, 10000, 50000, 100000]
+  # Extended past 100,000: on the first run fan-out spread was still
+  # climbing at that point (17.32 -> 19.00 -> 23.73 -> 28.96), unlike
+  # NF-UNSW-NB15-v2 where it peaked at 10,000 and fell away.
+  window_sizes_to_sweep: [10000, 50000, 100000, 200000, 400000]
   directed: true
   multigraph: true
   node_identity: ip

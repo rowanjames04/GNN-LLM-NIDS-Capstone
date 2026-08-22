@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T04:22:55.230041+00:00",
+  "generated_at": "2026-08-22T04:57:00.436382+00:00",
   "config": {
     "dataset_config": "configs/dataset_toniot.yaml",
     "eda_metrics": "results/metrics/eda_NF-ToN-IoT-v2.json",
@@ -40,7 +40,7 @@
       "scaler": "standard"
     },
     "split": {
-      "method": "contiguous",
+      "method": "window_random",
       "train": 0.7,
       "val": 0.1,
       "test": 0.2,
@@ -51,11 +51,11 @@
       "window": "fixed_count",
       "window_size": 10000,
       "window_sizes_to_sweep": [
-        1000,
-        5000,
         10000,
         50000,
-        100000
+        100000,
+        200000,
+        400000
       ],
       "directed": true,
       "multigraph": true,
@@ -69,14 +69,27 @@
       "seed": 42
     }
   },
-  "n_rows": 6123525,
+  "n_rows": 5910000,
   "load": {
     "source_rows": 16940496,
-    "rows_loaded": 6123525,
+    "rows_loaded": 5916006,
     "row_groups_total": 40,
     "row_groups_read": 14,
-    "row_group_stride": 2,
     "capped": true,
+    "family_aware": true,
+    "families_covered": [
+      "Benign",
+      "backdoor",
+      "ddos",
+      "dos",
+      "injection",
+      "mitm",
+      "password",
+      "ransomware",
+      "scanning",
+      "xss"
+    ],
+    "families_missing": [],
     "note": "contiguous blocks; joins between kept groups are discontinuous"
   },
   "schema": {
@@ -137,38 +150,39 @@
       "SERVER_TCP_FLAGS"
     ]
   },
+  "split_method": "window_random",
   "splits": {
     "train": {
       "name": "train",
       "start": 0,
-      "stop": 4276467,
-      "n_rows": 4276467
+      "stop": 4130000,
+      "n_rows": 4130000
     },
     "val": {
       "name": "val",
-      "start": 4296467,
-      "stop": 4888820,
-      "n_rows": 592353
+      "start": 4130000,
+      "stop": 4720000,
+      "n_rows": 590000
     },
     "test": {
       "name": "test",
-      "start": 4908820,
-      "stop": 6123525,
-      "n_rows": 1214705
+      "start": 4720000,
+      "stop": 5910000,
+      "n_rows": 1190000
     }
   },
   "split_attack_rates": {
-    "train": 0.533788,
-    "val": 0.799976,
-    "test": 0.970506
+    "train": 0.654854,
+    "val": 0.693283,
+    "test": 0.628034
   },
-  "rows_purged": 40000,
+  "rows_purged": 0,
   "categorical_cardinalities": {
     "PROTOCOL": 4,
-    "L7_PROTO": 26,
-    "TCP_FLAGS": 8,
-    "CLIENT_TCP_FLAGS": 8,
-    "SERVER_TCP_FLAGS": 6,
+    "L7_PROTO": 17,
+    "TCP_FLAGS": 16,
+    "CLIENT_TCP_FLAGS": 15,
+    "SERVER_TCP_FLAGS": 13,
     "L4_SRC_PORT_bucket": 3,
     "L4_DST_PORT_bucket": 3,
     "ICMP_TYPE_present": 2,
@@ -184,356 +198,357 @@
     "no_nan_in_features": true
   },
   "window_sweep": {
-    "1000": {
-      "n_windows_total": 4276,
-      "n_windows_measured": 200,
-      "nodes": {
-        "mean": 52.705,
-        "std": 80.4735,
-        "min": 2.0,
-        "max": 234.0,
-        "cv": 1.5269
-      },
-      "unique_pairs": {
-        "mean": 73.82,
-        "std": 120.8119,
-        "min": 2.0,
-        "max": 495.0,
-        "cv": 1.6366
-      },
-      "density": {
-        "mean": 0.1042,
-        "std": 0.1056,
-        "min": 0.0046,
-        "max": 1.0,
-        "cv": 1.0137
-      },
-      "max_fanout": {
-        "mean": 45.295,
-        "std": 76.6999,
-        "min": 1.0,
-        "max": 223.0,
-        "cv": 1.6933
-      },
-      "mean_fanout": {
-        "mean": 10.5581,
-        "std": 15.666,
-        "min": 1.0,
-        "max": 80.2,
-        "cv": 1.4838
-      },
-      "fanout_std_within_window": {
-        "mean": 17.3154,
-        "std": 30.0386,
-        "min": 0.0,
-        "max": 108.299,
-        "cv": 1.7348
-      },
-      "n_active_senders": {
-        "mean": 5.94,
-        "std": 2.9625,
-        "min": 1.0,
-        "max": 22.0,
-        "cv": 0.4987
-      },
-      "flows_per_node_std": {
-        "mean": 202.0903,
-        "std": 107.7908,
-        "min": 35.93,
-        "max": 690.14,
-        "cv": 0.5334
-      },
-      "attack_rate": {
-        "mean": 0.5476,
-        "std": 0.4833,
-        "min": 0.0,
-        "max": 1.0,
-        "cv": 0.8825
-      },
-      "windows_with_no_attack": 16
-    },
-    "5000": {
-      "n_windows_total": 855,
-      "n_windows_measured": 200,
-      "nodes": {
-        "mean": 64.225,
-        "std": 87.6737,
-        "min": 3.0,
-        "max": 253.0,
-        "cv": 1.3651
-      },
-      "unique_pairs": {
-        "mean": 107.455,
-        "std": 160.8094,
-        "min": 4.0,
-        "max": 687.0,
-        "cv": 1.4965
-      },
-      "density": {
-        "mean": 0.0834,
-        "std": 0.071,
-        "min": 0.0045,
-        "max": 0.6667,
-        "cv": 0.8517
-      },
-      "max_fanout": {
-        "mean": 54.535,
-        "std": 86.0461,
-        "min": 2.0,
-        "max": 228.0,
-        "cv": 1.5778
-      },
-      "mean_fanout": {
-        "mean": 9.5829,
-        "std": 13.0879,
-        "min": 1.25,
-        "max": 64.0,
-        "cv": 1.3657
-      },
-      "fanout_std_within_window": {
-        "mean": 18.9359,
-        "std": 30.6534,
-        "min": 0.5,
-        "max": 106.93,
-        "cv": 1.6188
-      },
-      "n_active_senders": {
-        "mean": 9.595,
-        "std": 3.9308,
-        "min": 3.0,
-        "max": 23.0,
-        "cv": 0.4097
-      },
-      "flows_per_node_std": {
-        "mean": 835.4482,
-        "std": 443.3276,
-        "min": 172.71,
-        "max": 2808.26,
-        "cv": 0.5306
-      },
-      "attack_rate": {
-        "mean": 0.543,
-        "std": 0.4794,
-        "min": 0.0,
-        "max": 1.0,
-        "cv": 0.8829
-      },
-      "windows_with_no_attack": 3
-    },
     "10000": {
-      "n_windows_total": 427,
+      "n_windows_total": 413,
       "n_windows_measured": 200,
       "nodes": {
-        "mean": 70.88,
-        "std": 89.795,
-        "min": 7.0,
-        "max": 283.0,
-        "cv": 1.2669
+        "mean": 72.855,
+        "std": 99.3697,
+        "min": 10.0,
+        "max": 615.0,
+        "cv": 1.3639
       },
       "unique_pairs": {
-        "mean": 122.135,
-        "std": 170.8534,
-        "min": 8.0,
-        "max": 712.0,
-        "cv": 1.3989
+        "mean": 116.365,
+        "std": 155.8411,
+        "min": 19.0,
+        "max": 701.0,
+        "cv": 1.3392
       },
       "density": {
-        "mean": 0.0708,
-        "std": 0.0525,
-        "min": 0.0042,
-        "max": 0.3095,
-        "cv": 0.7408
+        "mean": 0.0705,
+        "std": 0.0513,
+        "min": 0.0017,
+        "max": 0.2111,
+        "cv": 0.7285
       },
       "max_fanout": {
-        "mean": 58.055,
-        "std": 87.2957,
-        "min": 3.0,
-        "max": 229.0,
-        "cv": 1.5037
+        "mean": 54.445,
+        "std": 88.1983,
+        "min": 4.0,
+        "max": 478.0,
+        "cv": 1.62
       },
       "mean_fanout": {
-        "mean": 9.3664,
-        "std": 11.8997,
-        "min": 1.333,
-        "max": 48.357,
-        "cv": 1.2705
+        "mean": 8.5005,
+        "std": 11.0178,
+        "min": 2.083,
+        "max": 47.1,
+        "cv": 1.2961
       },
       "fanout_std_within_window": {
-        "mean": 18.9967,
-        "std": 29.358,
-        "min": 0.787,
-        "max": 94.09,
-        "cv": 1.5454
+        "mean": 16.4121,
+        "std": 27.5835,
+        "min": 1.13,
+        "max": 121.882,
+        "cv": 1.6807
       },
       "n_active_senders": {
-        "mean": 11.41,
-        "std": 4.3694,
-        "min": 4.0,
-        "max": 34.0,
-        "cv": 0.3829
+        "mean": 12.8,
+        "std": 5.592,
+        "min": 3.0,
+        "max": 49.0,
+        "cv": 0.4369
       },
       "flows_per_node_std": {
-        "mean": 1482.6278,
-        "std": 725.5341,
-        "min": 353.33,
-        "max": 3555.35,
-        "cv": 0.4894
+        "mean": 1341.2364,
+        "std": 664.9635,
+        "min": 179.16,
+        "max": 2864.75,
+        "cv": 0.4958
       },
       "attack_rate": {
-        "mean": 0.5265,
-        "std": 0.4771,
+        "mean": 0.6616,
+        "std": 0.4085,
         "min": 0.0,
         "max": 0.9999,
-        "cv": 0.9062
+        "cv": 0.6173
       },
       "windows_with_no_attack": 1
     },
     "50000": {
-      "n_windows_total": 85,
-      "n_windows_measured": 85,
+      "n_windows_total": 82,
+      "n_windows_measured": 82,
       "nodes": {
-        "mean": 117.5294,
-        "std": 104.4886,
-        "min": 12.0,
-        "max": 316.0,
-        "cv": 0.889
+        "mean": 144.6707,
+        "std": 165.7904,
+        "min": 19.0,
+        "max": 901.0,
+        "cv": 1.146
       },
       "unique_pairs": {
-        "mean": 203.7882,
-        "std": 204.0949,
-        "min": 21.0,
-        "max": 748.0,
-        "cv": 1.0015
+        "mean": 230.2561,
+        "std": 231.4711,
+        "min": 32.0,
+        "max": 1013.0,
+        "cv": 1.0053
       },
       "density": {
-        "mean": 0.0383,
-        "std": 0.0365,
-        "min": 0.004,
-        "max": 0.1591,
-        "cv": 0.9541
+        "mean": 0.0353,
+        "std": 0.033,
+        "min": 0.0012,
+        "max": 0.152,
+        "cv": 0.9352
       },
       "max_fanout": {
-        "mean": 88.8235,
-        "std": 93.8012,
-        "min": 6.0,
-        "max": 231.0,
-        "cv": 1.056
+        "mean": 102.6951,
+        "std": 131.5339,
+        "min": 5.0,
+        "max": 697.0,
+        "cv": 1.2808
       },
       "mean_fanout": {
-        "mean": 10.2417,
-        "std": 9.7236,
-        "min": 2.1,
-        "max": 41.278,
-        "cv": 0.9494
+        "mean": 10.6983,
+        "std": 9.9784,
+        "min": 2.909,
+        "max": 42.765,
+        "cv": 0.9327
       },
       "fanout_std_within_window": {
-        "mean": 23.7332,
-        "std": 26.6884,
-        "min": 1.853,
-        "max": 86.272,
-        "cv": 1.1245
+        "mean": 24.4233,
+        "std": 29.2573,
+        "min": 1.24,
+        "max": 111.729,
+        "cv": 1.1979
       },
       "n_active_senders": {
-        "mean": 18.8353,
-        "std": 8.5445,
-        "min": 8.0,
-        "max": 52.0,
-        "cv": 0.4536
+        "mean": 20.061,
+        "std": 9.6314,
+        "min": 10.0,
+        "max": 60.0,
+        "cv": 0.4801
       },
       "flows_per_node_std": {
-        "mean": 4989.278,
-        "std": 2589.9323,
-        "min": 1394.02,
-        "max": 13309.15,
-        "cv": 0.5191
+        "mean": 4373.4167,
+        "std": 2619.4291,
+        "min": 612.95,
+        "max": 11379.26,
+        "cv": 0.5989
       },
       "attack_rate": {
-        "mean": 0.5363,
-        "std": 0.4597,
-        "min": 0.0005,
-        "max": 0.9995,
-        "cv": 0.8573
+        "mean": 0.659,
+        "std": 0.3734,
+        "min": 0.0019,
+        "max": 0.9989,
+        "cv": 0.5667
       },
       "windows_with_no_attack": 0
     },
     "100000": {
-      "n_windows_total": 42,
-      "n_windows_measured": 42,
+      "n_windows_total": 41,
+      "n_windows_measured": 41,
       "nodes": {
-        "mean": 163.7619,
-        "std": 112.674,
-        "min": 29.0,
-        "max": 373.0,
-        "cv": 0.688
+        "mean": 214.0976,
+        "std": 227.7987,
+        "min": 21.0,
+        "max": 1064.0,
+        "cv": 1.064
       },
       "unique_pairs": {
-        "mean": 288.6667,
-        "std": 229.0719,
-        "min": 46.0,
-        "max": 767.0,
-        "cv": 0.7936
+        "mean": 334.8293,
+        "std": 301.9386,
+        "min": 40.0,
+        "max": 1243.0,
+        "cv": 0.9018
       },
       "density": {
-        "mean": 0.0225,
-        "std": 0.0223,
-        "min": 0.0039,
-        "max": 0.0852,
-        "cv": 0.9913
+        "mean": 0.0215,
+        "std": 0.0256,
+        "min": 0.0011,
+        "max": 0.1476,
+        "cv": 1.1864
       },
       "max_fanout": {
-        "mean": 117.8095,
-        "std": 94.4826,
-        "min": 10.0,
-        "max": 231.0,
-        "cv": 0.802
+        "mean": 150.7073,
+        "std": 173.8552,
+        "min": 8.0,
+        "max": 831.0,
+        "cv": 1.1536
       },
       "mean_fanout": {
-        "mean": 11.7095,
-        "std": 9.3795,
-        "min": 3.227,
-        "max": 39.632,
-        "cv": 0.801
+        "mean": 12.0988,
+        "std": 9.5475,
+        "min": 3.19,
+        "max": 39.316,
+        "cv": 0.7891
       },
       "fanout_std_within_window": {
-        "mean": 28.9617,
-        "std": 25.6835,
-        "min": 2.872,
-        "max": 84.083,
-        "cv": 0.8868
+        "mean": 30.9901,
+        "std": 30.5005,
+        "min": 1.923,
+        "max": 125.509,
+        "cv": 0.9842
       },
       "n_active_senders": {
-        "mean": 24.881,
-        "std": 11.2931,
+        "mean": 26.3415,
+        "std": 14.7741,
         "min": 11.0,
-        "max": 63.0,
-        "cv": 0.4539
+        "max": 97.0,
+        "cv": 0.5609
       },
       "flows_per_node_std": {
-        "mean": 7271.3155,
-        "std": 3444.4355,
-        "min": 2974.16,
-        "max": 15370.79,
-        "cv": 0.4737
+        "mean": 6473.3956,
+        "std": 4018.0738,
+        "min": 1001.74,
+        "max": 20645.92,
+        "cv": 0.6207
       },
       "attack_rate": {
-        "mean": 0.5417,
-        "std": 0.428,
-        "min": 0.0022,
+        "mean": 0.659,
+        "std": 0.3482,
+        "min": 0.0061,
         "max": 0.9988,
-        "cv": 0.7901
+        "cv": 0.5284
+      },
+      "windows_with_no_attack": 0
+    },
+    "200000": {
+      "n_windows_total": 20,
+      "n_windows_measured": 20,
+      "nodes": {
+        "mean": 283.85,
+        "std": 277.6965,
+        "min": 58.0,
+        "max": 1353.0,
+        "cv": 0.9783
+      },
+      "unique_pairs": {
+        "mean": 457.9,
+        "std": 367.081,
+        "min": 78.0,
+        "max": 1618.0,
+        "cv": 0.8017
+      },
+      "density": {
+        "mean": 0.0117,
+        "std": 0.0089,
+        "min": 0.0009,
+        "max": 0.0274,
+        "cv": 0.7606
+      },
+      "max_fanout": {
+        "mean": 191.0,
+        "std": 212.8241,
+        "min": 22.0,
+        "max": 1023.0,
+        "cv": 1.1143
+      },
+      "mean_fanout": {
+        "mean": 12.9236,
+        "std": 8.3513,
+        "min": 3.553,
+        "max": 33.56,
+        "cv": 0.6462
+      },
+      "fanout_std_within_window": {
+        "mean": 36.0355,
+        "std": 30.7483,
+        "min": 5.685,
+        "max": 130.076,
+        "cv": 0.8533
+      },
+      "n_active_senders": {
+        "mean": 33.65,
+        "std": 13.2751,
+        "min": 13.0,
+        "max": 63.0,
+        "cv": 0.3945
+      },
+      "flows_per_node_std": {
+        "mean": 9507.881,
+        "std": 4402.4834,
+        "min": 1595.15,
+        "max": 17835.75,
+        "cv": 0.463
+      },
+      "attack_rate": {
+        "mean": 0.6583,
+        "std": 0.324,
+        "min": 0.0297,
+        "max": 0.9961,
+        "cv": 0.4922
+      },
+      "windows_with_no_attack": 0
+    },
+    "400000": {
+      "n_windows_total": 10,
+      "n_windows_measured": 10,
+      "nodes": {
+        "mean": 415.6,
+        "std": 362.2199,
+        "min": 106.0,
+        "max": 1431.0,
+        "cv": 0.8716
+      },
+      "unique_pairs": {
+        "mean": 672.2,
+        "std": 474.0746,
+        "min": 141.0,
+        "max": 1777.0,
+        "cv": 0.7053
+      },
+      "density": {
+        "mean": 0.0068,
+        "std": 0.0046,
+        "min": 0.0009,
+        "max": 0.0175,
+        "cv": 0.6795
+      },
+      "max_fanout": {
+        "mean": 269.0,
+        "std": 281.3116,
+        "min": 41.0,
+        "max": 1081.0,
+        "cv": 1.0458
+      },
+      "mean_fanout": {
+        "mean": 13.3515,
+        "std": 7.1173,
+        "min": 5.571,
+        "max": 27.688,
+        "cv": 0.5331
+      },
+      "fanout_std_within_window": {
+        "mean": 43.305,
+        "std": 33.3166,
+        "min": 8.661,
+        "max": 129.603,
+        "cv": 0.7693
+      },
+      "n_active_senders": {
+        "mean": 47.8,
+        "std": 17.9767,
+        "min": 18.0,
+        "max": 71.0,
+        "cv": 0.3761
+      },
+      "flows_per_node_std": {
+        "mean": 13526.352,
+        "std": 6463.6679,
+        "min": 3322.92,
+        "max": 23069.38,
+        "cv": 0.4779
+      },
+      "attack_rate": {
+        "mean": 0.6583,
+        "std": 0.2341,
+        "min": 0.245,
+        "max": 0.9654,
+        "cv": 0.3556
       },
       "windows_with_no_attack": 0
     }
   },
   "attack_families": {
     "Benign": 0,
-    "ddos": 1,
-    "dos": 2,
-    "injection": 3,
-    "mitm": 4,
-    "password": 5,
-    "ransomware": 6,
-    "scanning": 7,
-    "xss": 8
+    "backdoor": 1,
+    "ddos": 2,
+    "dos": 3,
+    "injection": 4,
+    "mitm": 5,
+    "password": 6,
+    "ransomware": 7,
+    "scanning": 8,
+    "xss": 9
   }
 }
