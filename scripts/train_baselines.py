@@ -153,14 +153,20 @@ def main() -> None:
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "configs" / "baselines.yaml")
     ap.add_argument("--models", nargs="+", default=None)
     ap.add_argument("--seeds", type=int, default=None)
+    ap.add_argument("--preprocess-config", type=Path,
+                    default=REPO_ROOT / "configs" / "preprocess.yaml",
+                    help="selects the dataset; its dataset_config is followed")
+    ap.add_argument("--out", type=Path, default=None,
+                    help="results file (defaults to baselines.json in OUT_DIR)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
     n_seeds = args.seeds or cfg["n_seeds"]
     models_to_run = args.models or cfg["models"]
 
-    ds_cfg = yaml.safe_load((REPO_ROOT / "configs" / "dataset.yaml").read_text())
-    pre_cfg = yaml.safe_load((REPO_ROOT / "configs" / "preprocess.yaml").read_text())
+    pre_cfg = yaml.safe_load(args.preprocess_config.read_text())
+    ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
+    print(f"dataset: {ds_cfg['name']}")
     stem = Path(ds_cfg["source"]["filename"]).stem
     proc = REPO_ROOT / pre_cfg["output"]["dir"]
 
@@ -171,11 +177,13 @@ def main() -> None:
     splits = json.loads((proc / "splits.json").read_text())
     families = json.loads((proc / "attack_families.json").read_text())
 
-    df = pd.read_parquet(
-        REPO_ROOT / ds_cfg["paths"]["interim"] / f"{stem}.parquet",
-        columns=["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "L4_DST_PORT", "PROTOCOL",
-                 "IN_BYTES", "FLOW_DURATION_MILLISECONDS", "Label", "Attack"],
-    )
+    # Written by preprocess.py for exactly the rows in features.npz. Reading the
+    # source parquet instead would misalign whenever preprocessing was capped.
+    df = pd.read_parquet(proc / "meta.parquet")
+    if len(df) != len(cont):
+        raise SystemExit(
+            f"meta.parquet has {len(df):,} rows but features.npz has {len(cont):,}. "
+            f"Re-run scripts/preprocess.py --config {args.preprocess_config}.")
     y = df["Label"].to_numpy().astype(np.int64)
     ymc = df["Attack"].map(families).to_numpy().astype(np.int64)
 
@@ -303,7 +311,7 @@ def main() -> None:
     # Merge rather than overwrite: torch models and xgboost must run in separate
     # processes (each bundles its own OpenMP runtime and loading both segfaults
     # on macOS), so a full sweep is several invocations.
-    out_path = OUT_DIR / "baselines.json"
+    out_path = args.out or (OUT_DIR / f"baselines_{ds_cfg['name']}.json")
     if out_path.exists():
         prev = json.loads(out_path.read_text())
         merged = prev.get("results", {}); merged.update(results); results = merged

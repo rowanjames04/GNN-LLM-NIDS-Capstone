@@ -98,6 +98,15 @@ def analyse_skew(df: pd.DataFrame, features: list[str]) -> dict:
     out = {}
     for col in features:
         x = df[col].to_numpy(dtype="float64")
+        # Clip before measuring. NF-ToN-IoT-v2 carries throughput values up to
+        # 1.9e219, and squaring those overflows float64 inside the skew
+        # computation, yielding NaN -- which would silently mean "no log
+        # transform needed" for exactly the columns that need it most.
+        finite = x[np.isfinite(x)]
+        if not len(finite):
+            continue
+        hi = float(np.quantile(finite, 0.99999))
+        x = np.clip(np.nan_to_num(x, nan=0.0, posinf=hi, neginf=0.0), None, hi)
         if np.all(x == x[0]):
             continue
         raw = float(pd.Series(x).skew())
@@ -455,7 +464,7 @@ def main() -> None:
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "input_file": str(args.input.relative_to(REPO_ROOT)),
+        "input_file": str(Path(args.input).resolve().relative_to(REPO_ROOT)),
         "n_rows": int(len(df)),
         "n_features": len(features),
         "params": {

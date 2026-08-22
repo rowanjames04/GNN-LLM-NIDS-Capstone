@@ -33,6 +33,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from gnnids.data.loader import load_capped  # noqa: E402
 from gnnids.data.schema import LABEL_BINARY, LABEL_MULTICLASS, build_schema  # noqa: E402
 from gnnids.data.splits import assert_no_overlap, contiguous_split  # noqa: E402
 from gnnids.data.transforms import FeaturePipeline  # noqa: E402
@@ -112,6 +113,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "configs" / "preprocess.yaml")
     ap.add_argument("--no-sweep", action="store_true")
+    ap.add_argument("--max-rows", type=int, default=None,
+                    help="cap rows by reading whole parquet row groups (see loader)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
@@ -120,7 +123,11 @@ def main() -> None:
     path = REPO_ROOT / ds_cfg["paths"]["interim"] / f"{stem}.parquet"
 
     print(f"Loading {path.name} ...")
-    df = pd.read_parquet(path)
+    df, load_info = load_capped(path, args.max_rows)
+    if load_info["capped"]:
+        print(f"  capped: {load_info['rows_loaded']:,} of "
+              f"{load_info['source_rows']:,} flows "
+              f"({load_info['row_groups_read']}/{load_info['row_groups_total']} row groups)")
     print(f"  {len(df):,} flows\n")
 
     # ---- 1. schema -------------------------------------------------------
@@ -218,11 +225,19 @@ def main() -> None:
     (out_dir / "splits.json").write_text(json.dumps(
         {k: v.as_dict() for k, v in splits.items()}, indent=2))
     (out_dir / "attack_families.json").write_text(json.dumps(families, indent=2))
+    # Persist the identity/label columns for exactly the rows that were loaded.
+    # Downstream scripts must not re-read the source parquet: when --max-rows
+    # caps the load, the source has more rows than features.npz and the two
+    # would silently misalign.
+    df[["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "L4_DST_PORT", "PROTOCOL",
+        "IN_BYTES", "FLOW_DURATION_MILLISECONDS", LABEL_BINARY,
+        LABEL_MULTICLASS]].to_parquet(out_dir / "meta.parquet", index=False)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "config": cfg,
         "n_rows": int(len(df)),
+        "load": load_info,
         "schema": schema.summary(),
         "splits": {k: v.as_dict() for k, v in splits.items()},
         "split_attack_rates": {
