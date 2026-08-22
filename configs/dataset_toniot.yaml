@@ -1,0 +1,69 @@
+# NF-ToN-IoT-v2 -- PRIMARY dataset as of 2026-08-17 (D19).
+# See Obsidian: "01 - Dataset/NF-ToN-IoT-v2 Audit".
+#
+# Adopted because it has none of the three obstacles that made commitment V2
+# untestable on NF-UNSW-NB15-v2:
+#   0 shortcut features (vs 3)
+#   GBDT PR-AUC 0.5116 at matched 4% prevalence (vs 0.9951) -- real headroom
+#   29,245 hosts, fan-out std 34.6 (vs 44 hosts, fan-out std exactly 0.0)
+
+name: NF-ToN-IoT-v2
+
+source:
+  url: null
+  landing_page: "https://rdm.uq.edu.au/files/8c6e2a00-ef9c-11ed-827d-e762de186848"
+  # Verified 45 columns with both IP address columns intact. As always with this
+  # family, check the column count before trusting a mirror -- several strip the
+  # addresses, which makes them unusable for a graph.
+  kaggle: "shahidabbas76/nf-ton-iot-v2-full-dataset"
+  filename: NF-ToN-IoT-v2.csv
+  sha256: null # recorded on first run of scripts/download_data.py
+
+paths:
+  raw: data/raw
+  interim: data/interim
+
+columns:
+  src_ip: IPV4_SRC_ADDR
+  dst_ip: IPV4_DST_ADDR
+  src_port: L4_SRC_PORT
+  dst_port: L4_DST_PORT
+  label_binary: Label
+  label_multiclass: Attack
+
+# Audited and confirmed absent, same as NF-UNSW-NB15-v2.
+timestamp_candidates:
+  - FLOW_START_MILLISECONDS
+  - FLOW_END_MILLISECONDS
+  - FIRST_SWITCHED
+  - LAST_SWITCHED
+  - timestamp
+  - ts
+
+# --- Properties measured by scripts/audit_dataset.py, 2026-08-17 ---
+audited:
+  n_rows: 16940496
+  n_columns: 45
+  attack_prevalence: 0.639947   # NOT resampled -- see D20
+  unique_hosts: 29245
+  fanout_median: 1
+  fanout_max: 5161
+  fanout_std: 34.6
+  shortcut_features: []         # none above |AUC| 0.90; highest is IN_BYTES 0.799
+  saturated: false              # GBDT 0.5116 at 4% prevalence
+
+  # Ten families. LOAO list differs from NF-UNSW-NB15-v2 entirely, so
+  # "06 - Evaluation/Zero-Day Evaluation Protocol" needs its list rewritten.
+  # ransomware and mitm are the rare ones and will give very noisy held-out
+  # recall -- report with confidence intervals.
+  families:
+    Benign: 6099469
+    scanning: 3781419
+    xss: 2455020
+    ddos: 2026234
+    password: 1153323
+    dos: 712609
+    injection: 684465
+    backdoor: 16809
+    mitm: 7723
+    ransomware: 3425

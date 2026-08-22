@@ -1,0 +1,84 @@
+# Phase 2 preprocessing for NF-ToN-IoT-v2 (primary dataset, D19).
+#
+# Deliberately near-identical to configs/preprocess.yaml. The NF-v2 schema is
+# shared (D1), so adopting a second dataset costs configuration rather than
+# code -- the same pipeline, metric suite and graph builder run unchanged.
+
+dataset_config: configs/dataset_toniot.yaml
+eda_metrics: results/metrics/eda_NF-ToN-IoT-v2.json
+
+features:
+  # NOT shortcuts on this dataset -- the audit measured MIN_TTL at 0.6585 and
+  # MIN_IP_PKT_LEN at 0.7038 here, against 0.9942 and 0.9884 on
+  # NF-UNSW-NB15-v2. The leak was that capture's, not the feature set's.
+  #
+  # They are dropped anyway, because cross-dataset transfer (Phase 9) requires
+  # both datasets to expose an identical feature vector. Using the intersection
+  # keeps every result comparable and keeps the NF-UNSW-NB15-v2 numbers clean.
+  # The cost here is small and is stated in the report rather than hidden.
+  drop_shortcuts:
+    - MIN_TTL
+    - MAX_TTL
+    - MIN_IP_PKT_LEN
+
+  drop_uninformative:
+    - DNS_QUERY_ID      # transaction identifier, no generalisable signal
+    - ICMP_IPV4_TYPE    # duplicate of ICMP_TYPE by definition
+
+  identity:
+    - IPV4_SRC_ADDR
+    - IPV4_DST_ADDR
+
+  categorical:
+    - PROTOCOL
+    - L7_PROTO
+    - TCP_FLAGS
+    - CLIENT_TCP_FLAGS
+    - SERVER_TCP_FLAGS
+  categorical_min_frequency: 0.001
+  categorical_max_cardinality: 64
+
+  conditional:
+    - ICMP_TYPE
+    - DNS_QUERY_TYPE
+    - DNS_TTL_ANSWER
+    - FTP_COMMAND_RET_CODE
+
+  ports:
+    - L4_SRC_PORT
+    - L4_DST_PORT
+
+  log_transform: from_eda
+  scaler: standard
+
+split:
+  method: contiguous
+  train: 0.70
+  val: 0.10
+  test: 0.20
+  purge_gap: 10000
+  fit_on: train
+
+graph:
+  window: fixed_count
+  # Held at 10,000 for comparability with NF-UNSW-NB15-v2, but re-sweep: this
+  # graph is completely different (29,245 hosts against 44), so the window size
+  # that maximises structural variation is very unlikely to be the same.
+  window_size: 10000
+  window_sizes_to_sweep: [1000, 5000, 10000, 50000, 100000]
+  directed: true
+  multigraph: true
+  node_identity: ip
+  global_node_map: true
+
+# D20: the dataset stays at its published 63.99% attack rate. Downsampling
+# attack FLOWS would destroy the topology this dataset was adopted for -- a
+# scanner reaching 5,161 peers keeps ~155 at 3% sampling. If compute forces a
+# smaller set, drop whole WINDOWS so each retained window stays structurally
+# intact. Null means use everything.
+subsample_windows: null
+
+output:
+  dir: data/processed/toniot
+  stats: results/metrics/preprocess_NF-ToN-IoT-v2.json
+  seed: 42

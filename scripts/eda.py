@@ -43,6 +43,31 @@ DEFAULT_INPUT = REPO_ROOT / "data" / "interim" / "NF-UNSW-NB15-v2.parquet"
 METRICS_OUT = REPO_ROOT / "results" / "metrics" / "eda.json"
 FIG_DIR = REPO_ROOT / "results" / "figures"
 
+
+def load_frame(path: Path, max_rows: int | None) -> pd.DataFrame:
+    """Load the dataset, capped at max_rows by reading whole row groups.
+
+    NF-ToN-IoT-v2 is 16.9M rows and would need roughly 6 GB in pandas, which a
+    16 GB machine cannot spare alongside model fitting. Parquet stores data in
+    row groups, so taking every k-th group gives a sample spread across the
+    whole file at a fraction of the memory -- and, unlike random row sampling,
+    each retained group is a contiguous block, so local structure survives
+    (the same principle as D20).
+    """
+    import pyarrow.parquet as pq
+
+    pf = pq.ParquetFile(path)
+    if max_rows is None or pf.metadata.num_rows <= max_rows:
+        return pd.read_parquet(path)
+
+    n_groups = pf.metadata.num_row_groups
+    rows_per_group = pf.metadata.num_rows / max(n_groups, 1)
+    keep_n = max(1, int(max_rows / max(rows_per_group, 1)))
+    step = max(1, n_groups // keep_n)
+    groups = list(range(0, n_groups, step))[:keep_n]
+    print(f"  capping at ~{max_rows:,} rows: {len(groups)} of {n_groups} row groups")
+    return pf.read_row_groups(groups).to_pandas()
+
 IDENTITY = ["IPV4_SRC_ADDR", "IPV4_DST_ADDR"]
 LABELS = ["Label", "Attack"]
 TCP_FLAG_COLS = ["TCP_FLAGS", "CLIENT_TCP_FLAGS", "SERVER_TCP_FLAGS"]
@@ -299,7 +324,7 @@ def analyse_app_layer(df: pd.DataFrame) -> dict:
 
 # ---------------------------------------------------------------- figures
 
-def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
+def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts, prefix="") -> list[str]:
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     written = []
 
@@ -315,7 +340,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.set_title("Class distribution — NF-UNSW-NB15-v2")
     for i, v in enumerate(counts.values):
         ax.text(i, v * 1.25, f"{v:,}", ha="center", fontsize=7)
-    p = FIG_DIR / "01_class_distribution.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}01_class_distribution.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     # 2. skew before/after log
@@ -330,7 +355,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.set_yticks(ypos); ax.set_yticklabels(names, fontsize=7)
     ax.invert_yaxis(); ax.set_xlabel("skewness"); ax.legend()
     ax.set_title("Log transform flattens the heaviest tails (top 20 by |skew|)")
-    p = FIG_DIR / "02_feature_skew.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}02_feature_skew.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     # 3. mutual information ranking
@@ -340,7 +365,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.invert_yaxis(); ax.set_xlabel("mutual information with Label (nats)")
     ax.set_title("Feature informativeness (top 25)")
     ax.tick_params(axis="y", labelsize=7)
-    p = FIG_DIR / "03_mutual_information.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}03_mutual_information.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     # 4. class separation
@@ -353,7 +378,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.set_xlabel("Cohen's d   (positive = higher in attacks)")
     ax.set_title("Attack vs benign separation (top 20 by |d|)")
     ax.tick_params(axis="y", labelsize=7)
-    p = FIG_DIR / "04_class_separation.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}04_class_separation.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     # 5. TCP flag decomposition gain
@@ -367,7 +392,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.set_xticks(x); ax.set_xticklabels(cols, fontsize=7)
     ax.set_ylabel("mutual information (nats)"); ax.legend()
     ax.set_title("Decomposing TCP flag bitmasks into bits")
-    p = FIG_DIR / "05_tcp_flag_decomposition.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}05_tcp_flag_decomposition.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     # 6. shortcut audit -- the figure that changes what we train on
@@ -384,7 +409,7 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
     ax.set_xlabel("single-feature |AUC|  (max of AUC, 1−AUC)")
     ax.set_title("Shortcut audit: features that separate classes alone")
     ax.tick_params(axis="y", labelsize=7); ax.legend(loc="lower right")
-    p = FIG_DIR / "06_shortcut_audit.png"; fig.savefig(p); plt.close(fig)
+    p = FIG_DIR / f"{prefix}06_shortcut_audit.png"; fig.savefig(p); plt.close(fig)
     written.append(p.name)
 
     return written
@@ -393,6 +418,11 @@ def make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts) -> list[str]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--input", type=Path, default=DEFAULT_INPUT)
+    ap.add_argument("--output", type=Path, default=METRICS_OUT)
+    ap.add_argument("--fig-prefix", default="",
+                    help="prefix for figure filenames, to keep datasets apart")
+    ap.add_argument("--max-rows", type=int, default=None,
+                    help="cap rows by reading a subset of parquet row groups")
     ap.add_argument("--mi-sample", type=int, default=200_000)
     ap.add_argument("--corr-threshold", type=float, default=0.95)
     ap.add_argument("--shortcut-threshold", type=float, default=0.90)
@@ -400,7 +430,7 @@ def main() -> None:
     args = ap.parse_args()
 
     print(f"Loading {args.input.name} ...")
-    df = pd.read_parquet(args.input)
+    df = load_frame(args.input, args.max_rows)
     features = [c for c in df.columns if c not in IDENTITY + LABELS]
     print(f"  {len(df):,} flows, {len(features)} candidate features\n")
 
@@ -420,7 +450,8 @@ def main() -> None:
     shortcuts = analyse_shortcuts(df, features, args.shortcut_threshold)
 
     print("figures ...")
-    figs = make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts)
+    figs = make_figures(df, skew, dvals, mi, redundancy, tcp, shortcuts,
+                        prefix=args.fig_prefix)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -441,8 +472,8 @@ def main() -> None:
         "shortcuts": shortcuts,
         "figures": figs,
     }
-    METRICS_OUT.parent.mkdir(parents=True, exist_ok=True)
-    METRICS_OUT.write_text(json.dumps(report, indent=2))
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(report, indent=2))
 
     # ---- console summary ----
     log_cols = [c for c, v in skew.items() if v["recommend_log"]]
@@ -484,7 +515,7 @@ def main() -> None:
         print(f"      {c:<32} {v:.4f}")
 
     print(f"\n{len(figs)} figures -> results/figures/")
-    print(f"metrics -> {METRICS_OUT.relative_to(REPO_ROOT)}\n")
+    print(f"metrics -> {args.output.relative_to(REPO_ROOT)}\n")
 
 
 if __name__ == "__main__":
