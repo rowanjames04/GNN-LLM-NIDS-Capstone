@@ -176,9 +176,15 @@ def main() -> None:
     splits_raw = json.loads((proc / "splits.json").read_text())
     families = json.loads((proc / "attack_families.json").read_text())
 
+    # float16 storage, upcast to float32 per window inside build_snapshot. The
+    # full array at float32 is 2.6 GB, which pushed a 16 GB machine into swap:
+    # the first attempt ran at 23% CPU in uninterruptible I/O wait with 2.9 GB
+    # of swap in use. Precision is irrelevant here -- these are standardised
+    # features and one-hot indicators.
     edge_feats = np.hstack([
         npz["continuous"], one_hot(npz["categorical"], meta["cardinalities"])
-    ]).astype(np.float32)
+    ]).astype(np.float16)
+    del npz
 
     df = pd.read_parquet(proc / "meta.parquet",
                          columns=["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "Label", "Attack"])
@@ -187,10 +193,17 @@ def main() -> None:
             f"meta.parquet has {len(df):,} rows, features have {len(edge_feats):,}. "
             f"Re-run scripts/preprocess.py.")
 
-    src = df.IPV4_SRC_ADDR.to_numpy()
-    dst = df.IPV4_DST_ADDR.to_numpy()
+    # Factorise addresses to int32 once. As numpy object arrays these are
+    # 0.63 GB of Python string objects for 2,556 distinct hosts; as codes they
+    # are 47 MB. np.unique inside build_snapshot is also far faster on ints.
+    n = len(df)
+    codes = pd.factorize(
+        np.concatenate([df.IPV4_SRC_ADDR.to_numpy(), df.IPV4_DST_ADDR.to_numpy()])
+    )[0].astype(np.int32)
+    src, dst = codes[:n], codes[n:]
     y = df.Label.to_numpy().astype(np.int64)
     ymc = df.Attack.map(families).to_numpy().astype(np.int64)
+    del df, codes
 
     datasets = {"families": families}
     for name, s in splits_raw.items():
