@@ -32,11 +32,17 @@ class SnapshotDataset(torch.utils.data.Dataset):
         y_multiclass: np.ndarray,
         split: Split,
         window_size: int,
+        max_windows: int | None = None,
     ) -> None:
         self.src, self.dst = src, dst
         self.edge_features = edge_features
         self.y_binary, self.y_multiclass = y_binary, y_multiclass
         self.windows = list(fixed_count_windows(split, window_size))
+        if max_windows is not None and len(self.windows) > max_windows:
+            # Smoke runs take an even spread rather than a prefix: a prefix of a
+            # scenario-ordered dataset samples one attack family (B4).
+            idx = np.linspace(0, len(self.windows) - 1, max_windows).astype(int)
+            self.windows = [self.windows[i] for i in idx]
         if not self.windows:
             raise ValueError(
                 f"split {split.name!r} has {len(split)} rows, too few for "

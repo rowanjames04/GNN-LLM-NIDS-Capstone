@@ -75,7 +75,25 @@ def infer(model, loader, device) -> tuple[np.ndarray, np.ndarray, np.ndarray, np
     )
 
 
-def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device) -> dict:
+def release(device: torch.device) -> None:
+    """Return cached GPU memory to the allocator between runs.
+
+    PyTorch's Metal allocator caches freed blocks rather than releasing them.
+    Our graphs are variable-sized -- each window has a different node count --
+    which fragments that cache. Suspected cause of U1, where the heaviest
+    ablation degraded 51 -> 77 -> 206 s/epoch across three identical seeds
+    while the two lighter ones stayed flat.
+    """
+    import gc
+    gc.collect()
+    if device.type == "mps" and hasattr(torch, "mps"):
+        torch.mps.empty_cache()
+    elif device.type == "cuda":
+        torch.cuda.empty_cache()
+
+
+def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
+              ckpt_path: Path | None = None) -> dict:
     torch.manual_seed(seed)
     np.random.seed(seed)
     tcfg = cfg["train"]
@@ -101,8 +119,10 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device) -> dic
 
     target_prev = cfg["eval"]["target_prevalence"]
     best_ap, best_state, patience, epochs_run = -1.0, None, 0, 0
+    epoch_seconds = []
 
     for epoch in range(tcfg["max_epochs"]):
+        t_epoch = time.time()
         model.train()
         total = 0.0
         for batch in train_loader:
@@ -122,10 +142,16 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device) -> dic
         idx = subsample_to_prevalence(val_y, target_prev, cfg["output"]["seed"])
         ap = average_precision_score(val_y[idx], val_scores[idx])
         epochs_run = epoch + 1
+        # Per-epoch timing distinguishes degradation *within* a run (thermal)
+        # from degradation *between* runs (allocator accumulation).
+        epoch_seconds.append(round(time.time() - t_epoch, 2))
 
         if ap > best_ap + 1e-5:
             best_ap, patience = ap, 0
-            best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+            # Kept on CPU: the checkpoint does not need to occupy GPU memory
+            # for the rest of training, and this is the object that gets saved.
+            best_state = {k: v.detach().cpu().clone()
+                          for k, v in model.state_dict().items()}
         else:
             patience += 1
             if patience >= tcfg["patience"]:
@@ -144,6 +170,9 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device) -> dic
                       cfg["output"]["seed"])
     out["val_pr_auc_at_target"] = round(float(best_ap), 5)
     out["epochs_run"] = epochs_run
+    out["epoch_seconds"] = epoch_seconds
+    out["epoch_seconds_first_last"] = (
+        [epoch_seconds[0], epoch_seconds[-1]] if epoch_seconds else [])
     out["n_parameters"] = sum(p.numel() for p in model.parameters())
     if alpha is not None:
         out["channel_attribution"] = channel_attribution(torch.from_numpy(alpha))
@@ -153,7 +182,90 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device) -> dic
         if tp.any():
             out["channel_attribution"]["topological_weight_on_true_positives"] = round(
                 float(alpha[tp, 1].mean()), 4)
+
+    # Phase 6 attributes over a trained model, so it needs one to exist. Nine
+    # Phase 4 models were trained and discarded because this was never written.
+    if ckpt_path is not None:
+        ckpt_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save({
+            "state_dict": best_state,
+            "edge_dim": edge_dim, "n_classes": n_classes,
+            "ablation": ablation, "seed": seed,
+            "model_cfg": cfg["model"],
+            "val_pr_auc_at_target": out["val_pr_auc_at_target"],
+            "threshold": threshold,
+        }, ckpt_path)
+        out["checkpoint"] = str(ckpt_path.name)
+
+    del model, opt, train_loader, val_loader, test_loader
+    release(device)
     return out
+
+
+def _run_seeds_in_subprocesses(args) -> int:
+    """Re-invoke this script once per seed, then merge the partial results."""
+    import subprocess
+
+    cfg = yaml.safe_load(args.config.read_text())
+    pre_cfg = yaml.safe_load((REPO_ROOT / cfg["preprocess_config"]).read_text())
+    ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
+    n_seeds = args.seeds or cfg["train"]["n_seeds"]
+    out_dir = REPO_ROOT / cfg["output"]["metrics"]
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    merged, failed = {}, []
+    for seed in range(n_seeds):
+        cmd = [sys.executable, __file__, "--config", str(args.config),
+               "--single-seed", str(seed)]
+        if args.ablation:
+            cmd += ["--ablation"] + list(args.ablation)
+        if args.max_windows:
+            cmd += ["--max-windows", str(args.max_windows)]
+        print(f"\n===== seed {seed} (fresh process) =====", flush=True)
+        if subprocess.run(cmd).returncode != 0:
+            print(f"  seed {seed} FAILED -- continuing with the rest", flush=True)
+            failed.append(seed)
+            continue
+        part = out_dir / f"partial_{ds_cfg['name']}_seed{seed}.json"
+        if part.exists():
+            for ab, payload in json.loads(part.read_text())["results"].items():
+                merged.setdefault(ab, {"spec": payload["spec"], "runs": []})
+                merged[ab]["runs"].extend(payload["runs"])
+            part.unlink()
+
+    key = f"at_{cfg['eval']['target_prevalence']:.0%}"
+    for ab, payload in merged.items():
+        payload["n_seeds"] = len(payload["runs"])
+        payload["aggregate"] = aggregate_seeds([r[key] for r in payload["runs"]])
+
+    out_path = out_dir / f"gnn_{ds_cfg['name']}.json"
+    out_path.write_text(json.dumps({
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "dataset": ds_cfg["name"], "config": cfg,
+        "seeds_failed": failed,
+        "baseline_to_beat": {"model": "xgboost", "pr_auc": 0.9552, "f1": 0.8963},
+        "results": merged,
+    }, indent=2))
+
+    print("\n" + "=" * 72)
+    print(f"  PHASE 4 -- test metrics at {cfg['eval']['target_prevalence']:.0%} prevalence")
+    print("=" * 72)
+    print(f"  {'model':<16} {'PR-AUC':>16} {'F1':>10}")
+    print(f"  {'XGBoost (P3)':<16} {0.9552:>16.4f} {0.8963:>10.4f}   <- to beat")
+    for ab in ("channel1_only", "channel2_only", "full"):
+        if ab in merged:
+            g = merged[ab]["aggregate"]
+            print(f"  {ab:<16} {g['pr_auc']['mean']:>9.4f} +/-{g['pr_auc']['std']:<5.4f} "
+                  f"{g['f1']['mean']:>10.4f}")
+    if "full" in merged and "channel1_only" in merged:
+        gap = (merged["full"]["aggregate"]["pr_auc"]["mean"]
+               - merged["channel1_only"]["aggregate"]["pr_auc"]["mean"])
+        print(f"\n  topology gain (full - channel1_only): {gap:+.4f}")
+        print("  This is the V2 measurement.")
+    if failed:
+        print(f"\n  WARNING: seeds {failed} failed and are excluded.")
+    print(f"\nwritten -> {out_path.relative_to(REPO_ROOT)}\n")
+    return 0
 
 
 def main() -> None:
@@ -161,7 +273,25 @@ def main() -> None:
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "configs" / "gnn.yaml")
     ap.add_argument("--ablation", nargs="+", default=None)
     ap.add_argument("--seeds", type=int, default=None)
+    ap.add_argument("--smoke", action="store_true",
+                    help="tiny run to prove the code path: few windows, few epochs")
+    ap.add_argument("--max-windows", type=int, default=None)
+    ap.add_argument("--single-seed", type=int, default=None,
+                    help="internal: run exactly one seed and write a partial file")
+    ap.add_argument("--in-process", action="store_true",
+                    help="run seeds in this process instead of spawning one each")
     args = ap.parse_args()
+
+    # One seed per process unless told otherwise. PyTorch's Metal allocator
+    # caches freed blocks and our graphs are variable-sized, so running several
+    # seeds in one process fragments it: the heaviest ablation degraded
+    # 51 -> 77 -> 206 s/epoch across three identical seeds, and a later attempt
+    # was OOM-killed outright. A fresh process per seed removes the whole class
+    # of problem, and means one seed failing no longer takes the campaign with
+    # it. Costs a few seconds of startup each.
+    if (args.single_seed is None and not args.in_process and not args.smoke
+            and (args.seeds or 3) > 1):
+        raise SystemExit(_run_seeds_in_subprocesses(args))
 
     cfg = yaml.safe_load(args.config.read_text())
     pre_cfg = yaml.safe_load((REPO_ROOT / cfg["preprocess_config"]).read_text())
@@ -169,22 +299,40 @@ def main() -> None:
     proc = REPO_ROOT / pre_cfg["output"]["dir"]
     window = pre_cfg["graph"]["window_size"]
     n_seeds = args.seeds or cfg["train"]["n_seeds"]
+    max_windows = args.max_windows
+    if args.smoke:
+        # Seconds, not hours. Proves every code path -- construction, training,
+        # early stopping, inference, prevalence adjustment, checkpointing --
+        # without waiting. A component that has never executed is not built.
+        cfg["train"]["max_epochs"] = 2
+        cfg["train"]["patience"] = 99
+        n_seeds, max_windows = 1, max_windows or 12
+        print("SMOKE RUN -- 12 windows, 2 epochs, 1 seed. Results are meaningless.")
 
     print(f"dataset: {ds_cfg['name']}   window: {window:,}")
-    npz = np.load(proc / "features.npz")
     meta = json.loads((proc / "pipeline.json").read_text())
     splits_raw = json.loads((proc / "splits.json").read_text())
     families = json.loads((proc / "attack_families.json").read_text())
 
-    # float16 storage, upcast to float32 per window inside build_snapshot. The
-    # full array at float32 is 2.6 GB, which pushed a 16 GB machine into swap:
-    # the first attempt ran at 23% CPU in uninterruptible I/O wait with 2.9 GB
-    # of swap in use. Precision is irrelevant here -- these are standardised
-    # features and one-hot indicators.
-    edge_feats = np.hstack([
-        npz["continuous"], one_hot(npz["categorical"], meta["cardinalities"])
-    ]).astype(np.float16)
-    del npz
+    # Memory-mapped, not resident. Built once as a float16 .npy and thereafter
+    # paged in by the OS on demand, so the process holds only the windows it is
+    # touching rather than the whole 1.3 GB array. Holding it resident is what
+    # OOM-killed the first U1 diagnostic and pushed the original Phase 4 run
+    # into swap at 23% CPU.
+    #
+    # float16 because these are standardised features and one-hot indicators;
+    # build_snapshot upcasts to float32 per window.
+    feat_path = proc / "edge_features.npy"
+    if not feat_path.exists():
+        print("  building memory-mappable edge features (one-off) ...")
+        npz = np.load(proc / "features.npz")
+        arr = np.hstack([
+            npz["continuous"], one_hot(npz["categorical"], meta["cardinalities"])
+        ]).astype(np.float16)
+        np.save(feat_path, arr)
+        del npz, arr
+    edge_feats = np.load(feat_path, mmap_mode="r")
+    print(f"  edge features: {edge_feats.shape} float16, memory-mapped")
 
     df = pd.read_parquet(proc / "meta.parquet",
                          columns=["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "Label", "Attack"])
@@ -209,7 +357,8 @@ def main() -> None:
     for name, s in splits_raw.items():
         datasets[name] = SnapshotDataset(
             src, dst, edge_feats, y, ymc,
-            Split(name, s["start"], s["stop"]), window)
+            Split(name, s["start"], s["stop"]), window,
+            max_windows=max_windows)
         print(f"  {name:<6} {len(datasets[name]):>5} windows  "
               f"{datasets[name].n_edges:>10,} edges  "
               f"attack {datasets[name].attack_rate():.2%}")
@@ -229,19 +378,24 @@ def main() -> None:
         spec = cfg["ablations"][ablation]
         print(f"--- {ablation} ---")
         runs = []
-        for seed in range(n_seeds):
+        seeds = [args.single_seed] if args.single_seed is not None else range(n_seeds)
+        for seed in seeds:
             t0 = time.time()
-            r = train_one(cfg, datasets, edge_dim, n_classes, spec, seed, device)
+            ckpt = (None if args.smoke else
+                    REPO_ROOT / cfg["output"]["checkpoints"] /
+                    f"{ds_cfg['name']}_{ablation}_seed{seed}.pt")
+            r = train_one(cfg, datasets, edge_dim, n_classes, spec, seed, device, ckpt)
             r["fit_seconds"] = round(time.time() - t0, 1)
             runs.append(r)
             adj = r[f"at_{cfg['eval']['target_prevalence']:.0%}"]
+            es = r["epoch_seconds"]
             print(f"  seed {seed}  PR-AUC {adj['pr_auc']:.4f} (base "
                   f"{adj['prevalence']:.3f})  F1 {adj['f1']:.4f}  "
                   f"recall {adj['recall']:.4f}  {r['epochs_run']}ep "
-                  f"({r['fit_seconds']:.0f}s)")
+                  f"({r['fit_seconds']:.0f}s, epoch {es[0]:.1f}->{es[-1]:.1f}s)")
         key = f"at_{cfg['eval']['target_prevalence']:.0%}"
         results[ablation] = {
-            "spec": spec, "n_seeds": n_seeds, "runs": runs,
+            "spec": spec, "n_seeds": len(runs), "runs": runs,
             "aggregate": aggregate_seeds([r[key] for r in runs]),
         }
         agg = results[ablation]["aggregate"]
@@ -250,7 +404,13 @@ def main() -> None:
 
     out_dir = REPO_ROOT / cfg["output"]["metrics"]
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_name = f"gnn_{ds_cfg['name']}.json"
+    # Smoke results are meaningless by construction and must never overwrite a
+    # real run. The first smoke test clobbered the Phase 4 results file; they
+    # were only recoverable because they had been committed.
+    out_name = (f"smoke_gnn_{ds_cfg['name']}.json" if args.smoke
+                else f"partial_{ds_cfg['name']}_seed{args.single_seed}.json"
+                if args.single_seed is not None
+                else f"gnn_{ds_cfg['name']}.json")
     (out_dir / out_name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": ds_cfg["name"], "config": cfg,
