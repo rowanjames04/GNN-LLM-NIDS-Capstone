@@ -333,3 +333,112 @@ def test_window_split_rejects_too_few_windows():
 
     with pytest.raises(ValueError):
         window_split(2000, window_size=1000)
+
+
+# ------------------------------------------------------- Phase 4: the GNN
+
+def _graph(n=400, edge_dim=97, seed=0):
+    from gnnids.graph.build import build_snapshot
+
+    rng = np.random.default_rng(seed)
+    return build_snapshot(
+        np.array([f"10.0.0.{i % 30}" for i in range(n)]),
+        np.array([f"10.0.1.{i % 17}" for i in range(n)]),
+        rng.normal(size=(n, edge_dim)).astype(np.float32),
+        np.zeros((n, 0), dtype=np.int64),
+        rng.integers(0, 2, n), rng.integers(0, 10, n),
+    )
+
+
+def test_fusion_weights_are_a_distribution():
+    """Alpha is read directly into the evidence pack as an explanation, so it
+    has to be a genuine 2-way distribution rather than arbitrary logits."""
+    import torch
+    from gnnids.models.dual_channel import DualChannelGNN
+
+    g = _graph()
+    _, _, alpha = DualChannelGNN(edge_dim=97, hidden_dim=32)(
+        g.x, g.edge_index, g.edge_attr)
+    assert alpha.shape == (g.edge_index.shape[1], 2)
+    assert torch.allclose(alpha.sum(-1), torch.ones(alpha.shape[0]), atol=1e-5)
+    assert (alpha >= 0).all()
+
+
+def test_single_channel_ablations_have_no_fusion():
+    from gnnids.models.dual_channel import DualChannelGNN
+
+    g = _graph()
+    for kw in ({"use_channel2": False}, {"use_channel1": False}):
+        _, _, alpha = DualChannelGNN(edge_dim=97, hidden_dim=32, **kw)(
+            g.x, g.edge_index, g.edge_attr)
+        assert alpha is None
+
+
+def test_disabling_both_channels_is_rejected():
+    from gnnids.models.dual_channel import DualChannelGNN
+
+    with pytest.raises(ValueError):
+        DualChannelGNN(edge_dim=97, use_channel1=False, use_channel2=False)
+
+
+def test_channel1_ignores_topology_and_channel2_does_not():
+    """The core premise of the V2 measurement. Rewire the graph while holding
+    edge features fixed: Channel 1 must be unchanged, Channel 2 must not be."""
+    import torch
+    from gnnids.models.dual_channel import DualChannelGNN
+
+    torch.manual_seed(0)
+    g = _graph()
+    shuffled = g.edge_index[:, torch.randperm(g.edge_index.shape[1])]
+
+    c1 = DualChannelGNN(edge_dim=97, hidden_dim=32, use_channel2=False, dropout=0.0).eval()
+    a, _, _ = c1(g.x, g.edge_index, g.edge_attr)
+    b, _, _ = c1(g.x, shuffled, g.edge_attr)
+    assert torch.allclose(a, b, atol=1e-6), "Channel 1 must be topology-blind"
+
+    c2 = DualChannelGNN(edge_dim=97, hidden_dim=32, use_channel1=False, dropout=0.0).eval()
+    a, _, _ = c2(g.x, g.edge_index, g.edge_attr)
+    b, _, _ = c2(g.x, shuffled, g.edge_attr)
+    assert not torch.allclose(a, b, atol=1e-4), "Channel 2 must use topology"
+
+
+def test_message_passing_is_permutation_invariant():
+    """A host's connections have no canonical order; a model sensitive to edge
+    ordering would be learning how the data happens to be stored."""
+    import torch
+    from gnnids.models.egraphsage import TopologicalChannel
+
+    torch.manual_seed(0)
+    g = _graph()
+    ch = TopologicalChannel(edge_dim=97, hidden_dim=32, dropout=0.0).eval()
+
+    out_a = ch(g.x, g.edge_index, g.edge_attr)
+    perm = torch.randperm(g.edge_index.shape[1])
+    out_b = ch(g.x, g.edge_index[:, perm], g.edge_attr[perm])
+    assert torch.allclose(out_a[perm], out_b, atol=1e-5)
+
+
+def test_prevalence_subsampling_hits_the_target():
+    from gnnids.eval.prevalence import subsample_to_prevalence
+
+    y = np.zeros(100_000, dtype=int)
+    y[:64_000] = 1                      # 64% attack, as NF-ToN-IoT-v2 is
+    idx = subsample_to_prevalence(y, 0.04, seed=0)
+    assert abs(y[idx].mean() - 0.04) < 0.005
+    # Thinning must come from the surplus side, keeping every benign flow.
+    assert (y[idx] == 0).sum() == 36_000
+
+
+def test_prevalence_adjustment_reports_its_own_baseline():
+    """Three numbers have been misread in this project because the PR-AUC floor
+    moved silently. The adjustment must always declare it."""
+    from gnnids.eval.prevalence import report_both
+
+    rng = np.random.default_rng(0)
+    y = (rng.random(50_000) < 0.64).astype(int)
+    scores = np.clip(y * 0.6 + rng.normal(0, 0.25, len(y)), 0, 1)
+
+    out = report_both(y, scores, 0.5, 0.04, seed=0)
+    assert out["native"]["prevalence"] > 0.6
+    assert abs(out["at_4%"]["prevalence"] - 0.04) < 0.01
+    assert out["at_4%"]["pr_auc"] < out["native"]["pr_auc"]  # floor moved down

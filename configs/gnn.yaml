@@ -1,0 +1,59 @@
+# Phase 4: the dual-channel GNN.
+# See Obsidian "03 - GNN/Dual-Channel Architecture" and "Vision Integrity" V2.
+#
+# Target to beat, on NF-ToN-IoT-v2 at 4% prevalence (Phase 3, XGBoost):
+#     PR-AUC 0.9552    F1 0.8963
+# On NF-UNSW-NB15-v2 there is no headroom to compete for -- everything reaches
+# ~0.995 -- so the model is BUILT for both datasets and JUDGED on the primary.
+
+preprocess_config: configs/preprocess_toniot.yaml
+
+model:
+  hidden_dim: 128
+  n_mlp_blocks: 3       # Channel 1 depth; matches the Phase 3 MLP baseline
+  # Receptive field. Should be at least the hops an attack propagates over --
+  # lateral movement spans several and one layer cannot represent it -- but
+  # deeper stacks over-smooth, so 2-3 is the useful range. Swept below.
+  n_gnn_layers: 2
+  dropout: 0.1
+  # Also pass messages backwards along each edge, so a victim's embedding
+  # reflects who contacted it. Fan-in patterns (DoS, DDoS) need this; the
+  # forward direction alone only describes what a host initiates.
+  bidirectional: true
+
+train:
+  # Windows per batch. Each window contributes ~10,000 edge predictions, so a
+  # batch of 8 is 80,000 supervised examples -- far more signal per step than
+  # the count suggests.
+  batch_size: 8
+  lr: 0.001
+  weight_decay: 0.0001
+  max_epochs: 40
+  patience: 6           # early stopping on validation PR-AUC at 4% prevalence
+  grad_clip: 1.0
+  focal_alpha: 0.75     # D8
+  focal_gamma: 2.0
+  multiclass_weight: 0.3  # auxiliary head (D3), below the binary objective
+  n_seeds: 3
+  # MPS on the M4. iHPC is decommissioned and Cetus unreachable, so local is
+  # the only option -- see "Compute Access Risk". Phases 4/5/9 do not need HPC.
+  device: auto
+
+eval:
+  # D23: metrics at a standardised prevalence, computed by subsampling SCORES
+  # after inference. The graph is never altered, so topology survives intact.
+  target_prevalence: 0.04
+  threshold_mode: f1    # chosen on validation, never test (D16)
+
+# Each isolates one claim and each is a row in the results table.
+ablations:
+  channel1_only: {use_channel1: true,  use_channel2: false}   # = the MLP baseline
+  channel2_only: {use_channel1: false, use_channel2: true}    # = plain E-GraphSAGE
+  full:          {use_channel1: true,  use_channel2: true}
+  # Run after the headline result, not before.
+  gnn_layer_sweep: [1, 2, 3]
+
+output:
+  metrics: results/metrics/gnn
+  checkpoints: results/checkpoints
+  seed: 42
