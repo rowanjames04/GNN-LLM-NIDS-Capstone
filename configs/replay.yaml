@@ -1,0 +1,13 @@
+# Phase 8: replay harness and demo (D7). The video showcase is built on this.
+
+gnn_config: configs/gnn.yaml
+checkpoint: results/checkpoints/NF-ToN-IoT-v2_full_seed0.pt
+
+windows: 100
+
+smoke:
+  window_size: 2000
+  windows: 6
+
+output:
+  dir: results/metrics/replay

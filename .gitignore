@@ -77,3 +77,6 @@ results/reports/smoke_*.json
 
 # Smoke-run transfer metrics.
 results/metrics/transfer/smoke_*.json
+
+# Smoke-run replay metrics.
+results/metrics/replay/smoke_*.json
