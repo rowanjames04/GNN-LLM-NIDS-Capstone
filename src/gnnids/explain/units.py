@@ -68,7 +68,9 @@ def _round(x: float) -> float | int:
     # The near-integer case matters: features are stored as float16 and passed
     # through log1p and back, so a packet count of 1 returns as 1.0003. Handing
     # the LLM "1.0003 packets" invites it to reason about the fraction.
-    if abs(x - round(x)) < 0.01 and abs(x) < 1e9:
+    # Relative as well as absolute, because the noise scales with the value:
+    # a true 48 comes back as 48.0135 and a true 1 as 1.0003, both ~0.03% off.
+    if abs(x) < 1e9 and abs(x - round(x)) <= max(0.01, abs(x) * 0.001):
         return int(round(x))
     return int(round(x)) if abs(x) >= 100 else round(x, 4)
 

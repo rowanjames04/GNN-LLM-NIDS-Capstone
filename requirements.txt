@@ -23,7 +23,10 @@ matplotlib>=3.9
 statsmodels>=0.14
 
 # Explainability
-captum>=0.7
+# captum -- NOT used. Integrated gradients is implemented directly in
+# src/gnnids/explain/attribution.py: attributing over edge_attr while holding
+# edge_index fixed needs a custom forward wrapper anyway, so the dependency
+# bought ~15 lines, and the method has to be defensible in the report (D28).
 
 # LLM clients
 anthropic>=0.40

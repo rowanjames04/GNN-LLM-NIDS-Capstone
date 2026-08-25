@@ -1,0 +1,39 @@
+# Phase 7: the LLM layer. See Obsidian "05 - LLM Layer".
+
+# `stub` by default -- deterministic, offline, free, and the control arm of the
+# study rather than only a test double. A real model that scores no better than
+# a template on groundedness is not adding anything, and having that floor makes
+# the claim checkable. Every other provider costs money or needs a local server
+# and must be requested explicitly on the command line.
+provider: stub
+
+# Versioned because the study measures PROMPTS as well as models (the
+# prompt-sensitivity ablation). Every generated report records the version that
+# produced it; editing a prompt without bumping the version silently invalidates
+# every comparison made before the edit.
+prompt_version: v1
+
+packs: results/evidence/evidence_NF-ToN-IoT-v2.json
+n_reports: 200          # the stratified sample size in the study design
+
+provider_options:
+  stub: {}
+  anthropic:
+    model: claude-opus-5
+    max_tokens: 2000
+  openai:
+    model: gpt-4o
+    max_tokens: 2000
+  ollama:
+    # Fallback 2 from "Compute Access Risk": iHPC is decommissioned and Cetus
+    # unreachable, so the self-hosted arm is a small quantised model on the M4.
+    # That makes V5 "cloud vs small local" rather than "cloud vs large local" --
+    # a stated ceiling, not a silent downgrade.
+    model: llama3.2:3b
+
+smoke:
+  packs: results/evidence/smoke_evidence_NF-ToN-IoT-v2.json
+  n_reports: 2
+
+output:
+  dir: results/reports

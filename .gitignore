@@ -71,3 +71,6 @@ results/metrics/**/smoke_*.json
 # Smoke-run evidence packs. Same reason as smoke metrics: meaningless numbers
 # must not sit where real ones live.
 results/evidence/smoke_*.json
+
+# Smoke-run generated reports.
+results/reports/smoke_*.json
