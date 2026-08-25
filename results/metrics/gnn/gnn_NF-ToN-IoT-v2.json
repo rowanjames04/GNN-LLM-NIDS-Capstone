@@ -54,11 +54,6 @@
   },
   "edge_dim": 110,
   "window_size": 10000,
-  "baseline_to_beat": {
-    "model": "xgboost",
-    "pr_auc": 0.9552,
-    "f1": 0.8963
-  },
   "results": {
     "channel1_only": {
       "spec": {
@@ -1545,5 +1540,16 @@
         }
       }
     }
+  },
+  "baseline_to_beat_REMOVED": {
+    "was": {
+      "model": "xgboost",
+      "pr_auc": 0.9552,
+      "f1": 0.8963
+    },
+    "removed_on": "2026-08-25",
+    "why": "C17 -- this was a hardcoded literal from audit_dataset.py, a different training regime (rows resampled to 4% and trained there, vs this run's native-prevalence training with scores subsampled per D23). It was never measured against this run and must not be read as a comparator.",
+    "valid_comparison_lives_in": "results/metrics/baselines/baselines_NF-ToN-IoT-v2.json (entries tagged schema=dual-prevalence-v1)",
+    "note": "Only this metadata key was edited. No value under 'results' was altered."
   }
 }
