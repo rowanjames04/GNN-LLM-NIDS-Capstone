@@ -1,0 +1,34 @@
+# Phase 9: cross-dataset generalisation. See Obsidian
+# "06 - Evaluation/Cross-Dataset Generalisation". Tier 1 since D18.
+
+gnn_config: configs/gnn.yaml
+
+# The dataset the model was TRAINED on. Its fitted pipeline -- scalers and
+# categorical vocabularies -- is applied unchanged to the target. Refitting on
+# the target would hand the model the target's own means and variances, which is
+# test-set access dressed up as preprocessing.
+source:
+  preprocess_config: configs/preprocess_toniot.yaml
+
+# The network it has never seen. Only the binary head transfers: attack family
+# vocabularies differ between datasets, so the 9-way head has no shared label
+# space -- the same reason leave-one-attack-out is binary-only.
+target:
+  preprocess_config: configs/preprocess.yaml
+
+checkpoint: results/checkpoints/NF-ToN-IoT-v2_full_seed0.pt
+
+# Above this share of one categorical column landing outside the source
+# vocabulary, the run prints a warning. A transfer number computed where most
+# values fell to OTHER measures a degraded input, not a different network, and
+# would be a misleading headline in either direction.
+oov_warn_above: 0.5
+
+max_rows: 2000000
+
+smoke:
+  max_rows: 40000
+  window_size: 2000
+
+output:
+  dir: results/metrics/transfer

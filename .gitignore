@@ -74,3 +74,6 @@ results/evidence/smoke_*.json
 
 # Smoke-run generated reports.
 results/reports/smoke_*.json
+
+# Smoke-run transfer metrics.
+results/metrics/transfer/smoke_*.json
