@@ -1,0 +1,126 @@
+{
+  "_comment": [
+    "Static threat guidance keyed by attack family (D10). NOT model output, and",
+    "not retrieval -- with nine families a dictionary is the honest engineering",
+    "choice and calling it RAG would oversell it.",
+    "",
+    "Why this is a FILE and not knowledge the LLM supplies: the groundedness",
+    "check in the comparative study set-differences entities in the generated",
+    "report against entities in the evidence pack. Mitigation advice the model",
+    "produced from its own weights would be unverifiable by construction, and",
+    "wrong mitigation advice in a security context is worse than none. Sourcing",
+    "it here makes it checkable like every other field.",
+    "",
+    "MITRE ATT&CK technique IDs are the public enterprise matrix identifiers.",
+    "Families follow NF-ToN-IoT-v2's Attack column."
+  ],
+  "families": {
+    "scanning": {
+      "display_name": "Network Scanning / Reconnaissance",
+      "mitre_techniques": ["T1046", "T1595", "T1018"],
+      "description": "Systematic probing of hosts or ports to map reachable services.",
+      "standard_mitigations": [
+        "Rate-limit and alert on hosts contacting an unusual number of distinct destinations",
+        "Restrict east-west traffic with network segmentation",
+        "Ensure exposed services are inventoried and patched"
+      ],
+      "typical_indicators": ["high distinct destination count", "short flows", "many small packets"]
+    },
+    "ddos": {
+      "display_name": "Distributed Denial of Service",
+      "mitre_techniques": ["T1498", "T1499"],
+      "description": "Coordinated traffic volume from many sources intended to exhaust a target's capacity.",
+      "standard_mitigations": [
+        "Enable upstream volumetric filtering or scrubbing",
+        "Apply per-source rate limits at the edge",
+        "Confirm autoscaling and failover behaviour for the targeted service"
+      ],
+      "typical_indicators": ["high fan-in to one destination", "sustained packet rate"]
+    },
+    "dos": {
+      "display_name": "Denial of Service",
+      "mitre_techniques": ["T1499"],
+      "description": "Single-source traffic intended to exhaust a target service or host.",
+      "standard_mitigations": [
+        "Rate-limit the source at the network edge",
+        "Review the targeted service's connection and resource limits"
+      ],
+      "typical_indicators": ["repeated flows to one destination port", "elevated packet rate"]
+    },
+    "password": {
+      "display_name": "Password Attack",
+      "mitre_techniques": ["T1110", "T1110.001"],
+      "description": "Repeated authentication attempts aimed at guessing valid credentials.",
+      "standard_mitigations": [
+        "Enforce account lockout or progressive delay after failed attempts",
+        "Require multi-factor authentication on exposed services",
+        "Alert on repeated authentication failures from one source"
+      ],
+      "typical_indicators": ["many short flows to an authentication port", "regular timing"]
+    },
+    "injection": {
+      "display_name": "Injection",
+      "mitre_techniques": ["T1190"],
+      "description": "Malformed input sent to an application to alter how it parses a command or query.",
+      "standard_mitigations": [
+        "Use parameterised queries and validate input server-side",
+        "Deploy a web application firewall in front of exposed applications",
+        "Review application logs for the targeted endpoint"
+      ],
+      "typical_indicators": ["unusual payload sizes to an application port"]
+    },
+    "xss": {
+      "display_name": "Cross-Site Scripting",
+      "mitre_techniques": ["T1059.007", "T1189"],
+      "description": "Script content injected into a web application so it executes in another user's browser.",
+      "standard_mitigations": [
+        "Encode output contextually and validate input server-side",
+        "Set a restrictive Content-Security-Policy header",
+        "Review the affected application's request logs"
+      ],
+      "typical_indicators": ["HTTP flows with anomalous payload characteristics"]
+    },
+    "backdoor": {
+      "display_name": "Backdoor",
+      "mitre_techniques": ["T1505.003", "T1571"],
+      "description": "Persistent unauthorised access channel into a host, often on a non-standard port.",
+      "standard_mitigations": [
+        "Isolate the host and inspect it for unauthorised persistence",
+        "Block the destination and review egress filtering rules",
+        "Rotate credentials that the host had access to"
+      ],
+      "typical_indicators": ["long-lived flows", "non-standard destination ports"]
+    },
+    "ransomware": {
+      "display_name": "Ransomware",
+      "mitre_techniques": ["T1486", "T1490"],
+      "description": "Malicious encryption of data, usually preceded by discovery and lateral movement.",
+      "standard_mitigations": [
+        "Isolate the affected host immediately",
+        "Verify backup integrity and that backups are offline or immutable",
+        "Hunt for lateral movement from the same source"
+      ],
+      "typical_indicators": ["bursts of file-share traffic", "unusual internal fan-out"]
+    },
+    "mitm": {
+      "display_name": "Man-in-the-Middle",
+      "mitre_techniques": ["T1557", "T1557.002"],
+      "description": "Traffic intercepted or relayed between two hosts that believe they communicate directly.",
+      "standard_mitigations": [
+        "Enforce authenticated and encrypted transport between endpoints",
+        "Enable dynamic ARP inspection and DHCP snooping on access switches",
+        "Verify the ARP and neighbour tables of the affected hosts"
+      ],
+      "typical_indicators": ["unexpected intermediary host between two endpoints"]
+    },
+    "Benign": {
+      "display_name": "Benign",
+      "mitre_techniques": [],
+      "description": "No attack behaviour indicated. Present so that false positives carry guidance too.",
+      "standard_mitigations": [
+        "No action indicated; confirm against the host's normal behaviour before dismissing"
+      ],
+      "typical_indicators": []
+    }
+  }
+}

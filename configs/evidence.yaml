@@ -1,0 +1,41 @@
+# Phase 6a: evidence packs -- the frozen GNN/LLM contract.
+# See Obsidian "05 - LLM Layer/Evidence Pack Schema".
+
+gnn_config: configs/gnn.yaml
+
+# Which trained model explains the detections. Phase 4 saved six checkpoints;
+# seed 0 of `full` is the default because `full` is the contribution and the
+# pack must show BOTH channels -- a channel1_only checkpoint has no fusion
+# weights, so its packs would silently omit the topological half of the
+# explanation.
+checkpoint: results/checkpoints/NF-ToN-IoT-v2_full_seed0.pt
+
+# Static per-family threat guidance (D10). Retrieved, never generated: advice
+# the model produced from its own weights would be unverifiable by the
+# groundedness check, and wrong mitigation advice is worse than none.
+guidance: data/reference/threat_guidance.json
+
+n_packs: 200          # the comparative study's stratified sample size
+max_windows: 40
+
+# Riemann steps along the path from baseline to input. 32 is the usual default
+# and convergence is checkable: the attributions should sum to roughly the
+# difference in model output between baseline and input (the completeness
+# axiom). Raise it if that gap is wide.
+integrated_gradient_steps: 32
+
+# Below this, a neighbour is noise rather than evidence. Occluding one edge in
+# a 10,000-edge window moves the score by ~1e-4 even when the neighbourhood
+# matters, because the topological contribution is spread across it. Listing
+# those flows as "influential" would give the LLM non-evidence to write up, so
+# the pack says so explicitly instead.
+min_neighbour_importance: 0.01
+
+smoke:
+  window_size: 2000
+  max_windows: 2
+  n_packs: 3
+  ig_steps: 4
+
+output:
+  dir: results/evidence
