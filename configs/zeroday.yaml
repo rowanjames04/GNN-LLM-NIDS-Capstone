@@ -1,0 +1,55 @@
+# Phase 5: leave-one-attack-out, the zero-day protocol (D4, Protocol 2).
+# See Obsidian "06 - Evaluation/Zero-Day Evaluation Protocol".
+#
+# Everything about the MODEL is inherited from configs/gnn.yaml rather than
+# restated here. That is deliberate: the zero-day claim is only meaningful if
+# the architecture, optimiser and reporting path are identical to Phase 4's and
+# the ONLY difference is which rows the model was allowed to see. Duplicating
+# the model block here would let the two drift apart silently, and the drift
+# would look like a zero-day finding.
+gnn_config: configs/gnn.yaml
+
+# Which Phase 4 ablation to run under the protocol. `full` is the contribution.
+# Running channel1_only here too would ask whether topology helps specifically
+# on UNSEEN families -- a stronger version of V2, worth doing once the headline
+# exists, but not before.
+ablation: full
+
+n_seeds: 3
+
+# The label used for non-attack traffic in attack_families.json.
+benign_class_name: Benign
+
+# Two thresholds, because "noisy" and "unmeasurable" are different problems and
+# conflating them is how a recall computed over three flows ends up in a table.
+#
+# Measured on NF-ToN-IoT-v2, 2026-08-25 -- held-out flows landing in the TEST
+# split, which is not the same as the family's size:
+#
+#     scanning 241,497   xss 162,337   password 107,086   ddos 92,066
+#     dos 77,328   injection 61,648   backdoor 4,498   mitm 897
+#     ransomware 3       <- of 2,557 flows; 2,554 of them are in train
+#
+# Rare families sit in narrow positional bands and D21 assigns whole 10,000-row
+# windows to splits, so a small family lands almost entirely in one split.
+# ransomware is therefore not a family this dataset can hold out at all. That is
+# a property of the data, not a bug, and it is reported rather than worked
+# around -- see the Defect Register (A7).
+skip_below_test_positives: 500      # below this, recall is not a measurement
+thin_below_test_positives: 20000    # above the gate but wide error bars
+
+smoke:
+  # Seconds, not hours. Proves construction, filtering, the leak assertion,
+  # training, inference and reporting without waiting. A smaller window than
+  # Phase 4's 10,000 is used because filtering removes rows, and a family
+  # occupying a narrow positional band can leave a split with few surviving
+  # windows at the full size.
+  window_size: 2000
+  max_windows: 8
+  train:
+    max_epochs: 2
+    patience: 99
+    batch_size: 4
+
+output:
+  metrics: results/metrics/zeroday
