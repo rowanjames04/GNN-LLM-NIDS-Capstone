@@ -63,3 +63,7 @@ secrets/
 
 # Download staging folders (Kaggle archives etc.)
 archive*/
+
+# Smoke-run outputs. Seconds of training, meaningless numbers -- they must
+# never sit in results/metrics/ looking like results (the C17 failure mode).
+results/metrics/**/smoke_*.json
