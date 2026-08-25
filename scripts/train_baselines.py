@@ -50,9 +50,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.data.host_features import FEATURE_NAMES, standardise, windowed_host_features  # noqa: E402
-from gnnids.eval.metrics import aggregate_seeds, choose_threshold, evaluate  # noqa: E402
+from gnnids.eval.metrics import aggregate_seeds, choose_threshold  # noqa: E402
+from gnnids.eval.prevalence import report_both, subsample_to_prevalence  # noqa: E402
 
 OUT_DIR = REPO_ROOT / "results" / "metrics" / "baselines"
+
+# Bumped when the meaning of the numbers changes, so a merged file can never
+# present two incompatible reporting regimes as one table (C17).
+SCHEMA = "dual-prevalence-v1"
+STALE_SCHEMA = "pre-c17-native-only"
 
 
 def one_hot(cat: np.ndarray, cardinalities: list[int]) -> np.ndarray:
@@ -158,11 +164,20 @@ def main() -> None:
                     help="selects the dataset; its dataset_config is followed")
     ap.add_argument("--out", type=Path, default=None,
                     help="results file (defaults to baselines.json in OUT_DIR)")
+    ap.add_argument("--target-prevalence", type=float, default=None,
+                    help="override the standardised prevalence (D23; default 0.04)")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
     n_seeds = args.seeds or cfg["n_seeds"]
     models_to_run = args.models or cfg["models"]
+
+    # D23 -- the same standardised prevalence Phase 4 reports at. Held in the
+    # config, not hardcoded here, and written into the output alongside the
+    # metrics so no downstream reader has to assume it (C17).
+    target_prev = args.target_prevalence or cfg["eval"]["target_prevalence"]
+    prev_seed = cfg["eval"]["prevalence_seed"]
+    prev_key = f"at_{target_prev:.0%}"
 
     pre_cfg = yaml.safe_load(args.preprocess_config.read_text())
     ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
@@ -283,28 +298,56 @@ def main() -> None:
                     raise SystemExit(f"unknown model {model_name!r}")
 
                 val_scores = sc(Xva)
-                thr = choose_threshold(y[va], val_scores, cfg["threshold_mode"])
+                # Select the threshold on validation subsampled to the target
+                # prevalence, not on native validation. This mirrors
+                # scripts/train_gnn.py line-for-line, and it is the half of C17
+                # that is easy to miss: a threshold tuned at 63% attack traffic
+                # does not transfer to a 4% network, so a baseline evaluated at
+                # 4% with a natively-tuned threshold is handicapped and the GNN
+                # beats a strawman. PR-AUC is threshold-free and unaffected;
+                # F1, precision and recall are not.
+                vidx = subsample_to_prevalence(y[va], target_prev, prev_seed)
+                thr = choose_threshold(y[va][vidx], val_scores[vidx], cfg["threshold_mode"])
                 test_scores = sc(Xte)
 
-                run = evaluate(y[te], test_scores, thr, ymc[te], families)
-                run["val_pr_auc"] = round(float(
-                    __import__("sklearn.metrics", fromlist=["average_precision_score"])
-                    .average_precision_score(y[va], val_scores)), 5)
+                # Both prevalences, from one set of predictions (D23).
+                run = report_both(y[te], test_scores, thr, target_prev,
+                                  ymc[te], families, prev_seed)
+                from sklearn.metrics import average_precision_score
+                # At the target prevalence, matching train_gnn.py's model
+                # selection criterion. The native figure would sit against a
+                # 0.63 floor and say nothing.
+                run["val_pr_auc_at_target"] = round(float(
+                    average_precision_score(y[va][vidx], val_scores[vidx])), 5)
+                run["threshold_selected_at"] = target_prev
                 run["fit_seconds"] = round(time.time() - t0, 1)
                 runs.append(run)
                 infos.append(info)
-                print(f"  seed {seed}  PR-AUC {run['pr_auc']:.4f}  F1 {run['f1']:.4f}  "
-                      f"recall {run['recall']:.4f}  FPR@95 {run['fpr_at_95_recall']:.5f}  "
+                adj, nat = run[prev_key], run["native"]
+                print(f"  seed {seed}  PR-AUC {adj['pr_auc']:.4f} (at "
+                      f"{adj['prevalence']:.3f}, native {nat['pr_auc']:.4f})  "
+                      f"F1 {adj['f1']:.4f}  recall {adj['recall']:.4f}  "
+                      f"FPR@95 {adj['fpr_at_95_recall']:.5f}  "
                       f"({run['fit_seconds']:.0f}s)")
 
             results[key] = {
                 "model": model_name, "feature_set": fs_name,
                 "n_seeds": n_seeds,
-                "aggregate": aggregate_seeds(runs),
+                # "aggregate" is the standardised figure, because that is the
+                # one comparable with Phase 4 and across datasets. The native
+                # block is kept beside it and named, never left implicit --
+                # three numbers in this project have been misread because the
+                # PR-AUC floor moved underneath them.
+                "reported_at_prevalence": target_prev,
+                "schema": SCHEMA,
+                "aggregate": aggregate_seeds([r[prev_key] for r in runs]),
+                "aggregate_native": aggregate_seeds([r["native"] for r in runs]),
                 "runs": runs, "info": infos,
             }
-            agg = results[key]["aggregate"]
-            print(f"  => PR-AUC {agg['pr_auc']['mean']:.4f} +/- {agg['pr_auc']['std']:.4f}\n")
+            agg, agg_n = results[key]["aggregate"], results[key]["aggregate_native"]
+            print(f"  => PR-AUC {agg['pr_auc']['mean']:.4f} +/- {agg['pr_auc']['std']:.4f} "
+                  f"at {target_prev:.0%} (floor {target_prev:.2f})   "
+                  f"native {agg_n['pr_auc']['mean']:.4f}\n")
         del Xtr, Xva, Xte   # free ~850 MB before assembling the next feature set
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -314,7 +357,16 @@ def main() -> None:
     out_path = args.out or (OUT_DIR / f"baselines_{ds_cfg['name']}.json")
     if out_path.exists():
         prev = json.loads(out_path.read_text())
-        merged = prev.get("results", {}); merged.update(results); results = merged
+        merged = prev.get("results", {})
+        # Entries written before C17 was closed report at NATIVE prevalence and
+        # carry no schema tag. Tag them on sight rather than leaving them to be
+        # read as though they were 4% figures -- a merged file mixing the two
+        # silently is precisely the failure C17 was.
+        for k, v in merged.items():
+            if isinstance(v, dict) and "schema" not in v:
+                v["schema"] = STALE_SCHEMA
+                v["reported_at_prevalence"] = "native"
+        merged.update(results); results = merged
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "config": cfg,
@@ -333,18 +385,28 @@ def main() -> None:
 
     # ---- the comparison that matters -------------------------------------
     print("=" * 74)
-    print("  PHASE 3 SUMMARY -- test PR-AUC, mean +/- std over seeds")
+    print(f"  PHASE 3 SUMMARY -- test PR-AUC at {target_prev:.0%} prevalence "
+          f"(floor {target_prev:.2f}), mean +/- std")
     print("=" * 74)
     print(f"  {'model':<16} {'flow':>18} {'flow+host':>18} {'host gain':>12}")
-    for model_name in sorted({k.split("::")[0] for k in results}):
-        a = results.get(f"{model_name}::flow", {}).get("aggregate", {}).get("pr_auc")
-        b = results.get(f"{model_name}::flow+host", {}).get("aggregate", {}).get("pr_auc")
+    current = {k: v for k, v in results.items() if v.get("schema") == SCHEMA}
+    stale = sorted(k for k in results if k not in current)
+    for model_name in sorted({k.split("::")[0] for k in current}):
+        a = current.get(f"{model_name}::flow", {}).get("aggregate", {}).get("pr_auc")
+        b = current.get(f"{model_name}::flow+host", {}).get("aggregate", {}).get("pr_auc")
         if a and b:
             print(f"  {model_name:<16} {a['mean']:>9.4f} +/-{a['std']:<6.4f} "
                   f"{b['mean']:>9.4f} +/-{b['std']:<6.4f} {b['mean'] - a['mean']:>+12.4f}")
     print("\n  'host gain' is what hand-crafted context is worth. Phase 4's GNN")
     print("  must beat the flow+host column to justify message passing at all.")
-    print(f"\nwritten -> {(OUT_DIR / 'baselines.json').relative_to(REPO_ROOT)}\n")
+    if stale:
+        print(f"\n  NOT SHOWN -- {len(stale)} entries predate C17 and report at NATIVE")
+        print("  prevalence, so they do not belong in the table above. Re-run them")
+        print("  to bring them onto the standardised scale:")
+        for k in stale:
+            print(f"    {k}")
+    shown = out_path.relative_to(REPO_ROOT) if out_path.is_relative_to(REPO_ROOT) else out_path
+    print(f"\nwritten -> {shown}\n")
 
 
 if __name__ == "__main__":

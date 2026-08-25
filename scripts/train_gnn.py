@@ -233,30 +233,25 @@ def _run_seeds_in_subprocesses(args) -> int:
                 merged[ab]["runs"].extend(payload["runs"])
             part.unlink()
 
-    key = f"at_{cfg['eval']['target_prevalence']:.0%}"
+    target_prev = cfg["eval"]["target_prevalence"]
+    key = f"at_{target_prev:.0%}"
     for ab, payload in merged.items():
         payload["n_seeds"] = len(payload["runs"])
         payload["aggregate"] = aggregate_seeds([r[key] for r in payload["runs"]])
 
+    comparators = load_comparators(ds_cfg["name"], target_prev)
     out_path = out_dir / f"gnn_{ds_cfg['name']}.json"
     out_path.write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": ds_cfg["name"], "config": cfg,
         "seeds_failed": failed,
-        "baseline_to_beat": {"model": "xgboost", "pr_auc": 0.9552, "f1": 0.8963},
+        "phase3_comparators": comparators,
         "results": merged,
     }, indent=2))
 
-    print("\n" + "=" * 72)
-    print(f"  PHASE 4 -- test metrics at {cfg['eval']['target_prevalence']:.0%} prevalence")
-    print("=" * 72)
-    print(f"  {'model':<16} {'PR-AUC':>16} {'F1':>10}")
-    print(f"  {'XGBoost (P3)':<16} {0.9552:>16.4f} {0.8963:>10.4f}   <- to beat")
-    for ab in ("channel1_only", "channel2_only", "full"):
-        if ab in merged:
-            g = merged[ab]["aggregate"]
-            print(f"  {ab:<16} {g['pr_auc']['mean']:>9.4f} +/-{g['pr_auc']['std']:<5.4f} "
-                  f"{g['f1']['mean']:>10.4f}")
+    print()
+    print_comparison(comparators, merged,
+                     ("channel1_only", "channel2_only", "full"), target_prev)
     if "full" in merged and "channel1_only" in merged:
         gap = (merged["full"]["aggregate"]["pr_auc"]["mean"]
                - merged["channel1_only"]["aggregate"]["pr_auc"]["mean"])
@@ -266,6 +261,93 @@ def _run_seeds_in_subprocesses(args) -> int:
         print(f"\n  WARNING: seeds {failed} failed and are excluded.")
     print(f"\nwritten -> {out_path.relative_to(REPO_ROOT)}\n")
     return 0
+
+
+BASELINE_SCHEMA = "dual-prevalence-v1"
+
+
+def load_comparators(dataset_name: str, target_prevalence: float) -> dict:
+    """Phase 3 baselines, read from disk rather than hardcoded (C17).
+
+    Until 2026-08-25 this file carried `baseline_to_beat = 0.9552 / 0.8963` as a
+    literal in five places. That figure came from `audit_dataset.py`, which
+    resampled *rows* to 4% and trained there, while the GNN trains at native
+    prevalence and subsamples its *scores* (D23) -- roughly 16x more positives.
+    It was never a comparison; it was a decoration, and everything of the form
+    "the GNN beat the baseline" rested on it.
+
+    Reading the file has a second benefit: a baseline that has not been re-run
+    on the current reporting path is *absent* rather than silently wrong, so a
+    missing comparator shows up as a missing row.
+    """
+    path = REPO_ROOT / "results" / "metrics" / "baselines" / f"baselines_{dataset_name}.json"
+    if not path.exists():
+        return {"error": f"no baselines at {path.relative_to(REPO_ROOT)}", "entries": {}}
+
+    results = json.loads(path.read_text()).get("results", {})
+    entries, stale = {}, []
+    for key, payload in results.items():
+        if payload.get("schema") != BASELINE_SCHEMA:
+            stale.append(key)
+            continue
+        if payload.get("reported_at_prevalence") != target_prevalence:
+            stale.append(key)
+            continue
+        agg = payload["aggregate"]
+        entries[key] = {
+            "pr_auc": round(agg["pr_auc"]["mean"], 5),
+            "pr_auc_std": round(agg["pr_auc"]["std"], 5),
+            "f1": round(agg["f1"]["mean"], 5),
+            "f1_std": round(agg["f1"]["std"], 5),
+            "fpr_at_95_recall": round(agg["fpr_at_95_recall"]["mean"], 5),
+            "n_seeds": payload["n_seeds"],
+        }
+    return {
+        "source": str(path.relative_to(REPO_ROOT)),
+        "reported_at_prevalence": target_prevalence,
+        "entries": entries,
+        "excluded_not_on_this_reporting_path": sorted(stale),
+    }
+
+
+def print_comparison(comparators: dict, ablations: dict, order, target_prevalence: float) -> None:
+    """One table, one prevalence, every number carrying its own std."""
+    print("=" * 72)
+    print(f"  PHASE 4 -- test metrics at {target_prevalence:.0%} prevalence "
+          f"(PR-AUC floor {target_prevalence:.2f})")
+    print("=" * 72)
+    print(f"  {'model':<22} {'PR-AUC':>18} {'F1':>18} {'FPR@95':>9}")
+    for key, c in sorted(comparators.get("entries", {}).items()):
+        print(f"  {'P3 ' + key:<22} {c['pr_auc']:>9.4f} +/-{c['pr_auc_std']:<7.4f} "
+              f"{c['f1']:>9.4f} +/-{c['f1_std']:<7.4f} {c['fpr_at_95_recall']:>9.5f}")
+    if not comparators.get("entries"):
+        print("  (no Phase 3 baseline on this reporting path -- run "
+              "scripts/train_baselines.py)")
+    for a in order:
+        if a not in ablations:
+            continue
+        g = ablations[a]["aggregate"]
+        print(f"  {'GNN ' + a:<22} {g['pr_auc']['mean']:>9.4f} +/-{g['pr_auc']['std']:<7.4f} "
+              f"{g['f1']['mean']:>9.4f} +/-{g['f1']['std']:<7.4f} "
+              f"{g['fpr_at_95_recall']['mean']:>9.5f}")
+    for key in comparators.get("excluded_not_on_this_reporting_path", []):
+        print(f"  excluded (not on this reporting path): {key}")
+
+    # State the verdict rather than leaving it to be eyeballed, and state it
+    # against the STRONGEST baseline. Picking the weakest is how a result gets
+    # overclaimed without anyone lying.
+    best = max(comparators.get("entries", {}).items(),
+               key=lambda kv: kv[1]["pr_auc"], default=None)
+    if best and "full" in ablations:
+        name, c = best
+        g = ablations["full"]["aggregate"]
+        d_pr = g["pr_auc"]["mean"] - c["pr_auc"]
+        d_f1 = g["f1"]["mean"] - c["f1"]
+        print(f"\n  vs strongest baseline ({name}): "
+              f"PR-AUC {d_pr:+.4f}, F1 {d_f1:+.4f}")
+        if d_pr > 0 and d_f1 < 0:
+            print("  Split verdict: better ranking, worse operating point. Not")
+            print("  'the GNN beat the baseline' -- say both halves.")
 
 
 def main() -> None:
@@ -367,8 +449,16 @@ def main() -> None:
     edge_dim = edge_feats.shape[1]
     n_classes = len(families)
     print(f"\ndevice: {device}   edge features: {edge_dim}   classes: {n_classes}")
-    print(f"target: beat XGBoost PR-AUC 0.9552 / F1 0.8963 at "
-          f"{cfg['eval']['target_prevalence']:.0%} prevalence\n")
+    _c = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"])
+    _best = max(_c["entries"].items(), key=lambda kv: kv[1]["pr_auc"], default=None)
+    if _best:
+        print(f"target: beat {_best[0]} PR-AUC {_best[1]['pr_auc']:.4f} / "
+              f"F1 {_best[1]['f1']:.4f} at "
+              f"{cfg['eval']['target_prevalence']:.0%} prevalence "
+              f"({_c['source']})\n")
+    else:
+        print("target: no Phase 3 baseline on this reporting path -- run "
+              "scripts/train_baselines.py first\n")
 
     to_run = args.ablation or list(cfg["ablations"].keys() - {"gnn_layer_sweep"})
     order = [a for a in ("channel1_only", "channel2_only", "full") if a in to_run]
@@ -411,23 +501,16 @@ def main() -> None:
                 else f"partial_{ds_cfg['name']}_seed{args.single_seed}.json"
                 if args.single_seed is not None
                 else f"gnn_{ds_cfg['name']}.json")
+    comparators = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"])
     (out_dir / out_name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": ds_cfg["name"], "config": cfg,
         "edge_dim": edge_dim, "window_size": window,
-        "baseline_to_beat": {"model": "xgboost", "pr_auc": 0.9552, "f1": 0.8963},
+        "phase3_comparators": comparators,
         "results": results,
     }, indent=2))
 
-    print("=" * 72)
-    print(f"  PHASE 4 -- test metrics at {cfg['eval']['target_prevalence']:.0%} prevalence")
-    print("=" * 72)
-    print(f"  {'model':<16} {'PR-AUC':>16} {'F1':>10}")
-    print(f"  {'XGBoost (P3)':<16} {0.9552:>16.4f} {0.8963:>10.4f}   <- to beat")
-    for a in order:
-        g = results[a]["aggregate"]
-        print(f"  {a:<16} {g['pr_auc']['mean']:>9.4f} +/-{g['pr_auc']['std']:<5.4f} "
-              f"{g['f1']['mean']:>10.4f}")
+    print_comparison(comparators, results, order, cfg["eval"]["target_prevalence"])
     if "full" in results and "channel1_only" in results:
         gap = (results["full"]["aggregate"]["pr_auc"]["mean"]
                - results["channel1_only"]["aggregate"]["pr_auc"]["mean"])

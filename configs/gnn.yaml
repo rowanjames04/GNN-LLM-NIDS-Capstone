@@ -1,8 +1,11 @@
 # Phase 4: the dual-channel GNN.
 # See Obsidian "03 - GNN/Dual-Channel Architecture" and "Vision Integrity" V2.
 #
-# Target to beat, on NF-ToN-IoT-v2 at 4% prevalence (Phase 3, XGBoost):
-#     PR-AUC 0.9552    F1 0.8963
+# The Phase 3 target is NOT written here. train_gnn.py reads it from
+# results/metrics/baselines/baselines_<dataset>.json at report time, and accepts
+# only entries produced on the same reporting path (D23, 4% standardised). A
+# literal here was C17: "PR-AUC 0.9552 / F1 0.8963" came from a different
+# training regime and was printed as "<- to beat" for weeks.
 # On NF-UNSW-NB15-v2 there is no headroom to compete for -- everything reaches
 # ~0.995 -- so the model is BUILT for both datasets and JUDGED on the primary.
 

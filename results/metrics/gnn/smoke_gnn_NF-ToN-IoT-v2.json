@@ -1,0 +1,725 @@
+{
+  "generated_at": "2026-08-25T06:04:32.810520+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "config": {
+    "preprocess_config": "configs/preprocess_toniot.yaml",
+    "model": {
+      "hidden_dim": 128,
+      "n_mlp_blocks": 3,
+      "n_gnn_layers": 2,
+      "dropout": 0.1,
+      "bidirectional": true
+    },
+    "train": {
+      "batch_size": 8,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "max_epochs": 2,
+      "patience": 99,
+      "grad_clip": 1.0,
+      "focal_alpha": 0.75,
+      "focal_gamma": 2.0,
+      "multiclass_weight": 0.3,
+      "n_seeds": 3,
+      "device": "auto"
+    },
+    "eval": {
+      "target_prevalence": 0.04,
+      "threshold_mode": "f1"
+    },
+    "ablations": {
+      "channel1_only": {
+        "use_channel1": true,
+        "use_channel2": false
+      },
+      "channel2_only": {
+        "use_channel1": false,
+        "use_channel2": true
+      },
+      "full": {
+        "use_channel1": true,
+        "use_channel2": true
+      },
+      "gnn_layer_sweep": [
+        1,
+        2,
+        3
+      ]
+    },
+    "output": {
+      "metrics": "results/metrics/gnn",
+      "checkpoints": "results/checkpoints",
+      "seed": 42
+    }
+  },
+  "edge_dim": 110,
+  "window_size": 10000,
+  "phase3_comparators": {
+    "source": "results/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
+    "reported_at_prevalence": 0.04,
+    "entries": {
+      "xgboost::flow": {
+        "pr_auc": 0.986,
+        "pr_auc_std": 0.00049,
+        "f1": 0.94157,
+        "f1_std": 0.0004,
+        "fpr_at_95_recall": 0.00284,
+        "n_seeds": 3
+      },
+      "xgboost::flow+host": {
+        "pr_auc": 0.98086,
+        "pr_auc_std": 0.00114,
+        "f1": 0.9497,
+        "f1_std": 0.00115,
+        "fpr_at_95_recall": 0.00237,
+        "n_seeds": 3
+      }
+    },
+    "excluded_not_on_this_reporting_path": [
+      "logreg::flow",
+      "logreg::flow+host",
+      "mlp::flow",
+      "mlp::flow+host",
+      "random_forest::flow",
+      "random_forest::flow+host"
+    ]
+  },
+  "results": {
+    "channel1_only": {
+      "spec": {
+        "use_channel1": true,
+        "use_channel2": false
+      },
+      "n_seeds": 1,
+      "runs": [
+        {
+          "native": {
+            "n": 120000,
+            "n_positive": 76136,
+            "prevalence": 0.634467,
+            "threshold": 0.821929,
+            "pr_auc": 0.84127,
+            "roc_auc": 0.78732,
+            "precision": 0.88738,
+            "recall": 0.28481,
+            "f1": 0.43121,
+            "fpr_at_95_recall": 0.713683,
+            "fpr_at_99_recall": 0.948067,
+            "false_positives": 2752,
+            "true_positives": 21684,
+            "alerts_per_true_positive": 1.127,
+            "per_family_recall": {
+              "ddos": {
+                "n": 9144,
+                "recall": 0.62292,
+                "recall_ci95": 0.00993
+              },
+              "dos": {
+                "n": 4462,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "injection": {
+                "n": 983,
+                "recall": 0.77213,
+                "recall_ci95": 0.02622
+              },
+              "mitm": {
+                "n": 444,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "password": {
+                "n": 20625,
+                "recall": 0.47888,
+                "recall_ci95": 0.00682
+              },
+              "scanning": {
+                "n": 27863,
+                "recall": 0.06392,
+                "recall_ci95": 0.00287
+              },
+              "xss": {
+                "n": 12615,
+                "recall": 0.28308,
+                "recall_ci95": 0.00786
+              }
+            },
+            "prevalence_adjustment": "none (native)"
+          },
+          "at_4%": {
+            "n": 45691,
+            "n_positive": 1827,
+            "prevalence": 0.039986,
+            "threshold": 0.821929,
+            "pr_auc": 0.14658,
+            "roc_auc": 0.78992,
+            "precision": 0.15892,
+            "recall": 0.28462,
+            "f1": 0.20396,
+            "fpr_at_95_recall": 0.621444,
+            "fpr_at_99_recall": 0.93929,
+            "false_positives": 2752,
+            "true_positives": 520,
+            "alerts_per_true_positive": 6.292,
+            "per_family_recall": {
+              "ddos": {
+                "n": 211,
+                "recall": 0.59716,
+                "recall_ci95": 0.06618
+              },
+              "dos": {
+                "n": 101,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "injection": {
+                "n": 21,
+                "recall": 0.85714,
+                "recall_ci95": 0.14967
+              },
+              "mitm": {
+                "n": 6,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "password": {
+                "n": 503,
+                "recall": 0.50696,
+                "recall_ci95": 0.04369
+              },
+              "scanning": {
+                "n": 665,
+                "recall": 0.06165,
+                "recall_ci95": 0.01828
+              },
+              "xss": {
+                "n": 320,
+                "recall": 0.25,
+                "recall_ci95": 0.04744
+              }
+            },
+            "prevalence_adjustment": {
+              "target": 0.04,
+              "achieved": 0.03999,
+              "native": 0.63447,
+              "n_before": 120000,
+              "n_after": 45691,
+              "note": "scores subsampled after inference; the graph was never altered"
+            }
+          },
+          "val_pr_auc_at_target": 0.34029,
+          "epochs_run": 2,
+          "epoch_seconds": [
+            0.44,
+            0.3
+          ],
+          "epoch_seconds_first_last": [
+            0.44,
+            0.3
+          ],
+          "n_parameters": 117910,
+          "fit_seconds": 1.1
+        }
+      ],
+      "aggregate": {
+        "n": {
+          "mean": 45691.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "n_positive": {
+          "mean": 1827.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "prevalence": {
+          "mean": 0.03999,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "threshold": {
+          "mean": 0.82193,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "pr_auc": {
+          "mean": 0.14658,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "roc_auc": {
+          "mean": 0.78992,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "precision": {
+          "mean": 0.15892,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "recall": {
+          "mean": 0.28462,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "f1": {
+          "mean": 0.20396,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_95_recall": {
+          "mean": 0.62144,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_99_recall": {
+          "mean": 0.93929,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "false_positives": {
+          "mean": 2752.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "true_positives": {
+          "mean": 520.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "alerts_per_true_positive": {
+          "mean": 6.292,
+          "std": 0.0,
+          "n_seeds": 1
+        }
+      }
+    },
+    "channel2_only": {
+      "spec": {
+        "use_channel1": false,
+        "use_channel2": true
+      },
+      "n_seeds": 1,
+      "runs": [
+        {
+          "native": {
+            "n": 120000,
+            "n_positive": 76136,
+            "prevalence": 0.634467,
+            "threshold": 0.624867,
+            "pr_auc": 0.90103,
+            "roc_auc": 0.84192,
+            "precision": 0.95151,
+            "recall": 0.4874,
+            "f1": 0.64461,
+            "fpr_at_95_recall": 0.506019,
+            "fpr_at_99_recall": 0.519697,
+            "false_positives": 1891,
+            "true_positives": 37109,
+            "alerts_per_true_positive": 1.051,
+            "per_family_recall": {
+              "ddos": {
+                "n": 9144,
+                "recall": 0.79582,
+                "recall_ci95": 0.00826
+              },
+              "dos": {
+                "n": 4462,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "injection": {
+                "n": 983,
+                "recall": 0.85249,
+                "recall_ci95": 0.02217
+              },
+              "mitm": {
+                "n": 444,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "password": {
+                "n": 20625,
+                "recall": 0.76679,
+                "recall_ci95": 0.00577
+              },
+              "scanning": {
+                "n": 27863,
+                "recall": 0.066,
+                "recall_ci95": 0.00292
+              },
+              "xss": {
+                "n": 12615,
+                "recall": 0.89893,
+                "recall_ci95": 0.00526
+              }
+            },
+            "prevalence_adjustment": "none (native)"
+          },
+          "at_4%": {
+            "n": 45691,
+            "n_positive": 1827,
+            "prevalence": 0.039986,
+            "threshold": 0.624867,
+            "pr_auc": 0.31389,
+            "roc_auc": 0.84127,
+            "precision": 0.32488,
+            "recall": 0.49808,
+            "f1": 0.39326,
+            "fpr_at_95_recall": 0.519674,
+            "fpr_at_99_recall": 0.519674,
+            "false_positives": 1891,
+            "true_positives": 910,
+            "alerts_per_true_positive": 3.078,
+            "per_family_recall": {
+              "ddos": {
+                "n": 211,
+                "recall": 0.83886,
+                "recall_ci95": 0.04961
+              },
+              "dos": {
+                "n": 101,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "injection": {
+                "n": 21,
+                "recall": 0.95238,
+                "recall_ci95": 0.09108
+              },
+              "mitm": {
+                "n": 6,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "password": {
+                "n": 503,
+                "recall": 0.77137,
+                "recall_ci95": 0.0367
+              },
+              "scanning": {
+                "n": 665,
+                "recall": 0.05113,
+                "recall_ci95": 0.01674
+              },
+              "xss": {
+                "n": 320,
+                "recall": 0.90938,
+                "recall_ci95": 0.03145
+              }
+            },
+            "prevalence_adjustment": {
+              "target": 0.04,
+              "achieved": 0.03999,
+              "native": 0.63447,
+              "n_before": 120000,
+              "n_after": 45691,
+              "note": "scores subsampled after inference; the graph was never altered"
+            }
+          },
+          "val_pr_auc_at_target": 0.40415,
+          "epochs_run": 2,
+          "epoch_seconds": [
+            0.48,
+            0.47
+          ],
+          "epoch_seconds_first_last": [
+            0.48,
+            0.47
+          ],
+          "n_parameters": 130059,
+          "fit_seconds": 1.4
+        }
+      ],
+      "aggregate": {
+        "n": {
+          "mean": 45691.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "n_positive": {
+          "mean": 1827.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "prevalence": {
+          "mean": 0.03999,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "threshold": {
+          "mean": 0.62487,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "pr_auc": {
+          "mean": 0.31389,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "roc_auc": {
+          "mean": 0.84127,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "precision": {
+          "mean": 0.32488,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "recall": {
+          "mean": 0.49808,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "f1": {
+          "mean": 0.39326,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_95_recall": {
+          "mean": 0.51967,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_99_recall": {
+          "mean": 0.51967,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "false_positives": {
+          "mean": 1891.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "true_positives": {
+          "mean": 910.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "alerts_per_true_positive": {
+          "mean": 3.078,
+          "std": 0.0,
+          "n_seeds": 1
+        }
+      }
+    },
+    "full": {
+      "spec": {
+        "use_channel1": true,
+        "use_channel2": true
+      },
+      "n_seeds": 1,
+      "runs": [
+        {
+          "native": {
+            "n": 120000,
+            "n_positive": 76136,
+            "prevalence": 0.634467,
+            "threshold": 0.647623,
+            "pr_auc": 0.89289,
+            "roc_auc": 0.85235,
+            "precision": 0.90406,
+            "recall": 0.53754,
+            "f1": 0.67421,
+            "fpr_at_95_recall": 0.419296,
+            "fpr_at_99_recall": 0.479801,
+            "false_positives": 4343,
+            "true_positives": 40926,
+            "alerts_per_true_positive": 1.106,
+            "per_family_recall": {
+              "ddos": {
+                "n": 9144,
+                "recall": 0.9766,
+                "recall_ci95": 0.0031
+              },
+              "dos": {
+                "n": 4462,
+                "recall": 0.89601,
+                "recall_ci95": 0.00896
+              },
+              "injection": {
+                "n": 983,
+                "recall": 0.90234,
+                "recall_ci95": 0.01856
+              },
+              "mitm": {
+                "n": 444,
+                "recall": 0.06532,
+                "recall_ci95": 0.02298
+              },
+              "password": {
+                "n": 20625,
+                "recall": 0.65198,
+                "recall_ci95": 0.0065
+              },
+              "scanning": {
+                "n": 27863,
+                "recall": 0.07698,
+                "recall_ci95": 0.00313
+              },
+              "xss": {
+                "n": 12615,
+                "recall": 0.91082,
+                "recall_ci95": 0.00497
+              }
+            },
+            "prevalence_adjustment": "none (native)"
+          },
+          "at_4%": {
+            "n": 45691,
+            "n_positive": 1827,
+            "prevalence": 0.039986,
+            "threshold": 0.647623,
+            "pr_auc": 0.2725,
+            "roc_auc": 0.8504,
+            "precision": 0.1838,
+            "recall": 0.5353,
+            "f1": 0.27364,
+            "fpr_at_95_recall": 0.444693,
+            "fpr_at_99_recall": 0.480326,
+            "false_positives": 4343,
+            "true_positives": 978,
+            "alerts_per_true_positive": 5.441,
+            "per_family_recall": {
+              "ddos": {
+                "n": 211,
+                "recall": 0.99526,
+                "recall_ci95": 0.00927
+              },
+              "dos": {
+                "n": 101,
+                "recall": 0.82178,
+                "recall_ci95": 0.07464
+              },
+              "injection": {
+                "n": 21,
+                "recall": 0.95238,
+                "recall_ci95": 0.09108
+              },
+              "mitm": {
+                "n": 6,
+                "recall": 0.0,
+                "recall_ci95": 0.0
+              },
+              "password": {
+                "n": 503,
+                "recall": 0.66402,
+                "recall_ci95": 0.04128
+              },
+              "scanning": {
+                "n": 665,
+                "recall": 0.06015,
+                "recall_ci95": 0.01807
+              },
+              "xss": {
+                "n": 320,
+                "recall": 0.90938,
+                "recall_ci95": 0.03145
+              }
+            },
+            "prevalence_adjustment": {
+              "target": 0.04,
+              "achieved": 0.03999,
+              "native": 0.63447,
+              "n_before": 120000,
+              "n_after": 45691,
+              "note": "scores subsampled after inference; the graph was never altered"
+            }
+          },
+          "val_pr_auc_at_target": 0.2912,
+          "epochs_run": 2,
+          "epoch_seconds": [
+            0.82,
+            0.75
+          ],
+          "epoch_seconds_first_last": [
+            0.82,
+            0.75
+          ],
+          "n_parameters": 279704,
+          "channel_attribution": {
+            "attribute_weight_mean": 0.1409,
+            "topological_weight_mean": 0.8591,
+            "topological_share_above_half": 1.0,
+            "topological_weight_on_true_positives": 0.8257
+          },
+          "fit_seconds": 2.2
+        }
+      ],
+      "aggregate": {
+        "n": {
+          "mean": 45691.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "n_positive": {
+          "mean": 1827.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "prevalence": {
+          "mean": 0.03999,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "threshold": {
+          "mean": 0.64762,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "pr_auc": {
+          "mean": 0.2725,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "roc_auc": {
+          "mean": 0.8504,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "precision": {
+          "mean": 0.1838,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "recall": {
+          "mean": 0.5353,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "f1": {
+          "mean": 0.27364,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_95_recall": {
+          "mean": 0.44469,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "fpr_at_99_recall": {
+          "mean": 0.48033,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "false_positives": {
+          "mean": 4343.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "true_positives": {
+          "mean": 978.0,
+          "std": 0.0,
+          "n_seeds": 1
+        },
+        "alerts_per_true_positive": {
+          "mean": 5.441,
+          "std": 0.0,
+          "n_seeds": 1
+        }
+      }
+    }
+  }
+}

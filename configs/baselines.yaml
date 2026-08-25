@@ -9,6 +9,18 @@ n_seeds: 3
 # tuned on train would not transfer. Val sits at 6.71%, close to test. (D16)
 threshold_mode: f1        # 'f1' | 'recall'
 
+# D23 -- report at a standardised prevalence, identical to configs/gnn.yaml.
+# Before 2026-08-25 the baselines were reported at the dataset's native 63%
+# and the GNN at 4%, and the difference was invisible in both output files.
+# That is C17: the "XGBoost 0.9552 / 0.8963" figure hardcoded in train_gnn.py
+# was never comparable with anything the GNN produced.
+eval:
+  target_prevalence: 0.04
+  # Fixed, NOT the model seed. The subsample must be identical across seeds so
+  # that seed-to-seed spread measures the model rather than which rows were
+  # drawn. Matches cfg.output.seed in configs/gnn.yaml.
+  prevalence_seed: 42
+
 logreg:
   max_iter: 300
 
