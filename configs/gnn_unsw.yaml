@@ -1,0 +1,91 @@
+# Phase 4/9 on NF-UNSW-NB15-v2 (SECONDARY dataset).
+#
+# Two jobs, both blocked without a checkpoint trained here:
+#
+#  1. **Phase 9 in the planned direction.** D18's protocol is train on
+#     NF-UNSW-NB15-v2, test on the others. Every existing checkpoint is
+#     ToN-IoT, so the direction actually specified has never been run.
+#  2. **U9.** Dr Altaf challenged the fan-out/topology-richness claim on
+#     2026-08-25 (D25). Answering it needs a `channel1_only` vs `full`
+#     ablation *on this dataset*, which has never been run either.
+#
+# Everything except the dataset and the stopping rule is inherited from
+# configs/gnn.yaml verbatim, so any difference in the result is the dataset.
+#
+# NOTE: NF-UNSW-NB15-v2 is saturated (D25 -- logreg reaches 0.99270 on the
+# cleaned feature set, seven of eight configurations within 0.003). Expect the
+# ablation gap here to be SMALL and possibly not separable. That is the point of
+# running it: U9 asks whether topology helps on a simple graph, and "barely" is
+# a real answer.
+
+# training regime and was printed as "<- to beat" for weeks.
+# On NF-UNSW-NB15-v2 there is no headroom to compete for -- everything reaches
+# ~0.995 -- so the model is BUILT for both datasets and JUDGED on the primary.
+
+preprocess_config: configs/preprocess.yaml
+
+model:
+  hidden_dim: 128
+  n_mlp_blocks: 3       # Channel 1 depth; matches the Phase 3 MLP baseline
+  # Receptive field. Should be at least the hops an attack propagates over --
+  # lateral movement spans several and one layer cannot represent it -- but
+  # deeper stacks over-smooth, so 2-3 is the useful range. Swept below.
+  n_gnn_layers: 2
+  dropout: 0.1
+  # Also pass messages backwards along each edge, so a victim's embedding
+  # reflects who contacted it. Fan-in patterns (DoS, DDoS) need this; the
+  # forward direction alone only describes what a host initiates.
+  bidirectional: true
+
+train:
+  # Windows per batch. Each window contributes ~10,000 edge predictions, so a
+  # batch of 8 is 80,000 supervised examples -- far more signal per step than
+  # the count suggests.
+  batch_size: 8
+  lr: 0.001
+  weight_decay: 0.0001
+  max_epochs: 40
+
+  # Early stopping is the largest uncontrolled source of variance measured in
+  # this project (B11 / U7, 2026-08-25). MPS non-determinism wobbles the
+  # validation curve; a wobble near `patience` flips the stopping decision; and
+  # the models are STILL IMPROVING when they stop, so the epoch count rather
+  # than the seed ends up dominating the spread. Seed 0 ran 16 epochs in one
+  # campaign and 28 in another, worth +0.0054 PR-AUC.
+  #
+  # Set `early_stopping: false` to run the full `max_epochs` and keep the
+  # best-validation state anyway. Nothing is lost -- the best checkpoint is
+  # already tracked -- and every run in a campaign becomes comparable by
+  # construction. Costs ~13 min/seed at ~19.5 s/epoch instead of ~6-9.
+  #
+  # RECOMMENDED FOR STAGE C: false. Left true here so nothing about the
+  # existing Phase 4 results changes without an explicit decision.
+  early_stopping: false   # fixed budget + best-val selection (B11/U7)
+  patience: 6           # ignored when early_stopping is false
+  grad_clip: 1.0
+  focal_alpha: 0.75     # D8
+  focal_gamma: 2.0
+  multiclass_weight: 0.3  # auxiliary head (D3), below the binary objective
+  n_seeds: 3
+  # MPS on the M4. iHPC is decommissioned and Cetus unreachable, so local is
+  # the only option -- see "Compute Access Risk". Phases 4/5/9 do not need HPC.
+  device: auto
+
+eval:
+  # D23: metrics at a standardised prevalence, computed by subsampling SCORES
+  # after inference. The graph is never altered, so topology survives intact.
+  target_prevalence: 0.04
+  threshold_mode: f1    # chosen on validation, never test (D16)
+
+# Each isolates one claim and each is a row in the results table.
+ablations:
+  channel1_only: {use_channel1: true,  use_channel2: false}   # = the MLP baseline
+  channel2_only: {use_channel1: false, use_channel2: true}    # = plain E-GraphSAGE
+  full:          {use_channel1: true,  use_channel2: true}
+  # Run after the headline result, not before.
+  gnn_layer_sweep: [1, 2, 3]
+
+output:
+  metrics: results/metrics/gnn
+  checkpoints: results/checkpoints
+  seed: 42
