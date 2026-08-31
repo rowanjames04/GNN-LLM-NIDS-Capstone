@@ -111,7 +111,22 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
 
     target_prev = cfg["eval"]["target_prevalence"]
     best_ap, best_state, patience, epochs_run = -1.0, None, 0, 0
+    best_epoch = 0
     epoch_seconds = []
+
+    # Early stopping is the largest uncontrolled source of variance in this
+    # project (B11/U7). MPS non-determinism wobbles the validation curve, a
+    # wobble near `patience` flips the stopping decision, and because the models
+    # are still improving when they stop, the epoch count -- not the seed --
+    # ends up dominating the spread. Measured: seed 0 ran 16 epochs in one
+    # campaign and 28 in another, for +0.0054 PR-AUC; the seed whose epoch count
+    # did not change reproduced exactly.
+    #
+    # With `early_stopping: false` the loop runs a FIXED budget and keeps the
+    # best-validation state anyway -- so nothing is lost, the variance source is
+    # removed rather than merely widened, and every run in a campaign is
+    # comparable by construction.
+    early_stopping = tcfg.get("early_stopping", True)
 
     for epoch in range(tcfg["max_epochs"]):
         t_epoch = time.time()
@@ -139,14 +154,14 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
         epoch_seconds.append(round(time.time() - t_epoch, 2))
 
         if ap > best_ap + 1e-5:
-            best_ap, patience = ap, 0
+            best_ap, patience, best_epoch = ap, 0, epochs_run
             # Kept on CPU: the checkpoint does not need to occupy GPU memory
             # for the rest of training, and this is the object that gets saved.
             best_state = {k: v.detach().cpu().clone()
                           for k, v in model.state_dict().items()}
         else:
             patience += 1
-            if patience >= tcfg["patience"]:
+            if early_stopping and patience >= tcfg["patience"]:
                 break
 
     model.load_state_dict(best_state)
@@ -162,6 +177,13 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
                       cfg["output"]["seed"])
     out["val_pr_auc_at_target"] = round(float(best_ap), 5)
     out["epochs_run"] = epochs_run
+    # `best_epoch` is the diagnostic a fixed budget needs: if it equals the
+    # budget, the model was still improving when the run ended and the budget is
+    # too small. Under early stopping it also shows how much of the run was
+    # spent past the best point.
+    out["best_epoch"] = best_epoch
+    out["selection"] = ("early_stopping" if early_stopping
+                        else "fixed_budget_best_val")
     out["epoch_seconds"] = epoch_seconds
     out["epoch_seconds_first_last"] = (
         [epoch_seconds[0], epoch_seconds[-1]] if epoch_seconds else [])

@@ -32,7 +32,23 @@ train:
   lr: 0.001
   weight_decay: 0.0001
   max_epochs: 40
-  patience: 6           # early stopping on validation PR-AUC at 4% prevalence
+
+  # Early stopping is the largest uncontrolled source of variance measured in
+  # this project (B11 / U7, 2026-08-25). MPS non-determinism wobbles the
+  # validation curve; a wobble near `patience` flips the stopping decision; and
+  # the models are STILL IMPROVING when they stop, so the epoch count rather
+  # than the seed ends up dominating the spread. Seed 0 ran 16 epochs in one
+  # campaign and 28 in another, worth +0.0054 PR-AUC.
+  #
+  # Set `early_stopping: false` to run the full `max_epochs` and keep the
+  # best-validation state anyway. Nothing is lost -- the best checkpoint is
+  # already tracked -- and every run in a campaign becomes comparable by
+  # construction. Costs ~13 min/seed at ~19.5 s/epoch instead of ~6-9.
+  #
+  # RECOMMENDED FOR STAGE C: false. Left true here so nothing about the
+  # existing Phase 4 results changes without an explicit decision.
+  early_stopping: true
+  patience: 6           # ignored when early_stopping is false
   grad_clip: 1.0
   focal_alpha: 0.75     # D8
   focal_gamma: 2.0
