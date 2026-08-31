@@ -45,7 +45,7 @@ def _run_seeds_in_subprocesses(args) -> int:
     out_dir = REPO_ROOT / cfg["output"]["metrics"]
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    merged, failed = {}, []
+    merged, failed, completed = {}, [], []
     for seed in range(n_seeds):
         cmd = [sys.executable, __file__, "--config", str(args.config),
                "--single-seed", str(seed)]
@@ -63,7 +63,13 @@ def _run_seeds_in_subprocesses(args) -> int:
             for ab, payload in json.loads(part.read_text())["results"].items():
                 merged.setdefault(ab, {"spec": payload["spec"], "runs": []})
                 merged[ab]["runs"].extend(payload["runs"])
-            part.unlink()
+            # C19: the partial is NOT deleted here. Until this fix, completed
+            # seeds lived only in this process's memory and the merged file was
+            # written after the last seed -- so a parent killed in hour 9 of a
+            # 9-hour campaign lost all nine hours of finished work. Partials are
+            # cheap; a lost campaign is not. They are cleaned up only after the
+            # merged file is successfully written, at the end of this function.
+            completed.append(part)
 
     target_prev = cfg["eval"]["target_prevalence"]
     key = f"at_{target_prev:.0%}"
@@ -80,6 +86,10 @@ def _run_seeds_in_subprocesses(args) -> int:
         "phase3_comparators": comparators,
         "results": merged,
     }, indent=2))
+
+    # Only now is the work durable, so the partials can go.
+    for part in completed:
+        part.unlink(missing_ok=True)
 
     print()
     print_comparison(comparators, merged,
