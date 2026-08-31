@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-08-31T05:08:19.003522+00:00",
+  "protocol": "cross-dataset transfer, no retraining (D18/D32), xgboost arm",
+  "model": "xgboost::flow",
+  "smoke": false,
+  "source_dataset": "NF-UNSW-NB15-v2",
+  "target_dataset": "NF-UNSW-NB15-v2",
+  "pipeline": "frozen from source; identical protocol to transfer_eval.py",
+  "reported_at_prevalence": 0.04,
+  "target_rows": 2000000,
+  "target_native_prevalence": 0.03982,
+  "out_of_vocabulary": {
+    "PROTOCOL": {
+      "oov_rate": 0.00618,
+      "distinct_in_target": 255,
+      "distinct_in_source_vocab": 2,
+      "shared": 2
+    },
+    "L7_PROTO": {
+      "oov_rate": 0.00353,
+      "distinct_in_target": 84,
+      "distinct_in_source_vocab": 6,
+      "shared": 6
+    },
+    "TCP_FLAGS": {
+      "oov_rate": 0.00298,
+      "distinct_in_target": 16,
+      "distinct_in_source_vocab": 7,
+      "shared": 7
+    },
+    "CLIENT_TCP_FLAGS": {
+      "oov_rate": 0.00315,
+      "distinct_in_target": 15,
+      "distinct_in_source_vocab": 7,
+      "shared": 7
+    },
+    "SERVER_TCP_FLAGS": {
+      "oov_rate": 0.0,
+      "distinct_in_target": 13,
+      "distinct_in_source_vocab": 9,
+      "shared": 9
+    },
+    "_worst_oov_rate": 0.00618
+  },
+  "n_seeds": 1,
+  "runs": [
+    {
+      "seed": 0,
+      "source_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 79641,
+          "prevalence": 0.039821,
+          "threshold": 0.97051,
+          "pr_auc": 0.98471,
+          "roc_auc": 0.99888,
+          "precision": 0.96314,
+          "recall": 0.94171,
+          "f1": 0.95231,
+          "fpr_at_95_recall": 0.001982,
+          "fpr_at_99_recall": 0.039318,
+          "false_positives": 2870,
+          "true_positives": 74999,
+          "alerts_per_true_positive": 1.038,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 1991025,
+          "n_positive": 79641,
+          "prevalence": 0.04,
+          "threshold": 0.97051,
+          "pr_auc": 0.98477,
+          "roc_auc": 0.99888,
+          "precision": 0.96335,
+          "recall": 0.94171,
+          "f1": 0.95241,
+          "fpr_at_95_recall": 0.001979,
+          "fpr_at_99_recall": 0.039304,
+          "false_positives": 2853,
+          "true_positives": 74999,
+          "alerts_per_true_positive": 1.038,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.03982,
+            "n_before": 2000000,
+            "n_after": 1991025,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "recalibrated_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 79641,
+          "prevalence": 0.039821,
+          "threshold": 0.969245,
+          "pr_auc": 0.98471,
+          "roc_auc": 0.99888,
+          "precision": 0.96151,
+          "recall": 0.94379,
+          "f1": 0.95256,
+          "fpr_at_95_recall": 0.001982,
+          "fpr_at_99_recall": 0.039318,
+          "false_positives": 3009,
+          "true_positives": 75164,
+          "alerts_per_true_positive": 1.04,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 1991025,
+          "n_positive": 79641,
+          "prevalence": 0.04,
+          "threshold": 0.969245,
+          "pr_auc": 0.98477,
+          "roc_auc": 0.99888,
+          "precision": 0.96174,
+          "recall": 0.94379,
+          "f1": 0.95268,
+          "fpr_at_95_recall": 0.001979,
+          "fpr_at_99_recall": 0.039304,
+          "false_positives": 2990,
+          "true_positives": 75164,
+          "alerts_per_true_positive": 1.04,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.03982,
+            "n_before": 2000000,
+            "n_after": 1991025,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "thresholds": {
+        "source": 0.97051,
+        "recalibrated_on_target": 0.96924
+      }
+    }
+  ]
+}

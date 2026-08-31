@@ -154,8 +154,14 @@ def main() -> None:
     }
     out_dir = REPO_ROOT / cfg["output"]["dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    # C20: the filename must carry the CHECKPOINT, not just the dataset pair.
+    # Without it, running three seeds writes the same file three times and only
+    # the last survives -- which is exactly what happened on 2026-08-31 and
+    # silently destroyed a completed seed's result. The loss is invisible: the
+    # file exists and looks fine, it is simply the wrong run.
+    stem = ckpt_path.stem
     name = (f"{'smoke_' if args.smoke else ''}transfer_{src_ds['name']}"
-            f"_to_{tgt_ds['name']}.json")
+            f"_to_{tgt_ds['name']}__{stem}.json")
     (out_dir / name).write_text(json.dumps(out, indent=2))
 
     print("=" * 76)
