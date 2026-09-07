@@ -31,17 +31,6 @@ from ..models.dual_channel import DualChannelGNN, channel_attribution
 from ..models.mlp import FocalLoss
 
 
-def one_hot(cat: np.ndarray, cardinalities: list[int]) -> np.ndarray:
-    """Identical expansion to Phase 3, so Channel 1 sees the same input the
-    baseline did."""
-    blocks = []
-    for j, card in enumerate(cardinalities):
-        block = np.zeros((len(cat), card), dtype=np.float32)
-        block[np.arange(len(cat)), np.clip(cat[:, j], 0, card - 1)] = 1.0
-        blocks.append(block)
-    return np.hstack(blocks)
-
-
 def pick_device(spec: str) -> torch.device:
     if spec != "auto":
         return torch.device(spec)

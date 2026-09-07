@@ -21,7 +21,6 @@ import json
 import sys
 from pathlib import Path
 
-import numpy as np
 import streamlit as st
 import yaml
 

@@ -36,7 +36,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-import pyarrow as pa
 import pyarrow.parquet as pq
 from pyarrow import csv as pacsv
 

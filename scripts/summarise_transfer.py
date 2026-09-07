@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import statistics as st
-import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

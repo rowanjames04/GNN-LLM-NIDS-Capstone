@@ -312,7 +312,6 @@ def analyse_shortcuts(df: pd.DataFrame, features: list[str], thresh: float) -> d
 
 def analyse_app_layer(df: pd.DataFrame) -> dict:
     out = {}
-    n = len(df)
     for col in APP_LAYER:
         x = df[col]
         zero_frac = float((x == 0).mean())

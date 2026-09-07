@@ -51,6 +51,9 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.data.host_features import FEATURE_NAMES, standardise, windowed_host_features  # noqa: E402
 from gnnids.eval.metrics import aggregate_seeds, choose_threshold  # noqa: E402
+# Canonical one_hot, shared with the graph path so both see identical columns.
+# Safe here despite xgboost: gnnids.graph.inputs imports no torch (C3).
+from gnnids.graph.inputs import one_hot  # noqa: E402
 from gnnids.eval.prevalence import report_both, subsample_to_prevalence  # noqa: E402
 
 OUT_DIR = REPO_ROOT / "results" / "metrics" / "baselines"
@@ -61,19 +64,6 @@ SCHEMA = "dual-prevalence-v1"
 STALE_SCHEMA = "pre-c17-native-only"
 
 
-def one_hot(cat: np.ndarray, cardinalities: list[int]) -> np.ndarray:
-    """Expand categorical indices so every model sees the same representation.
-
-    Tree models could take the integers directly and the MLP could embed them,
-    but then the two would be seeing different inputs and any difference between
-    them would be partly an encoding artefact. Total width is only ~50 columns.
-    """
-    blocks = []
-    for j, card in enumerate(cardinalities):
-        block = np.zeros((len(cat), card), dtype=np.float32)
-        block[np.arange(len(cat)), np.clip(cat[:, j], 0, card - 1)] = 1.0
-        blocks.append(block)
-    return np.hstack(blocks)
 
 
 def train_torch_mlp(
@@ -182,7 +172,6 @@ def main() -> None:
     pre_cfg = yaml.safe_load(args.preprocess_config.read_text())
     ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
     print(f"dataset: {ds_cfg['name']}")
-    stem = Path(ds_cfg["source"]["filename"]).stem
     proc = REPO_ROOT / pre_cfg["output"]["dir"]
 
     print("Loading preprocessed features ...")

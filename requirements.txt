@@ -1,51 +1,60 @@
+# Runtime dependencies. Python 3.13, plain venv.
+#
+# Kept deliberately tight: an unused dependency is a claim the project makes
+# about itself that is not true, and several here were dropped when the decision
+# that motivated them was reversed.
+
 # Core numerics / data
 numpy>=2.0
 pandas>=2.2
-pyarrow>=17.0
-scipy>=1.14
+pyarrow>=17.0          # Parquet; 10-20x faster loads than CSV at 2.4M+ rows
 
 # Classical ML + baselines
 scikit-learn>=1.5
-xgboost>=2.1
-imbalanced-learn>=0.12
+xgboost>=2.1           # the strongest topology-blind comparator
 
 # Deep learning
 torch>=2.6
 torch-geometric>=2.6
-
-# Graphs
-networkx>=3.3
+# NOTE: torch and xgboost cannot be imported into one process on macOS -- both
+# bundle an OpenMP runtime and the process segfaults (exit 139). Tree and torch
+# models run as separate invocations.
 
 # Figures
 matplotlib>=3.9
 
-# Statistics (Granger causality, stationarity tests)
-statsmodels>=0.14
-
-# Explainability
-# captum -- NOT used. Integrated gradients is implemented directly in
-# src/gnnids/explain/attribution.py: attributing over edge_attr while holding
-# edge_index fixed needs a custom forward wrapper anyway, so the dependency
-# bought ~15 lines, and the method has to be defensible in the report (D28).
-
-# LLM clients
+# LLM clients. anthropic/openai/ollama each have an adapter in src/gnnids/llm.
+# google-genai is listed for the planned model roster but has no adapter yet --
+# add one before relying on it.
 anthropic>=0.40
 openai>=1.50
-google-genai>=0.3
 ollama>=0.4
+google-genai>=0.3
 
-# UI
+# UI (Phase 8 replay demo)
 streamlit>=1.39
-plotly>=5.24
-pyvis>=0.3.2
+plotly>=5.24           # not yet used -- for the pending topology view
+pyvis>=0.3.2           # not yet used -- for the pending topology view
 
-# Config / CLI / logging
+# Config / CLI / secrets
 pyyaml>=6.0
-typer>=0.12
-rich>=13.9
-tqdm>=4.66
-python-dotenv>=1.0
+python-dotenv>=1.0     # API keys live in .env, git-ignored
 
 # Dev
 pytest>=8.3
 ruff>=0.7
+
+# ---------------------------------------------------------------------------
+# Removed, with the reason, so they are not reinstated by habit:
+#
+#   captum            integrated gradients is implemented directly in
+#                     src/gnnids/explain/attribution.py -- attributing over
+#                     edge_attr needs a custom forward wrapper anyway, and the
+#                     method has to be defensible in the report
+#   imbalanced-learn  SMOTE was rejected: it interpolates feature vectors, which
+#                     is undefined for graph topology
+#   statsmodels       Granger causality is out of scope -- neither dataset
+#                     carries a timestamp column
+#   networkx          torch-geometric covers the graph handling actually used
+#   scipy             transitive via scikit-learn; never imported directly
+#   typer, rich, tqdm never used -- the scripts are argparse CLIs

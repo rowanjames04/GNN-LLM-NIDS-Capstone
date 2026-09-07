@@ -30,7 +30,6 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import torch
 import yaml
@@ -85,7 +84,6 @@ def main() -> None:
 
     # The schema is built from the SOURCE config -- same drops, same roles -- so
     # the model receives columns in the order it was trained on.
-    head = pd.read_parquet(target_parquet, columns=None).head(1) if False else None
     probe = pd.read_parquet(target_parquet).head(2000)
     schema = build_schema(src_pre, probe, REPO_ROOT)
     del probe
