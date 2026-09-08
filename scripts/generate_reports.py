@@ -125,6 +125,10 @@ def main() -> None:
             "scores": score_report(pack, r.text) if r.ok else {},
             "jargon": check_no_jargon(r.text) if r.ok else {},
             "uncertainty": check_uncertainty_conveyed(pack, r.text) if r.ok else None,
+            # What determinism controls this call could actually be given. The
+            # roster is not uniform, so this is recorded per response rather
+            # than asserted once for the study.
+            "determinism": r.extra.get("determinism"),
         }
         rows.append(row)
         mark = "ok " if r.ok else "FAIL"
@@ -136,6 +140,9 @@ def main() -> None:
               + (f"  {r.error}" if r.error else ""))
 
     summary = summarise(rows)
+    det = next((r["determinism"] for r in rows if r.get("determinism")), None)
+    summary["determinism"] = det or {"supported": False,
+                                     "note": "no determinism controls applied"}
     out_dir = REPO_ROOT / cfg["output"]["dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
     name = (f"{'smoke_' if args.smoke else ''}reports_"

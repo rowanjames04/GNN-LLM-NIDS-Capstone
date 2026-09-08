@@ -51,6 +51,7 @@ def rows() -> list[dict]:
             # detector got WRONG, does the model still invent nothing?
             "n_false_positive": len(fp),
             "groundedness_on_fp": mean(fp, "groundedness"),
+            "determinism": (d.get("summary", {}).get("determinism") or {}),
         })
     return out
 
@@ -80,6 +81,17 @@ def main() -> None:
         print(f"  {name:<30} {r['n_false_positive']:>9} "
               f"{fmt(r['groundedness_on_fp']):>17} {fmt(r['uncertainty_rate']):>22} "
               f"{r['n_failed']:>7}")
+
+    print(f"\n  {'model':<30} {'determinism applied':<24} note")
+    for r in sorted(data, key=lambda x: x["model"] or ""):
+        d = r["determinism"]
+        applied = ("temperature+seed" if d.get("temperature") is not None and d.get("seed") is not None
+                   else "temperature" if d.get("temperature") is not None
+                   else "seed" if d.get("seed") is not None else "none")
+        print(f"  {r['provider']}/{r['model']:<24} {applied:<24} {d.get('note', '')}")
+    print("\n  The roster is NOT uniform on determinism: sampling controls were "
+          "removed on the\n  current Claude generation. Report this asymmetry "
+          "rather than claiming temperature 0.")
 
     stub = [r for r in data if r["provider"] == "stub"]
     if stub and len(data) > 1:

@@ -29,7 +29,7 @@ ANTHROPIC_PRICING = {
 }
 
 
-def _determinism(temperature, seed) -> dict:
+def _determinism(temperature, seed, note: str | None = None) -> dict:
     """What determinism controls were actually applied to this call.
 
     Recorded per response rather than assumed, because the roster is not
@@ -38,8 +38,11 @@ def _determinism(temperature, seed) -> dict:
     temperature 0" would be wrong; one that records what each call could
     actually be given is defensible.
     """
-    return {"temperature": temperature, "seed": seed,
-            "supported": temperature is not None or seed is not None}
+    out = {"temperature": temperature, "seed": seed,
+           "supported": temperature is not None or seed is not None}
+    if note:
+        out["note"] = note
+    return out
 
 
 def _cost(model: str, table: dict, n_in: int | None, n_out: int | None) -> float | None:
@@ -60,9 +63,24 @@ class AnthropicAdapter:
 
     provider = "anthropic"
 
+    # Sampling controls were removed on the current Claude generation: passing
+    # `temperature`, `top_p` or `top_k` to these models returns a 400. They are
+    # therefore not sent, and the response records that the study's determinism
+    # control could not be applied here. `effort` is the available lever.
+    NO_SAMPLING_CONTROLS = ("claude-opus-5", "claude-opus-4-8", "claude-opus-4-7",
+                            "claude-sonnet-5", "claude-fable-5")
+
     def __init__(self, model: str = "claude-opus-5", max_tokens: int = 2000,
-                 effort: str | None = None) -> None:
+                 effort: str | None = None, temperature: float | None = None,
+                 seed: int | None = None) -> None:
         self.model, self.max_tokens, self.effort = model, max_tokens, effort
+        # Accepted from config so the roster can be configured uniformly, then
+        # dropped for models that reject them -- a silent 400 mid-sweep would be
+        # a worse failure than an honest "unsupported" in the results.
+        self.temperature = None if model in self.NO_SAMPLING_CONTROLS else temperature
+        self.seed = seed
+        self.sampling_dropped = (model in self.NO_SAMPLING_CONTROLS
+                                 and temperature is not None)
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
         import anthropic
@@ -78,6 +96,8 @@ class AnthropicAdapter:
             }
             if self.effort:
                 kwargs["output_config"] = {"effort": self.effort}
+            if self.temperature is not None:
+                kwargs["temperature"] = self.temperature
             msg = client.messages.create(**kwargs)
             # stop_details is populated only on a refusal; guard before reading.
             if msg.stop_reason == "refusal":
@@ -91,7 +111,12 @@ class AnthropicAdapter:
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 input_tokens=n_in, output_tokens=n_out,
                 cost_usd=_cost(self.model, ANTHROPIC_PRICING, n_in, n_out),
-                extra={"stop_reason": msg.stop_reason},
+                extra={"stop_reason": msg.stop_reason,
+                       "determinism": _determinism(
+                           self.temperature, self.seed,
+                           note=("sampling controls unavailable on this model"
+                                 if self.sampling_dropped or
+                                 self.model in self.NO_SAMPLING_CONTROLS else None))},
             )
         except Exception as e:                       # noqa: BLE001
             return self._fail(f"{type(e).__name__}: {e}", prompt_version, t0)
@@ -111,25 +136,31 @@ class OpenAIAdapter:
 
     provider = "openai"
 
-    def __init__(self, model: str = "gpt-4o", max_tokens: int = 2000) -> None:
+    def __init__(self, model: str = "gpt-4o", max_tokens: int = 2000,
+                 temperature: float | None = None, seed: int | None = None) -> None:
         self.model, self.max_tokens = model, max_tokens
+        self.temperature, self.seed = temperature, seed
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
         from openai import OpenAI
 
         t0 = time.perf_counter()
         try:
-            r = OpenAI().chat.completions.create(
-                model=self.model, max_tokens=self.max_tokens,
-                messages=[{"role": "system", "content": system},
-                          {"role": "user", "content": user}],
-            )
+            kwargs = {"model": self.model, "max_tokens": self.max_tokens,
+                      "messages": [{"role": "system", "content": system},
+                                   {"role": "user", "content": user}]}
+            if self.temperature is not None:
+                kwargs["temperature"] = self.temperature
+            if self.seed is not None:
+                kwargs["seed"] = self.seed
+            r = OpenAI().chat.completions.create(**kwargs)
             u = r.usage
             return LLMResponse(
                 text=r.choices[0].message.content or "", model=self.model,
                 provider=self.provider, prompt_version=prompt_version,
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 input_tokens=u.prompt_tokens, output_tokens=u.completion_tokens,
+                extra={"determinism": _determinism(self.temperature, self.seed)},
             )
         except Exception as e:                       # noqa: BLE001
             return LLMResponse(
@@ -206,9 +237,11 @@ class OllamaAdapter:
 
     provider = "ollama"
 
-    def __init__(self, model: str = "llama3.2:3b", host: str | None = None) -> None:
+    def __init__(self, model: str = "llama3.2:3b", host: str | None = None,
+                 temperature: float | None = None, seed: int | None = None) -> None:
         self.model = model
         self.host = host or os.environ.get("OLLAMA_HOST")
+        self.temperature, self.seed = temperature, seed
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
         import ollama
@@ -216,9 +249,14 @@ class OllamaAdapter:
         t0 = time.perf_counter()
         try:
             client = ollama.Client(host=self.host) if self.host else ollama
+            options = {}
+            if self.temperature is not None:
+                options["temperature"] = self.temperature
+            if self.seed is not None:
+                options["seed"] = self.seed
             r = client.chat(model=self.model, messages=[
                 {"role": "system", "content": system},
-                {"role": "user", "content": user}])
+                {"role": "user", "content": user}], options=options or None)
             return LLMResponse(
                 text=r["message"]["content"], model=self.model,
                 provider=self.provider, prompt_version=prompt_version,
@@ -226,6 +264,7 @@ class OllamaAdapter:
                 input_tokens=r.get("prompt_eval_count"),
                 output_tokens=r.get("eval_count"),
                 cost_usd=None,
+                extra={"determinism": _determinism(self.temperature, self.seed)},
             )
         except Exception as e:                       # noqa: BLE001
             return LLMResponse(

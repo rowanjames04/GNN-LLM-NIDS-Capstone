@@ -297,3 +297,40 @@ def test_the_control_stays_grounded_under_both_prompts():
         s, u = build_prompt(pack, v)
         r = StubAdapter().generate(s, u, v)
         assert score_report(pack, r.text)["n_ungrounded"] == 0
+
+
+# ------------------------------------------------- determinism across models
+
+def test_current_claude_models_drop_sampling_controls_rather_than_400():
+    """Passing temperature to the current Claude generation returns a 400. The
+    adapter accepts it from a uniform config and drops it, so a roster sweep
+    cannot die mid-run on a provider that rejects a parameter."""
+    a = build_adapter("anthropic", model="claude-opus-5", temperature=0, seed=42)
+
+    assert a.temperature is None
+    assert a.sampling_dropped is True
+
+
+def test_older_claude_models_keep_temperature():
+    """The restriction is model-specific, not vendor-specific."""
+    a = build_adapter("anthropic", model="claude-opus-4-6", temperature=0)
+
+    assert a.temperature == 0
+
+
+def test_providers_that_support_sampling_receive_it():
+    for provider in ("openai", "gemini", "ollama"):
+        a = build_adapter(provider, temperature=0, seed=42)
+        assert a.temperature == 0, provider
+        assert a.seed == 42, provider
+
+
+def test_unsupported_determinism_is_recorded_with_a_reason():
+    """The study cannot claim 'all models at temperature 0'. It can record what
+    each call was actually given, which is defensible."""
+    from gnnids.llm.adapters import _determinism
+
+    d = _determinism(None, None, note="sampling controls unavailable on this model")
+
+    assert d["supported"] is False
+    assert "unavailable" in d["note"]

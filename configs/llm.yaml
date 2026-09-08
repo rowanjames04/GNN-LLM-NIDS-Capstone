@@ -27,14 +27,25 @@ roster:
   - {provider: gemini, model: gemini-2.0-flash, enabled: false}     # enable once a key exists
   - {provider: ollama, model: llama3.2:3b, enabled: false}          # enable when compute is settled
 
+# Determinism is requested uniformly here and each adapter applies what its
+# provider actually supports, recording the rest as unsupported. The study
+# design's original wording -- "all models at temperature 0 with a fixed seed" --
+# is not achievable in 2026: sampling controls were removed on the current
+# Claude generation and passing them returns a 400. Asserting a control that
+# cannot be applied would be worse than reporting the asymmetry, so the
+# asymmetry is reported per response.
 provider_options:
   stub: {}
   anthropic:
     model: claude-opus-5
     max_tokens: 2000
+    temperature: 0        # dropped for models that reject it; recorded as unsupported
+    seed: 42
   openai:
     model: gpt-4o
     max_tokens: 2000
+    temperature: 0
+    seed: 42
   gemini:
     model: gemini-2.0-flash
     max_tokens: 2000

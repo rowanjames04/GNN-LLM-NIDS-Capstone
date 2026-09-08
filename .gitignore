@@ -88,3 +88,5 @@ results/evidence/*_sampling.json
 !results/evidence/evidence_*_sampling.json
 
 results/reports/smoke_study_manifest.json
+
+results/reports/study_manifest.json
