@@ -29,6 +29,19 @@ ANTHROPIC_PRICING = {
 }
 
 
+def _determinism(temperature, seed) -> dict:
+    """What determinism controls were actually applied to this call.
+
+    Recorded per response rather than assumed, because the roster is not
+    uniform: OpenAI, Gemini and Ollama accept a temperature, while current
+    Claude models reject it outright. A study claiming "all models at
+    temperature 0" would be wrong; one that records what each call could
+    actually be given is defensible.
+    """
+    return {"temperature": temperature, "seed": seed,
+            "supported": temperature is not None or seed is not None}
+
+
 def _cost(model: str, table: dict, n_in: int | None, n_out: int | None) -> float | None:
     if n_in is None or n_out is None or model not in table:
         return None
@@ -126,6 +139,60 @@ class OpenAIAdapter:
                 error=f"{type(e).__name__}: {e}")
 
 
+class GeminiAdapter:
+    """Google Gemini via the `google-genai` SDK.
+
+    The third cloud arm. Worth having beyond roster size: Gemini exposes both
+    `temperature` and `seed`, which current Claude models no longer do, so it is
+    one of the models where the study's determinism control can actually be
+    applied. That asymmetry is itself reportable.
+    """
+
+    provider = "gemini"
+
+    def __init__(self, model: str = "gemini-2.0-flash", max_tokens: int = 2000,
+                 temperature: float | None = None, seed: int | None = None) -> None:
+        self.model, self.max_tokens = model, max_tokens
+        self.temperature, self.seed = temperature, seed
+
+    def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
+        from google import genai
+        from google.genai import types
+
+        t0 = time.perf_counter()
+        try:
+            # Credentials come from GEMINI_API_KEY / GOOGLE_API_KEY in the
+            # environment; nothing is passed in code (secrets live in .env).
+            client = genai.Client()
+            cfg = {"system_instruction": system, "max_output_tokens": self.max_tokens}
+            if self.temperature is not None:
+                cfg["temperature"] = self.temperature
+            if self.seed is not None:
+                cfg["seed"] = self.seed
+            r = client.models.generate_content(
+                model=self.model, contents=user,
+                config=types.GenerateContentConfig(**cfg))
+            u = getattr(r, "usage_metadata", None)
+            return LLMResponse(
+                text=r.text or "", model=self.model, provider=self.provider,
+                prompt_version=prompt_version,
+                latency_seconds=round(time.perf_counter() - t0, 3),
+                input_tokens=getattr(u, "prompt_token_count", None),
+                output_tokens=getattr(u, "candidates_token_count", None),
+                # No per-token price is recorded here. Reporting 0.0 would let
+                # this model win a cost comparison it is not competing in; the
+                # aggregation reports "unknown" instead.
+                cost_usd=None,
+                extra={"determinism": _determinism(self.temperature, self.seed)},
+            )
+        except Exception as e:                       # noqa: BLE001
+            return LLMResponse(
+                text="", model=self.model, provider=self.provider,
+                prompt_version=prompt_version,
+                latency_seconds=round(time.perf_counter() - t0, 3),
+                error=f"{type(e).__name__}: {e}")
+
+
 class OllamaAdapter:
     """Self-hosted, local. The V5 arm that iHPC's decommissioning threatened.
 
@@ -172,6 +239,7 @@ ADAPTERS = {
     "stub": None,          # resolved in build_adapter to avoid a circular import
     "anthropic": AnthropicAdapter,
     "openai": OpenAIAdapter,
+    "gemini": GeminiAdapter,
     "ollama": OllamaAdapter,
 }
 

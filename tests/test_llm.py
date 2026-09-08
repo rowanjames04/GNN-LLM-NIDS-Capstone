@@ -220,3 +220,35 @@ def test_building_a_paid_adapter_makes_no_network_call():
 def test_an_unknown_provider_names_the_alternatives():
     with pytest.raises(KeyError, match="anthropic"):
         build_adapter("gpt5-turbo-ultra")
+
+
+# ------------------------------------------------------------------ gemini
+
+def test_gemini_is_in_the_roster_and_constructs_offline():
+    a = build_adapter("gemini")
+
+    assert a.provider == "gemini"
+    assert a.model.startswith("gemini")
+
+
+def test_gemini_records_which_determinism_controls_it_was_given():
+    """The roster is not uniform -- current Claude models reject temperature
+    outright -- so what each call could actually be given is recorded per
+    response rather than assumed study-wide."""
+    from gnnids.llm.adapters import _determinism
+
+    with_controls = _determinism(0.0, 42)
+    without = _determinism(None, None)
+
+    assert with_controls["supported"] is True
+    assert with_controls["temperature"] == 0.0 and with_controls["seed"] == 42
+    assert without["supported"] is False
+
+
+def test_gemini_reports_no_cost_rather_than_zero():
+    """Recording 0.0 would let a model win a cost comparison it is not
+    competing in."""
+    a = build_adapter("gemini")
+    r = a.generate("sys", "user", "v1")   # no key configured -> error path
+
+    assert r.cost_usd is None

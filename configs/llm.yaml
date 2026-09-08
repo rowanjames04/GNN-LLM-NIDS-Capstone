@@ -35,6 +35,13 @@ provider_options:
   openai:
     model: gpt-4o
     max_tokens: 2000
+  gemini:
+    model: gemini-2.0-flash
+    max_tokens: 2000
+    # Gemini accepts both, unlike current Claude models. See the determinism
+    # note in the study design.
+    temperature: 0
+    seed: 42
   ollama:
     # Fallback 2 from "Compute Access Risk": iHPC is decommissioned and Cetus
     # unreachable, so the self-hosted arm is a small quantised model on the M4.

@@ -23,13 +23,12 @@ torch-geometric>=2.6
 # Figures
 matplotlib>=3.9
 
-# LLM clients. anthropic/openai/ollama each have an adapter in src/gnnids/llm.
-# google-genai is listed for the planned model roster but has no adapter yet --
-# add one before relying on it.
+# LLM clients. Each has an adapter in src/gnnids/llm/adapters.py and an entry
+# in the roster in configs/llm.yaml.
 anthropic>=0.40
 openai>=1.50
+google-genai>=1.0      # Gemini; client.models.generate_content API
 ollama>=0.4
-google-genai>=0.3
 
 # UI (Phase 8 replay demo)
 streamlit>=1.39
