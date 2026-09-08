@@ -86,3 +86,5 @@ results/metrics/transfer/smoke_transfer_xgboost_*.json
 
 results/evidence/*_sampling.json
 !results/evidence/evidence_*_sampling.json
+
+results/reports/smoke_study_manifest.json
