@@ -16,7 +16,18 @@ checkpoint: results/checkpoints/NF-ToN-IoT-v2_full_seed0.pt
 guidance: data/reference/threat_guidance.json
 
 n_packs: 200          # the comparative study's stratified sample size
-max_windows: 40
+max_windows: 40       # windows scanned for candidates in pass 1
+
+# Fraction of the sample reserved for flows the detector got WRONG -- benign
+# traffic it flagged. This is the study's sharpest question: given evidence for
+# a detection that is false, does the model manufacture a threat narrative
+# because the prompt implies one exists?
+#
+# False positives are rare by construction (a good detector produces few), so
+# they must be sampled for deliberately. They will not appear in useful numbers
+# by accident, and a study without them cannot ask that question at all.
+false_positive_share: 0.15
+benign_class_name: Benign
 
 # Riemann steps along the path from baseline to input. 32 is the usual default
 # and convergence is checkable: the attributions should sum to roughly the

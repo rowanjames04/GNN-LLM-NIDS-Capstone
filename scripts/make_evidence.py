@@ -35,6 +35,7 @@ from gnnids.data.splits import Split  # noqa: E402
 from gnnids.explain.attribution import (  # noqa: E402
     integrated_gradients, neighbour_influence, top_features,
 )
+from gnnids.explain.sampling import Candidate, stratified_sample  # noqa: E402
 from gnnids.explain.evidence import (  # noqa: E402
     build_pack, config_hash, host_context, load_guidance, validate_pack,
 )
@@ -42,7 +43,7 @@ from gnnids.explain.units import UnitRestorer, feature_names  # noqa: E402
 from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
-from gnnids.training.loop import pick_device  # noqa: E402
+from gnnids.training.loop import pick_device, release  # noqa: E402
 
 
 def load_model(ckpt_path: Path, device) -> tuple[torch.nn.Module, dict]:
@@ -208,11 +209,55 @@ def main() -> None:
 
     out_dir = REPO_ROOT / cfg["output"]["dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
-    packs, checked = [], 0
 
+    # --- Pass 1: score every window and collect flagged flows as candidates ---
+    #
+    # Two passes, because the sample must be chosen before the expensive work is
+    # done. Integrated gradients costs `ig_steps` forward+backward passes per
+    # window, so attributing everything and then discarding most of it would
+    # dominate the runtime. Scoring is cheap; attribution is not.
+    print("  pass 1/2: scanning windows for candidates ...")
+    candidates = []
     for wi in range(len(ds)):
-        if len(packs) >= n_packs:
-            break
+        batch = ds[wi].to(device)
+        lo, hi = ds.windows[wi]
+        rows = np.arange(lo, hi) if ds.row_index is None else ds.row_index[lo:hi]
+        with torch.no_grad():
+            logit_b, _, _ = model(batch.x, batch.edge_index, batch.edge_attr)
+            scores = torch.sigmoid(logit_b).cpu().numpy()
+        for edge in np.flatnonzero(scores >= threshold):
+            row = int(rows[edge])
+            candidates.append(Candidate(
+                window_index=wi, edge_index=int(edge), row_index=row,
+                score=float(scores[edge]),
+                true_family=families_inv[int(inputs.y_multiclass[row])]))
+        release(device)
+
+    if not candidates:
+        raise SystemExit("no flow crossed the threshold; nothing to sample from")
+
+    plan = stratified_sample(candidates, n_total=n_packs,
+                             false_positive_share=cfg["false_positive_share"],
+                             seed=gnn_cfg["output"]["seed"])
+    print(f"  {len(candidates):,} candidates -> {len(plan.selected)} selected")
+    for fam, n in sorted(plan.taken.items()):
+        mark = "  <- false positives" if fam == cfg["benign_class_name"] else ""
+        print(f"      {fam:<14} {n:>4} of {plan.available.get(fam, 0):>6} available{mark}")
+    if plan.shortfalls:
+        print(f"  shortfalls (fewer detections than the quota): {plan.shortfalls}")
+    if not plan.taken.get(cfg["benign_class_name"]):
+        print("  WARNING: no false positives in the sample. The study's "
+              "false-positive arm cannot be answered from these packs.")
+
+    # --- Pass 2: build packs for the selected detections only ---
+    by_window = {}
+    for c in plan.selected:
+        by_window.setdefault(c.window_index, []).append(c)
+
+    print("  pass 2/2: attributing and building packs ...")
+    packs, checked = [], 0
+    for wi in sorted(by_window):
+        chosen = by_window[wi]
         batch = ds[wi].to(device)
         lo, hi = ds.windows[wi]
         rows = np.arange(lo, hi) if ds.row_index is None else ds.row_index[lo:hi]
@@ -223,20 +268,16 @@ def main() -> None:
             probs = torch.softmax(logit_m, dim=-1).cpu().numpy()
         alpha_np = alpha.cpu().numpy() if alpha is not None else None
 
-        flagged = np.flatnonzero(scores >= threshold)
-        if not len(flagged):
-            continue
-        take = flagged[:n_packs - len(packs)]
-
+        take = np.array([c.edge_index for c in chosen])
         attributions = integrated_gradients(
             model, batch.x, batch.edge_index, batch.edge_attr,
             torch.as_tensor(take, device=device), steps=ig_steps,
         ).cpu().numpy()
 
-        for edge in take:
-            row = int(rows[edge])
+        for c in chosen:
+            edge, row = c.edge_index, c.row_index
             pack = pack_for_detection(
-                edge=int(edge), batch=batch, model=model, restorer=restorer,
+                edge=edge, batch=batch, model=model, restorer=restorer,
                 ip_lookup=lambda local, b=batch, r=rows: _ip_for(local, b, r, meta),
                 families_inv=families_inv, guidance=guidance,
                 attributions=attributions, alpha=alpha_np, scores=scores,
@@ -249,14 +290,24 @@ def main() -> None:
                 },
                 feature_names=all_feature_names,
                 min_neighbour_importance=cfg["min_neighbour_importance"],
-                raw_cols={"true_label": families_inv[int(inputs.y_multiclass[row])]},
+                raw_cols={"true_label": c.true_family},
             )
             validate_pack(pack)
             checked += 1
             packs.append(pack)
+        release(device)
 
     name = f"{'smoke_' if args.smoke else ''}evidence_{ds_cfg['name']}.json"
     (out_dir / name).write_text(json.dumps(packs, indent=2))
+    # The sampling plan is part of the experimental record: which families the
+    # packs cover, how many false positives they contain, and where the data
+    # could not fill a quota. Without it a reader cannot tell whether a model's
+    # per-family score rests on 30 reports or 3.
+    (out_dir / name.replace(".json", "_sampling.json")).write_text(
+        json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(),
+                    "dataset": ds_cfg["name"], "checkpoint": ckpt_path.name,
+                    "threshold": round(float(threshold), 5),
+                    **plan.as_dict()}, indent=2))
 
     print(f"{len(packs)} packs, all {checked} validated against schema "
           f"{packs[0]['schema_version'] if packs else 'n/a'}")

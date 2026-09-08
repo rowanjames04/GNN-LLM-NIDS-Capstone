@@ -83,3 +83,6 @@ results/metrics/replay/smoke_*.json
 
 # Smoke-run transfer-baseline metrics.
 results/metrics/transfer/smoke_transfer_xgboost_*.json
+
+results/evidence/*_sampling.json
+!results/evidence/evidence_*_sampling.json

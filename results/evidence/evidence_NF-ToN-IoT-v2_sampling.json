@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-09-08T23:38:51.689260+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "checkpoint": "NF-ToN-IoT-v2_full_seed0.pt",
+  "threshold": 0.86577,
+  "n_selected": 60,
+  "per_family_requested": 5,
+  "false_positives_requested": 9,
+  "false_positives_taken": 9,
+  "available_by_true_family": {
+    "Benign": 32,
+    "backdoor": 700,
+    "ddos": 19630,
+    "dos": 6448,
+    "injection": 6960,
+    "mitm": 49,
+    "password": 25283,
+    "ransomware": 1,
+    "scanning": 68048,
+    "xss": 34360
+  },
+  "taken_by_true_family": {
+    "Benign": 9,
+    "backdoor": 5,
+    "ddos": 6,
+    "dos": 5,
+    "injection": 7,
+    "mitm": 5,
+    "password": 7,
+    "ransomware": 1,
+    "scanning": 8,
+    "xss": 7
+  },
+  "shortfalls": {
+    "ransomware": 4
+  }
+}
