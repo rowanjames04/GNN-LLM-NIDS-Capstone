@@ -252,3 +252,48 @@ def test_gemini_reports_no_cost_rather_than_zero():
     r = a.generate("sys", "user", "v1")   # no key configured -> error path
 
     assert r.cost_usd is None
+
+
+# --------------------------------------------------- prompt-sensitivity arm
+
+def test_the_ablation_has_two_genuinely_different_prompts():
+    """A paraphrase would measure nothing. v1 is prescriptive, v2 permissive,
+    and they must differ substantially in what they instruct."""
+    from gnnids.llm.prompts import PROMPTS
+
+    v1, v2 = PROMPTS["v1"]["system"], PROMPTS["v2"]["system"]
+
+    assert v1 != v2
+    assert len(v1.split()) > len(v2.split()) * 1.5   # v1 enumerates rules
+
+
+def test_both_versions_render_the_same_evidence():
+    """The pack is held fixed across the ablation; only the instructions move."""
+    from gnnids.llm.prompts import build_prompt
+
+    pack = _pack()
+    _, u1 = build_prompt(pack, "v1")
+    _, u2 = build_prompt(pack, "v2")
+
+    assert u1 == u2
+
+
+def test_every_version_is_documented():
+    """PROMPT_NOTES is what the ablation is described from in the write-up."""
+    from gnnids.llm.prompts import PROMPTS, PROMPT_NOTES
+
+    assert set(PROMPT_NOTES) == set(PROMPTS)
+    assert all(len(v) > 20 for v in PROMPT_NOTES.values())
+
+
+def test_the_control_stays_grounded_under_both_prompts():
+    """The template floor must not move with the prompt, or it stops being a
+    floor."""
+    from gnnids.llm.base import StubAdapter
+    from gnnids.llm.prompts import build_prompt
+
+    pack = _pack()
+    for v in ("v1", "v2"):
+        s, u = build_prompt(pack, v)
+        r = StubAdapter().generate(s, u, v)
+        assert score_report(pack, r.text)["n_ungrounded"] == 0

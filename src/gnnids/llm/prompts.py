@@ -43,10 +43,52 @@ USER_V1 = """Evidence for detection {detection_id}:
 Write the incident note."""
 
 
+# ---------------------------------------------------------------------------
+# v2 -- the prompt-sensitivity ablation arm.
+#
+# A useful ablation needs a *contrast*, not a paraphrase. v2 differs on one
+# axis that plausibly changes behaviour on this task: v1 constrains heavily and
+# enumerates the rules; v2 states the goal and the single hard constraint, and
+# otherwise trusts the model.
+#
+# The question it asks is whether the elaborate scaffolding in v1 is doing the
+# work, or whether the *evidence pack* is -- if groundedness is unchanged
+# between v1 and v2, then the anti-fabrication property comes from constraining
+# the input, which is the study's central architectural claim. If groundedness
+# collapses under v2, the property was coming from the prompt and is far more
+# fragile than the design assumes.
+#
+# Either result is publishable. That is what makes it worth running.
+
+SYSTEM_V2 = """You are a security analyst. You will be given the complete evidence for one network detection, and nothing else.
+
+Write a short incident note for a colleague who is technically competent but does not work on machine learning.
+
+There is one hard constraint: **every technical detail you state must come from the evidence provided.** If it is not in the evidence, it is not known, and you should say so rather than fill the gap.
+
+Beyond that, use your judgement about what matters and how to say it."""
+
+USER_V2 = """Evidence for detection {detection_id}:
+
+{facts}
+
+Write the incident note."""
+
+
 PROMPTS = {
     "v1": {"system": SYSTEM_V1, "user": USER_V1},
+    "v2": {"system": SYSTEM_V2, "user": USER_V2},
 }
 DEFAULT_VERSION = "v1"
+
+# What separates each version, recorded so the ablation can be described
+# without re-reading the templates.
+PROMPT_NOTES = {
+    "v1": "prescriptive: numbered rules, mandated three-section structure, "
+          "explicit word limit, explicit uncertainty and lower-bound instructions",
+    "v2": "permissive: states the goal and the single grounding constraint, "
+          "leaves structure and length to the model",
+}
 
 
 def render_facts(pack: dict) -> str:
