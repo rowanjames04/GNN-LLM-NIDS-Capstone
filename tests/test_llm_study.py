@@ -257,3 +257,20 @@ def test_a_free_tier_entry_projects_no_spend_but_keeps_its_list_price():
 
     assert free == 0.0 and "list price" in label
     assert billed > 0
+
+
+def test_a_sweep_can_write_outside_the_repo(tmp_path):
+    """The Colab notebook points output.dir at Google Drive. The sweep must
+    finish and write its manifest there rather than crash on the final print."""
+    packs = tmp_path / "packs.json"
+    packs.write_text(json.dumps([_pack(i) for i in range(2)]))
+    cfg = _roster_cfg(tmp_path, packs, "  - {provider: stub}\n")
+
+    r = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "run_llm_study.py"),
+         "--config", str(cfg), "--packs", str(packs)],
+        capture_output=True, text=True, timeout=180)
+
+    assert r.returncode == 0, r.stderr
+    assert (tmp_path / "study_manifest.json").exists()
+    assert (tmp_path / "reports_stub_template-v1_v1.json").exists()

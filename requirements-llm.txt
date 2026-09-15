@@ -1,0 +1,13 @@
+# The minimal install for running the LLM study's self-hosted arm in Google Colab
+# (D35, notebooks/colab_self_hosted_arm.ipynb).
+#
+# The LLM path imports no torch, xgboost, numpy or pandas -- checked 2026-09-15 by
+# importing generate_reports.py, run_llm_study.py and summarise_llm_study.py and
+# listing the third-party modules loaded. Installing the full requirements.txt in
+# Colab would spend minutes building torch-geometric for nothing.
+#
+# Cloud SDKs (anthropic, google-genai) are deliberately absent: the cloud arms
+# run from the Mac, and Colab runs only `--only self_hosted`.
+
+pyyaml>=6.0
+ollama>=0.4

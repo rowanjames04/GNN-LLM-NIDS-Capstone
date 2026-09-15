@@ -203,7 +203,11 @@ def main() -> None:
 
     ok = sum(1 for r in runs if r["ok"])
     print(f"\n{ok}/{len(runs)} runs completed.")
-    print(f"written -> {(out_dir / name).relative_to(REPO_ROOT)}")
+    # The Colab notebook writes to Google Drive, outside the repo, where an
+    # unconditional relative_to() would crash after the sweep had finished.
+    out = out_dir / name
+    shown = out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out
+    print(f"written -> {shown}")
     print("\nCollate with: python scripts/summarise_llm_study.py\n")
 
 
