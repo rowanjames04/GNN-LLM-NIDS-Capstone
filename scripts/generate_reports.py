@@ -12,6 +12,12 @@ local server, and must be asked for explicitly:
     python scripts/generate_reports.py --provider ollama --model llama3.1:8b
 
 `--estimate-only` prints what a run would cost without making a call.
+
+**Resuming.** Each report is appended to a `.partial.jsonl` log as soon as it is
+scored, and re-running the same command skips what is already there -- the
+self-hosted arm runs in a Colab session that can end at any pack (D35).
+`--fresh` discards the log; `--retry-failed` regenerates failed rows and records
+how many were retried.
 """
 
 from __future__ import annotations
@@ -32,6 +38,7 @@ from gnnids.llm.groundedness import (  # noqa: E402
     check_no_jargon, check_uncertainty_conveyed, score_report,
 )
 from gnnids.llm.prompts import DEFAULT_VERSION, build_prompt  # noqa: E402
+from gnnids.llm.resume import ReportLog, ResumeMismatch  # noqa: E402
 
 # Providers whose every call is charged. Gemini can be (on a billed key), but its
 # free tier is how this study uses it (D36); the roster's `billing` field and
@@ -81,6 +88,10 @@ def main() -> None:
     ap.add_argument("-n", "--n-reports", type=int, default=None)
     ap.add_argument("--estimate-only", action="store_true",
                     help="print the projected cost and stop")
+    ap.add_argument("--fresh", action="store_true",
+                    help="discard any partial log from an interrupted run")
+    ap.add_argument("--retry-failed", action="store_true",
+                    help="when resuming, regenerate rows that failed (counted)")
     ap.add_argument("--smoke", action="store_true")
     args = ap.parse_args()
 
@@ -118,8 +129,27 @@ def main() -> None:
         print("\n  stub provider is free.\n")
         return
 
-    rows = []
+    out_dir = REPO_ROOT / cfg["output"]["dir"]
+    name = (f"{'smoke_' if args.smoke else ''}reports_"
+            f"{adapter.provider}_{adapter.model.replace(':', '-')}_{version}.json")
+    log = ReportLog(out_dir / name.replace(".json", ".partial.jsonl"), {
+        "provider": adapter.provider, "model": adapter.model,
+        "prompt_version": version, "packs_source": packs_path.name})
+    if args.fresh:
+        log.discard()
+    try:
+        done, retried = log.load([p["detection_id"] for p in packs],
+                                 retry_failed=args.retry_failed)
+    except ResumeMismatch as e:
+        raise SystemExit(str(e)) from None
+    if done:
+        print(f"\n  resuming: {len(done)} of {len(packs)} already on disk"
+              + (f", {retried} failed row(s) dropped for retry" if retried else ""))
+    log.start(done)
+
     for pack in packs:
+        if pack["detection_id"] in done:
+            continue
         system, user = build_prompt(pack, version)
         r = adapter.generate(system, user, version)
         row = {
@@ -131,13 +161,15 @@ def main() -> None:
             "input_tokens": r.input_tokens, "output_tokens": r.output_tokens,
             "scores": score_report(pack, r.text) if r.ok else {},
             "jargon": check_no_jargon(r.text) if r.ok else {},
-            "uncertainty": check_uncertainty_conveyed(pack, r.text) if r.ok else None,
+            "uncertainty": (check_uncertainty_conveyed(pack, r.text)
+                            if r.ok else None),
             # What determinism controls this call could actually be given. The
             # roster is not uniform, so this is recorded per response rather
             # than asserted once for the study.
             "determinism": r.extra.get("determinism"),
         }
-        rows.append(row)
+        log.append(row)
+        done[row["detection_id"]] = row
         mark = "ok " if r.ok else "FAIL"
         g = row["scores"].get("groundedness")
         print(f"  {mark} {pack['detection_id'][:8]}  "
@@ -146,20 +178,22 @@ def main() -> None:
               f"{r.latency_seconds:.2f}s"
               + (f"  {r.error}" if r.error else ""))
 
+    # Pack order, not completion order, so a resumed run's file is identical in
+    # layout to an uninterrupted one.
+    rows = [done[p["detection_id"]] for p in packs]
     summary = summarise(rows)
     det = next((r["determinism"] for r in rows if r.get("determinism")), None)
     summary["determinism"] = det or {"supported": False,
                                      "note": "no determinism controls applied"}
-    out_dir = REPO_ROOT / cfg["output"]["dir"]
+    summary["n_retried_after_failure"] = retried
     out_dir.mkdir(parents=True, exist_ok=True)
-    name = (f"{'smoke_' if args.smoke else ''}reports_"
-            f"{adapter.provider}_{adapter.model.replace(':', '-')}_{version}.json")
     (out_dir / name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "provider": adapter.provider, "model": adapter.model,
         "prompt_version": version, "packs_source": str(packs_path.name),
         "smoke": args.smoke, "summary": summary, "reports": rows,
     }, indent=2))
+    log.discard()
 
     print("\n" + "=" * 70)
     print(f"  PHASE 7a -- {adapter.provider}/{adapter.model}, prompt {version}")
@@ -171,7 +205,12 @@ def main() -> None:
         print(f"  {k:<38} {summary[k]}")
     print("\n  Groundedness means 'invented nothing', NOT 'reasoned correctly'.")
     print("  A fluent wrong interpretation built from real facts scores 1.0.")
-    print(f"\nwritten -> {(out_dir / name).relative_to(REPO_ROOT)}\n")
+    # Not relative_to(REPO_ROOT) unconditionally: an output dir outside the repo
+    # (a Colab session writing to Drive, a test's tmp dir) crashed here AFTER the
+    # results were written -- the C2 defect again.
+    out = out_dir / name
+    shown = out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out
+    print(f"\nwritten -> {shown}\n")
 
 
 def _estimate(adapter, packs, version) -> str:

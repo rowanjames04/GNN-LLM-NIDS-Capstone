@@ -90,3 +90,7 @@ results/evidence/*_sampling.json
 results/reports/smoke_study_manifest.json
 
 results/reports/study_manifest.json
+
+# In-progress report logs from an interrupted LLM run (src/gnnids/llm/resume.py).
+# Deleted once the run completes; never a result in their own right.
+results/reports/*.partial.jsonl
