@@ -40,7 +40,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from gnnids.llm.adapters import ANTHROPIC_PRICING  # noqa: E402
+from gnnids.llm.adapters import LIST_PRICES  # noqa: E402
 from gnnids.llm.prompts import build_prompt  # noqa: E402
 
 BILLING_CLASSES = ("free", "paid", "free_tier", "self_hosted")
@@ -72,17 +72,26 @@ def select(roster: list[dict], only: list[str] | None) -> list[dict]:
 
 
 def estimate(entry: dict, packs: list, version: str) -> tuple[float | None, str]:
-    """Projected cost for one roster entry over the whole pack set."""
+    """Projected spend for one roster entry over the whole pack set.
+
+    Returns what would actually be *charged*: a free-tier entry projects zero,
+    with its list price shown beside it so the reference figure is not lost.
+    Output is guessed at 350 tokens per report, which excludes any thinking a
+    model does before answering -- treat the figure as a floor for such models.
+    """
     provider, model = entry["provider"], entry.get("model")
     if provider == "stub":
         return 0.0, "free"
-    if provider != "anthropic" or model not in ANTHROPIC_PRICING:
+    prices = LIST_PRICES.get(provider, {})
+    if model not in prices:
         return None, "unknown (no published per-token price for this provider)"
     words = sum(len(build_prompt(p, version)[1].split()) for p in packs)
     n_in = int(words * 1.35) + 400 * len(packs)
     n_out = 350 * len(packs)
-    pin, pout = ANTHROPIC_PRICING[model]
+    pin, pout = prices[model]
     usd = n_in / 1e6 * pin + n_out / 1e6 * pout
+    if billing(entry) == "free_tier":
+        return 0.0, f"$0 on the free tier (~${usd:.4f} at list price)"
     return usd, f"${usd:.4f}"
 
 

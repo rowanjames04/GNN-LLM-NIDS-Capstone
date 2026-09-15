@@ -242,3 +242,18 @@ def test_the_committed_roster_declares_billing_on_every_entry():
     assert not any(e["provider"] == "openai" and e.get("enabled", True)
                    for e in cfg["roster"])                          # D36
     assert all(e.get("model") != "gemini-2.0-flash" for e in cfg["roster"])
+
+
+def test_a_free_tier_entry_projects_no_spend_but_keeps_its_list_price():
+    study = _load("run_llm_study")
+    packs = [_pack(i) for i in range(10)]
+
+    free, label = study.estimate(
+        {"provider": "gemini", "model": "gemini-3.8-flash", "billing": "free_tier"},
+        packs, "v1")
+    billed, _ = study.estimate(
+        {"provider": "gemini", "model": "gemini-3.8-flash", "billing": "paid"},
+        packs, "v1")
+
+    assert free == 0.0 and "list price" in label
+    assert billed > 0

@@ -396,3 +396,87 @@ def test_ollama_sends_num_ctx_so_long_prompts_are_not_silently_truncated(monkeyp
     build_adapter("ollama", model="m", host="h", num_ctx=8192).generate("s", "u", "v1")
 
     assert sent["num_ctx"] == 8192
+
+
+# ------------------------------------------------ C21: unknown cost is not zero
+
+def _row(cost, ref=None, ok=True):
+    return {"ok": ok, "cost_usd": cost, "reference_cost_usd": ref,
+            "latency_seconds": 1.0, "uncertainty": None,
+            "scores": {"groundedness": 1.0, "fabricated_addresses": [],
+                       "report_words": 10},
+            "jargon": {"clean": True}}
+
+
+def _generate_module():
+    import importlib.util
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location(
+        "generate_reports_c21", root / "scripts" / "generate_reports.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_an_unpriced_run_totals_to_unknown_not_zero():
+    """C21. Free-tier Gemini and Colab Ollama were summed as $0.0000."""
+    gen = _generate_module()
+
+    s = gen.summarise([_row(None), _row(None)])
+
+    assert s["total_cost_usd"] is None
+
+
+def test_a_priced_run_still_totals():
+    gen = _generate_module()
+
+    s = gen.summarise([_row(0.01, 0.01), _row(0.02, 0.02)])
+
+    assert s["total_cost_usd"] == 0.03 and s["reference_cost_usd"] == 0.03
+
+
+def test_one_unknown_row_makes_the_total_unknown():
+    """A partial sum presented as a total understates the cost."""
+    gen = _generate_module()
+
+    assert gen.summarise([_row(0.01), _row(None)])["total_cost_usd"] is None
+
+
+def test_failed_rows_do_not_make_a_known_total_unknown():
+    gen = _generate_module()
+
+    s = gen.summarise([_row(0.01), _row(None, ok=False)])
+
+    assert s["total_cost_usd"] == 0.01
+
+
+def test_gemini_has_a_list_price_but_self_hosted_does_not():
+    from gnnids.llm.adapters import reference_cost
+
+    assert reference_cost("gemini", "gemini-3.8-flash", 1_000_000, 0) == 0.75
+    assert reference_cost("ollama", "llama3.1:8b", 1000, 1000) is None
+    assert reference_cost("stub", "template-v1", 1000, 1000) == 0.0
+
+
+def test_gemini_counts_thinking_tokens_and_explains_an_empty_answer(monkeypatch):
+    """Thinking is billed as output but missing from candidates_token_count, and
+    it can exhaust max_output_tokens -- which must not look like a refusal."""
+    from types import SimpleNamespace as NS
+
+    from google import genai
+
+    class FakeModels:
+        def generate_content(self, model, contents, config):
+            return NS(text="", model_version="gemini-3.8-flash-001",
+                      candidates=[NS(finish_reason="MAX_TOKENS")],
+                      usage_metadata=NS(prompt_token_count=700,
+                                        candidates_token_count=0,
+                                        thoughts_token_count=2000))
+
+    monkeypatch.setattr(genai, "Client", lambda: NS(models=FakeModels()))
+
+    r = build_adapter("gemini", model="gemini-3.8-flash").generate("s", "u", "v1")
+
+    assert r.output_tokens == 2000
+    assert r.extra["thoughts_tokens"] == 2000
+    assert not r.ok and "MAX_TOKENS" in r.error

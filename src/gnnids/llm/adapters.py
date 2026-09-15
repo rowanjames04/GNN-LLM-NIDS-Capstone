@@ -29,6 +29,33 @@ ANTHROPIC_PRICING = {
 }
 
 
+# Gemini paid-tier list prices, USD per million tokens (text, standard), read
+# from ai.google.dev/gemini-api/docs/pricing on 2026-09-15. The study uses the
+# FREE tier (D36), so these are never charged: they give the cost comparison a
+# reference figure for what a deployment on a billed key would pay. The
+# gemini-3.8-flash price is marked "through Dec 31, 2026" on that page -- a
+# promotional rate, so quote it with its date.
+GEMINI_PRICING = {
+    "gemini-3.8-flash": (0.75, 3.75),
+    "gemini-2.5-flash": (0.30, 2.50),
+}
+
+# List price per provider, whatever this study's billing. `cost_usd` is what a
+# call actually cost; `reference_cost_usd` is what it costs at list price. They
+# are kept apart so a free-tier call is neither reported as costing $0 nor as
+# costing money it did not.
+LIST_PRICES = {"anthropic": ANTHROPIC_PRICING, "gemini": GEMINI_PRICING}
+
+
+def reference_cost(provider: str, model: str, n_in: int | None,
+                   n_out: int | None) -> float | None:
+    """List-price cost of one call, or None where no per-token price exists
+    (self-hosted models, unpriced models). The stub is genuinely free."""
+    if provider == "stub":
+        return 0.0
+    return _cost(model, LIST_PRICES.get(provider, {}), n_in, n_out)
+
+
 def _determinism(temperature, seed, note: str | None = None) -> dict:
     """What determinism controls were actually applied to this call.
 
@@ -204,17 +231,33 @@ class GeminiAdapter:
                 model=self.model, contents=user,
                 config=types.GenerateContentConfig(**cfg))
             u = getattr(r, "usage_metadata", None)
+            answer = getattr(u, "candidates_token_count", None)
+            # Gemini 3.x thinks by default. Thinking tokens are billed as output
+            # but are NOT in candidates_token_count, and they count against
+            # max_output_tokens -- so they are added here, and recorded apart.
+            thoughts = getattr(u, "thoughts_token_count", None) or 0
+            n_out = None if answer is None else answer + thoughts
+            finish = next((str(c.finish_reason) for c in (r.candidates or [])
+                           if c.finish_reason is not None), None)
+            text = r.text or ""
             return LLMResponse(
-                text=r.text or "", model=self.model, provider=self.provider,
+                text=text, model=self.model, provider=self.provider,
                 prompt_version=prompt_version,
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 input_tokens=getattr(u, "prompt_token_count", None),
-                output_tokens=getattr(u, "candidates_token_count", None),
-                # No per-token price is recorded here. Reporting 0.0 would let
-                # this model win a cost comparison it is not competing in; the
-                # aggregation reports "unknown" instead.
+                output_tokens=n_out,
+                # None, not 0.0: on the free tier nothing is charged, but that is
+                # not a price, and 0.0 would win a cost comparison this model is
+                # not competing in. The list price is reference_cost_usd.
                 cost_usd=None,
-                extra={"determinism": _determinism(self.temperature, self.seed)},
+                # An empty answer is a failed report, and saying why matters:
+                # MAX_TOKENS here usually means thinking used the output budget,
+                # which is a configuration problem, not the model refusing.
+                error=(None if text.strip()
+                       else f"empty response (finish_reason={finish})"),
+                extra={"determinism": _determinism(self.temperature, self.seed),
+                       "thoughts_tokens": thoughts, "finish_reason": finish,
+                       "model_version": getattr(r, "model_version", None)},
             )
         except Exception as e:                       # noqa: BLE001
             return LLMResponse(

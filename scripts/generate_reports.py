@@ -33,7 +33,9 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from gnnids.llm.adapters import ANTHROPIC_PRICING, build_adapter  # noqa: E402
+from gnnids.llm.adapters import (  # noqa: E402
+    LIST_PRICES, build_adapter, reference_cost,
+)
 from gnnids.llm.groundedness import (  # noqa: E402
     check_no_jargon, check_uncertainty_conveyed, score_report,
 )
@@ -55,6 +57,16 @@ def summarise(rows: list[dict]) -> dict:
     better than one that returned a flawed report, which is backwards.
     """
     ok = [r for r in rows if r["ok"]]
+
+    def total(key):
+        # C21: an unknown cost is unknown, not zero. Summing None as 0.0 printed
+        # free-tier Gemini and Colab Ollama as $0.0000 -- a price they do not
+        # have, in the one column where the study compares prices.
+        vals = [r.get(key) for r in ok]
+        if any(v is None for v in vals):
+            return None
+        return round(sum(vals), 6)
+
     def mean(key, source="scores"):
         vals = [r[source][key] for r in ok
                 if isinstance(r[source].get(key), (int, float))]
@@ -70,7 +82,8 @@ def summarise(rows: list[dict]) -> dict:
         "report_words_mean": mean("report_words"),
         "latency_seconds_mean": round(
             sum(r["latency_seconds"] for r in ok) / len(ok), 3) if ok else None,
-        "total_cost_usd": round(sum(r["cost_usd"] or 0.0 for r in ok), 6),
+        "total_cost_usd": total("cost_usd"),
+        "reference_cost_usd": total("reference_cost_usd"),
         "ambiguous_detections": len(unc),
         "uncertainty_conveyed_rate": (
             round(sum(u["uncertainty_conveyed"] for u in unc) / len(unc), 4)
@@ -169,6 +182,8 @@ def main() -> None:
             "predicted_class": pack["detection"]["predicted_class"],
             "ok": r.ok, "error": r.error, "report": r.text,
             "latency_seconds": r.latency_seconds, "cost_usd": r.cost_usd,
+            "reference_cost_usd": reference_cost(adapter.provider, adapter.model,
+                                                 r.input_tokens, r.output_tokens),
             "input_tokens": r.input_tokens, "output_tokens": r.output_tokens,
             "scores": score_report(pack, r.text) if r.ok else {},
             "jargon": check_no_jargon(r.text) if r.ok else {},
@@ -217,6 +232,7 @@ def main() -> None:
     for k in ("n_ok", "n_failed", "groundedness_mean",
               "reports_with_fabricated_addresses", "reports_with_jargon",
               "report_words_mean", "latency_seconds_mean", "total_cost_usd",
+              "reference_cost_usd",
               "ambiguous_detections", "uncertainty_conveyed_rate"):
         print(f"  {k:<38} {summary[k]}")
     print("\n  Groundedness means 'invented nothing', NOT 'reasoned correctly'.")
@@ -253,15 +269,18 @@ def _check_session_continuity(previous: list[dict], current: dict) -> None:
 
 
 def _estimate(adapter, packs, version) -> str:
-    """Rough projected cost, from prompt length and a generous output guess."""
-    if adapter.provider != "anthropic" or adapter.model not in ANTHROPIC_PRICING:
-        return "unknown for this provider (self-hosted models have no per-token price)"
+    """Rough projected cost at list price, from prompt length and a generous
+    output guess. Whether that price is actually charged depends on the roster
+    entry's billing class, which run_llm_study.py reports."""
+    prices = LIST_PRICES.get(adapter.provider, {})
+    if adapter.model not in prices:
+        return "unknown for this model (self-hosted models have no per-token price)"
     words = sum(len(build_prompt(p, version)[1].split()) for p in packs)
     n_in = int(words * 1.35) + 400 * len(packs)      # ~1.35 tokens/word + system
     n_out = 350 * len(packs)
-    price_in, price_out = ANTHROPIC_PRICING[adapter.model]
+    price_in, price_out = prices[adapter.model]
     usd = n_in / 1e6 * price_in + n_out / 1e6 * price_out
-    return f"~${usd:.4f} (~{n_in:,} in / ~{n_out:,} out tokens)"
+    return f"~${usd:.4f} at list price (~{n_in:,} in / ~{n_out:,} out tokens)"
 
 
 if __name__ == "__main__":

@@ -46,6 +46,10 @@ def rows() -> list[dict]:
             "words": s.get("report_words_mean"),
             "latency": s.get("latency_seconds_mean"),
             "cost": s.get("total_cost_usd"),
+            # Reports from before C21 carry no list-price field. The stub is free
+            # by construction, so its figure is known; nothing else is inferred.
+            "reference_cost": s.get("reference_cost_usd",
+                                    0.0 if d.get("provider") == "stub" else None),
             "uncertainty_rate": s.get("uncertainty_conveyed_rate"),
             # The false-positive arm, scored separately: on detections the
             # detector got WRONG, does the model still invent nothing?
@@ -63,17 +67,21 @@ def main() -> None:
         raise SystemExit(f"no LLM results in {REPORTS}. Run scripts/run_llm_study.py.")
 
     fmt = lambda v, s=".4f": format(v, s) if isinstance(v, (int, float)) else "n/a"
+    # C21: a missing price prints as unknown, never as n/a or 0 -- "cost$" is
+    # what was charged, "list$" what it costs at list price on a billed key.
+    money = lambda v: format(v, ".4f") if isinstance(v, (int, float)) else "unknown"
     print("=" * 108)
     print("  PHASE 7b -- LLM COMPARISON (identical evidence packs, model is the only variable)")
     print("=" * 108)
     print(f"  {'model':<30} {'prompt':<7} {'n':>4} {'grounded':>9} {'fab.addr':>9} "
-          f"{'jargon':>7} {'words':>7} {'lat(s)':>7} {'cost$':>8}")
+          f"{'jargon':>7} {'words':>7} {'lat(s)':>7} {'cost$':>8} {'list$':>8}")
     for r in sorted(data, key=lambda x: (-(x["groundedness"] or 0), x["model"] or "")):
         name = f"{r['provider']}/{r['model']}"
         print(f"  {name:<30} {r['prompt'] or '-':<7} {r['n_ok']:>4} "
               f"{fmt(r['groundedness']):>9} {str(r['fabricated_addr_reports']):>9} "
               f"{str(r['jargon_reports']):>7} {fmt(r['words'], '.0f'):>7} "
-              f"{fmt(r['latency'], '.2f'):>7} {fmt(r['cost'], '.4f'):>8}")
+              f"{fmt(r['latency'], '.2f'):>7} {money(r['cost']):>8} "
+              f"{money(r['reference_cost']):>8}")
 
     print(f"\n  {'model':<30} {'FP packs':>9} {'grounded on FPs':>17} "
           f"{'uncertainty conveyed':>22} {'failed':>7}")
