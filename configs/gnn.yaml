@@ -54,8 +54,8 @@ train:
   focal_gamma: 2.0
   multiclass_weight: 0.3  # auxiliary head (D3), below the binary objective
   n_seeds: 3
-  # MPS on the M4. iHPC is decommissioned and Cetus unreachable, so local is
-  # the only option -- see "Compute Access Risk". Phases 4/5/9 do not need HPC.
+  # MPS on the M4. iHPC is decommissioned and Cetus was abandoned; Phases 4/5/9
+  # need no HPC. Colab is used only for the self-hosted LLM arm (D35), not here.
   device: auto
 
 eval:

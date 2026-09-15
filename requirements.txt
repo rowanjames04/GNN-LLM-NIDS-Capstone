@@ -24,9 +24,9 @@ torch-geometric>=2.6
 matplotlib>=3.9
 
 # LLM clients. Each has an adapter in src/gnnids/llm/adapters.py and an entry
-# in the roster in configs/llm.yaml.
+# in the roster in configs/llm.yaml. requirements-llm.txt is the Colab subset.
 anthropic>=0.40
-openai>=1.50
+openai>=1.50           # roster entry disabled (D36); kept so re-enabling is a config edit
 google-genai>=1.0      # Gemini; client.models.generate_content API
 ollama>=0.4
 
