@@ -10,6 +10,7 @@ readable prose and quietly select for worse reports.
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -480,3 +481,126 @@ def test_gemini_counts_thinking_tokens_and_explains_an_empty_answer(monkeypatch)
     assert r.output_tokens == 2000
     assert r.extra["thoughts_tokens"] == 2000
     assert not r.ok and "MAX_TOKENS" in r.error
+
+
+# ------------------------------------- rate limits are infrastructure (D36)
+
+def _quota_error(delay="37s", quota_id="GenerateRequestsPerMinutePerProjectPerModel"):
+    from google.genai import errors
+    return errors.ClientError(429, {"error": {
+        "code": 429, "message": "Quota exceeded", "status": "RESOURCE_EXHAUSTED",
+        "details": [
+            {"@type": "type.googleapis.com/google.rpc.QuotaFailure",
+             "violations": [{"quotaId": quota_id}]},
+            {"@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": delay}]}})
+
+
+def _flaky_gemini(monkeypatch, failures: list):
+    """A Gemini adapter whose first calls raise `failures`, then succeed."""
+    from types import SimpleNamespace as NS
+
+    from google import genai
+
+    class FakeModels:
+        def generate_content(self, model, contents, config):
+            if failures:
+                raise failures.pop(0)
+            return NS(text="A report.", model_version="v", candidates=[],
+                      usage_metadata=NS(prompt_token_count=10,
+                                        candidates_token_count=5,
+                                        thoughts_token_count=0))
+
+    monkeypatch.setattr(genai, "Client", lambda: NS(models=FakeModels()))
+    a = build_adapter("gemini", model="gemini-3.8-flash", max_retries=3,
+                      backoff_seconds=10)
+    slept = []
+    a.sleep = slept.append
+    return a, slept
+
+
+def test_a_per_minute_429_is_retried_honouring_the_suggested_delay(monkeypatch):
+    a, slept = _flaky_gemini(monkeypatch, [_quota_error("37s"), _quota_error("1s")])
+
+    r = a.generate("s", "u", "v1")
+
+    assert r.ok
+    assert slept == [37.0, 20.0]        # max(backoff * 2**n, retryDelay)
+    assert r.extra["rate_limit_retries"] == 2
+
+
+def test_waiting_out_a_rate_limit_is_not_counted_as_latency(monkeypatch):
+    """Otherwise the free tier's quota would be reported as the model's speed."""
+    a, _ = _flaky_gemini(monkeypatch, [_quota_error("0s")])
+    a.sleep = lambda s: time.sleep(0.2)
+
+    r = a.generate("s", "u", "v1")
+
+    assert r.latency_seconds < 0.2
+
+
+def test_an_exhausted_quota_is_flagged_as_infrastructure_not_a_bad_report(monkeypatch):
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+
+    a, slept = _flaky_gemini(monkeypatch, [_quota_error("0s") for _ in range(4)])
+
+    r = a.generate("s", "u", "v1")
+
+    assert not r.ok
+    assert "after 3 retries" in r.extra[INFRASTRUCTURE_ERROR]
+    assert len(slept) == 3
+
+
+def test_a_daily_quota_stops_at_once_because_no_wait_will_clear_it(monkeypatch):
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+
+    a, slept = _flaky_gemini(
+        monkeypatch, [_quota_error(quota_id="GenerateRequestsPerDayPerProjectPerModel")])
+
+    r = a.generate("s", "u", "v1")
+
+    assert slept == []
+    assert r.extra[INFRASTRUCTURE_ERROR] == "daily quota exhausted"
+
+
+def test_a_bad_request_is_a_model_failure_and_is_not_retried(monkeypatch):
+    """Only quota and availability errors are infrastructure. A 400 is recorded."""
+    from google.genai import errors
+
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+
+    a, slept = _flaky_gemini(monkeypatch, [errors.ClientError(400, {"error": {
+        "code": 400, "message": "bad", "status": "INVALID_ARGUMENT"}})])
+
+    r = a.generate("s", "u", "v1")
+
+    assert not r.ok and slept == []
+    assert INFRASTRUCTURE_ERROR not in r.extra
+
+
+def test_calls_are_spaced_by_the_minimum_interval(monkeypatch):
+    a, slept = _flaky_gemini(monkeypatch, [])
+    a.min_interval_seconds = 6
+
+    a.generate("s", "u", "v1")
+    a.generate("s", "u", "v1")
+
+    assert len(slept) == 1 and 5.5 < slept[0] <= 6
+
+
+def test_an_unreachable_ollama_server_is_infrastructure(monkeypatch):
+    import ollama
+
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+
+    class DeadClient:
+        def __init__(self, host=None):
+            pass
+
+        def chat(self, **kw):
+            raise ConnectionError("Failed to connect to Ollama")
+
+    monkeypatch.setattr(ollama, "Client", DeadClient)
+
+    r = build_adapter("ollama", model="m", host="h").generate("s", "u", "v1")
+
+    assert r.extra[INFRASTRUCTURE_ERROR] == "Ollama server unreachable"

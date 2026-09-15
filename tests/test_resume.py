@@ -191,3 +191,31 @@ def test_provenance_probes_never_raise_where_the_tool_is_missing(tmp_path):
 
     assert s["git"]["commit"] is None
     assert "python" in s and "platform" in s
+
+
+def test_an_infrastructure_stop_records_nothing_and_leaves_a_resumable_log(tmp_path):
+    """A quota or dead server must not become a failed report. The run exits
+    75 (resumable) with the partial log intact and no final results file."""
+    packs = tmp_path / "packs.json"
+    packs.write_text(json.dumps([_pack(i) for i in range(3)]))
+    cfg = tmp_path / "llm.yaml"
+    cfg.write_text(
+        "provider: ollama\nprompt_version: v1\nn_reports: 3\n"
+        f"packs: {packs}\n"
+        # Port 9 (discard) refuses connections: a dead Ollama server.
+        "provider_options: {ollama: {model: m, host: 'http://127.0.0.1:9'}}\n"
+        f"smoke: {{packs: {packs}, n_reports: 2}}\n"
+        f"output: {{dir: {tmp_path}}}\n")
+
+    r = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "scripts" / "generate_reports.py"),
+         "--config", str(cfg), "--packs", str(packs)],
+        capture_output=True, text=True, timeout=180)
+
+    assert r.returncode == 75, r.stdout + r.stderr
+    assert "Re-run the same command to resume" in r.stdout
+    assert not (tmp_path / "reports_ollama_m_v1.json").exists()
+    rows, _ = ReportLog(tmp_path / "reports_ollama_m_v1.partial.jsonl",
+                        {"provider": "ollama", "model": "m", "prompt_version": "v1",
+                         "packs_source": "packs.json"}).load(["id-0", "id-1", "id-2"])
+    assert rows == {}

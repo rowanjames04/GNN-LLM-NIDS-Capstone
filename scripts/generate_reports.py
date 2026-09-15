@@ -34,7 +34,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.llm.adapters import (  # noqa: E402
-    LIST_PRICES, build_adapter, reference_cost,
+    INFRASTRUCTURE_ERROR, LIST_PRICES, build_adapter, reference_cost,
 )
 from gnnids.llm.groundedness import (  # noqa: E402
     check_no_jargon, check_uncertainty_conveyed, score_report,
@@ -47,6 +47,10 @@ from gnnids.llm.resume import ReportLog, ResumeMismatch  # noqa: E402
 # free tier is how this study uses it (D36); the roster's `billing` field and
 # run_llm_study.py's gate are the real control, this only sets the banner.
 PAID_PROVIDERS = ("anthropic", "openai")
+
+# EX_TEMPFAIL from sysexits.h: the run stopped for a reason that may clear (a
+# quota, a restarted server) and can be resumed. Distinct from a crash.
+EXIT_RESUMABLE = 75
 
 
 def summarise(rows: list[dict]) -> dict:
@@ -176,6 +180,13 @@ def main() -> None:
             continue
         system, user = build_prompt(pack, version)
         r = adapter.generate(system, user, version)
+        if r.extra.get(INFRASTRUCTURE_ERROR):
+            # Not the model's failure, so not a row. Everything generated so far
+            # is already on disk; the same command resumes from here.
+            print(f"\n  STOPPED: {r.extra[INFRASTRUCTURE_ERROR]} ({r.error})")
+            print(f"  {len(done)} of {len(packs)} reports are saved in "
+                  f"{log.path.name}.\n  Re-run the same command to resume.\n")
+            raise SystemExit(EXIT_RESUMABLE)
         row = {
             "detection_id": pack["detection_id"],
             "true_label": pack["flow"].get("true_label"),

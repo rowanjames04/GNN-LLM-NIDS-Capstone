@@ -180,10 +180,15 @@ def main() -> None:
             label = f"{entry['provider']}/{entry.get('model', 'default')} [{v}]"
             print(f"\n===== {label} =====")
             rc = subprocess.run(cmd).returncode
+            # 75 is generate_reports.py's "stopped, resumable" (a quota or a
+            # dead server): not a failure of the model, and not finished either.
+            status = {0: "complete", 75: "stopped_resumable"}.get(rc, "failed")
             runs.append({"provider": entry["provider"], "model": entry.get("model"),
                          "billing": billing(entry), "prompt_version": v,
-                         "ok": rc == 0})
-            if rc != 0:
+                         "ok": rc == 0, "status": status})
+            if status == "stopped_resumable":
+                print(f"  {label} STOPPED -- resumable; re-run this sweep later")
+            elif rc != 0:
                 print(f"  {label} FAILED (exit {rc}) -- continuing with the rest")
 
     manifest = {

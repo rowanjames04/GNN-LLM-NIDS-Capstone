@@ -14,10 +14,17 @@ comparison.
 
 from __future__ import annotations
 
+import json
 import os
+import re
 import time
 
 from .base import LLMResponse
+
+# Set in `LLMResponse.extra` when a call failed for a reason outside the model --
+# an exhausted quota, an unreachable server. `generate_reports.py` stops the run
+# on it instead of recording a failed report, and a re-run resumes.
+INFRASTRUCTURE_ERROR = "infrastructure_error"
 
 # Anthropic list prices, USD per million tokens. Recorded here rather than
 # fetched so a study run is reproducible from the repo alone; re-check before
@@ -198,73 +205,132 @@ class OpenAIAdapter:
 
 
 class GeminiAdapter:
-    """Google Gemini via the `google-genai` SDK.
+    """Google Gemini via the `google-genai` SDK, used on the free tier (D36).
 
-    The third cloud arm. Worth having beyond roster size: Gemini exposes both
-    `temperature` and `seed`, which current Claude models no longer do, so it is
-    one of the models where the study's determinism control can actually be
-    applied. That asymmetry is itself reportable.
+    Worth having beyond roster size: Gemini exposes both `temperature` and
+    `seed`, which current Claude models no longer do, so it is one of the models
+    where the study's determinism control can actually be applied. That
+    asymmetry is itself reportable.
+
+    **Rate limits are infrastructure, not model behaviour.** The free tier caps
+    requests per minute and per day. A 429 is retried with backoff (honouring
+    the server's suggested delay), calls are spaced by `min_interval_seconds`,
+    and neither wait is counted in latency. If the quota is still exhausted --
+    or it is a *daily* quota, which no wait inside a run will clear -- the
+    response is marked as an infrastructure error, and `generate_reports.py`
+    stops without recording it. Recording it as a failed report would score
+    Gemini worse for Google's quota, not for its reports.
     """
 
     provider = "gemini"
+    RETRYABLE = (429, 500, 503)
+    sleep = staticmethod(time.sleep)          # replaced in tests
 
-    def __init__(self, model: str = "gemini-2.0-flash", max_tokens: int = 2000,
-                 temperature: float | None = None, seed: int | None = None) -> None:
+    def __init__(self, model: str = "gemini-3.8-flash", max_tokens: int = 2000,
+                 temperature: float | None = None, seed: int | None = None,
+                 min_interval_seconds: float = 0.0, max_retries: int = 5,
+                 backoff_seconds: float = 10.0) -> None:
         self.model, self.max_tokens = model, max_tokens
         self.temperature, self.seed = temperature, seed
+        self.min_interval_seconds = min_interval_seconds
+        self.max_retries, self.backoff_seconds = max_retries, backoff_seconds
+        self._last_call: float | None = None
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
+        from google.genai import errors
+
+        retries, waited = 0, 0.0
+        while True:
+            self._throttle()
+            t0 = time.perf_counter()
+            try:
+                r = self._call(system, user, prompt_version, t0)
+            except errors.APIError as e:
+                code = getattr(e, "code", None)
+                details = json.dumps(getattr(e, "details", None) or {}, default=str)
+                daily = "PerDay" in details
+                if code in self.RETRYABLE and not daily and retries < self.max_retries:
+                    delay = max(self.backoff_seconds * 2 ** retries,
+                                _suggested_retry_delay(details) or 0.0)
+                    self.sleep(delay)
+                    retries, waited = retries + 1, waited + delay
+                    continue
+                r = self._error(e, prompt_version, t0)
+                if code in self.RETRYABLE:
+                    r.extra[INFRASTRUCTURE_ERROR] = (
+                        "daily quota exhausted" if daily else
+                        f"HTTP {code} after {retries} retries")
+            except Exception as e:                   # noqa: BLE001
+                r = self._error(e, prompt_version, t0)
+            r.extra["rate_limit_retries"] = retries
+            r.extra["rate_limit_wait_seconds"] = round(waited, 1)
+            return r
+
+    def _throttle(self) -> None:
+        if self._last_call is not None and self.min_interval_seconds:
+            gap = time.monotonic() - self._last_call
+            if gap < self.min_interval_seconds:
+                self.sleep(self.min_interval_seconds - gap)
+        self._last_call = time.monotonic()
+
+    def _call(self, system: str, user: str, prompt_version: str,
+              t0: float) -> LLMResponse:
         from google import genai
         from google.genai import types
 
-        t0 = time.perf_counter()
-        try:
-            # Credentials come from GEMINI_API_KEY / GOOGLE_API_KEY in the
-            # environment; nothing is passed in code (secrets live in .env).
-            client = genai.Client()
-            cfg = {"system_instruction": system, "max_output_tokens": self.max_tokens}
-            if self.temperature is not None:
-                cfg["temperature"] = self.temperature
-            if self.seed is not None:
-                cfg["seed"] = self.seed
-            r = client.models.generate_content(
-                model=self.model, contents=user,
-                config=types.GenerateContentConfig(**cfg))
-            u = getattr(r, "usage_metadata", None)
-            answer = getattr(u, "candidates_token_count", None)
-            # Gemini 3.x thinks by default. Thinking tokens are billed as output
-            # but are NOT in candidates_token_count, and they count against
-            # max_output_tokens -- so they are added here, and recorded apart.
-            thoughts = getattr(u, "thoughts_token_count", None) or 0
-            n_out = None if answer is None else answer + thoughts
-            finish = next((str(c.finish_reason) for c in (r.candidates or [])
-                           if c.finish_reason is not None), None)
-            text = r.text or ""
-            return LLMResponse(
-                text=text, model=self.model, provider=self.provider,
-                prompt_version=prompt_version,
-                latency_seconds=round(time.perf_counter() - t0, 3),
-                input_tokens=getattr(u, "prompt_token_count", None),
-                output_tokens=n_out,
-                # None, not 0.0: on the free tier nothing is charged, but that is
-                # not a price, and 0.0 would win a cost comparison this model is
-                # not competing in. The list price is reference_cost_usd.
-                cost_usd=None,
-                # An empty answer is a failed report, and saying why matters:
-                # MAX_TOKENS here usually means thinking used the output budget,
-                # which is a configuration problem, not the model refusing.
-                error=(None if text.strip()
-                       else f"empty response (finish_reason={finish})"),
-                extra={"determinism": _determinism(self.temperature, self.seed),
-                       "thoughts_tokens": thoughts, "finish_reason": finish,
-                       "model_version": getattr(r, "model_version", None)},
-            )
-        except Exception as e:                       # noqa: BLE001
-            return LLMResponse(
-                text="", model=self.model, provider=self.provider,
-                prompt_version=prompt_version,
-                latency_seconds=round(time.perf_counter() - t0, 3),
-                error=f"{type(e).__name__}: {e}")
+        # Credentials come from GEMINI_API_KEY / GOOGLE_API_KEY in the
+        # environment; nothing is passed in code (secrets live in .env).
+        client = genai.Client()
+        cfg = {"system_instruction": system, "max_output_tokens": self.max_tokens}
+        if self.temperature is not None:
+            cfg["temperature"] = self.temperature
+        if self.seed is not None:
+            cfg["seed"] = self.seed
+        r = client.models.generate_content(
+            model=self.model, contents=user,
+            config=types.GenerateContentConfig(**cfg))
+        u = getattr(r, "usage_metadata", None)
+        answer = getattr(u, "candidates_token_count", None)
+        # Gemini 3.x thinks by default. Thinking tokens are billed as output
+        # but are NOT in candidates_token_count, and they count against
+        # max_output_tokens -- so they are added here, and recorded apart.
+        thoughts = getattr(u, "thoughts_token_count", None) or 0
+        n_out = None if answer is None else answer + thoughts
+        finish = next((str(c.finish_reason) for c in (r.candidates or [])
+                       if c.finish_reason is not None), None)
+        text = r.text or ""
+        return LLMResponse(
+            text=text, model=self.model, provider=self.provider,
+            prompt_version=prompt_version,
+            latency_seconds=round(time.perf_counter() - t0, 3),
+            input_tokens=getattr(u, "prompt_token_count", None),
+            output_tokens=n_out,
+            # None, not 0.0: on the free tier nothing is charged, but that is
+            # not a price, and 0.0 would win a cost comparison this model is
+            # not competing in. The list price is reference_cost_usd.
+            cost_usd=None,
+            # An empty answer is a failed report, and saying why matters:
+            # MAX_TOKENS here usually means thinking used the output budget,
+            # which is a configuration problem, not the model refusing.
+            error=(None if text.strip()
+                   else f"empty response (finish_reason={finish})"),
+            extra={"determinism": _determinism(self.temperature, self.seed),
+                   "thoughts_tokens": thoughts, "finish_reason": finish,
+                   "model_version": getattr(r, "model_version", None)},
+        )
+
+    def _error(self, e: Exception, prompt_version: str, t0: float) -> LLMResponse:
+        return LLMResponse(
+            text="", model=self.model, provider=self.provider,
+            prompt_version=prompt_version,
+            latency_seconds=round(time.perf_counter() - t0, 3),
+            error=f"{type(e).__name__}: {e}")
+
+
+def _suggested_retry_delay(details: str) -> float | None:
+    """The `retryDelay` a 429 carries (e.g. "37s"), if any."""
+    m = re.search(r'"retryDelay":\s*"(\d+(?:\.\d+)?)s"', details)
+    return float(m.group(1)) if m else None
 
 
 class OllamaAdapter:
@@ -346,16 +412,22 @@ class OllamaAdapter:
                 extra={"determinism": _determinism(self.temperature, self.seed)},
             )
         except Exception as e:                       # noqa: BLE001
-            return LLMResponse(
+            r = LLMResponse(
                 text="", model=self.model, provider=self.provider,
                 prompt_version=prompt_version,
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 error=f"{type(e).__name__}: {e}")
+            # The Ollama client raises the builtin ConnectionError when the
+            # server is gone -- in Colab, usually a restarted runtime. Every
+            # remaining pack would fail in milliseconds and be recorded as the
+            # model failing, so the run stops instead and resumes later.
+            if isinstance(e, ConnectionError):
+                r.extra[INFRASTRUCTURE_ERROR] = "Ollama server unreachable"
+            return r
 
 
 def _ollama_server_version(host: str | None) -> str | None:
     """`GET /api/version`. The Python client has no call for it."""
-    import json
     import urllib.request
 
     base = host or "http://127.0.0.1:11434"
