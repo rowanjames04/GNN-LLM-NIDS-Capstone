@@ -8,15 +8,22 @@ with whatever else changed between invocations.
 
 This script fixes the pack set once, then sweeps the roster.
 
-**Money.** Nothing is spent without `--confirm-spend`. Without it the script
-prints the projected cost of the whole sweep and stops, which is the number
-worth seeing before committing: a roster of five models over 200 packs is five
-times the per-model estimate.
+**Money.** No `paid` roster entry is called without `--confirm-spend`. Without
+it the script prints the projected cost of the whole sweep and stops, which is
+the number worth seeing before committing: a roster of five models over 200
+packs is five times the per-model estimate. `free_tier` and `self_hosted`
+entries run without the flag (see `billing` in configs/llm.yaml).
+
+**Arms run in different places** (D35). The cloud arms run from the Mac; the
+self-hosted arm runs inside a Colab notebook next to its Ollama server. `--only`
+selects by billing class or provider name, so each place runs only its half and
+Colab never tries to reach Claude without a key.
 
 Usage:
-    python scripts/run_llm_study.py --smoke              # stub only, free
-    python scripts/run_llm_study.py --estimate           # cost, then stop
-    python scripts/run_llm_study.py --confirm-spend      # actually runs
+    python scripts/run_llm_study.py --smoke                          # stub only, free
+    python scripts/run_llm_study.py --estimate                       # cost, then stop
+    python scripts/run_llm_study.py --only paid free_tier --confirm-spend
+    python scripts/run_llm_study.py --only self_hosted                # in Colab
 """
 
 from __future__ import annotations
@@ -35,6 +42,33 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.llm.adapters import ANTHROPIC_PRICING  # noqa: E402
 from gnnids.llm.prompts import build_prompt  # noqa: E402
+
+BILLING_CLASSES = ("free", "paid", "free_tier", "self_hosted")
+
+
+def billing(entry: dict) -> str:
+    """The entry's billing class. Missing means paid, never free.
+
+    The stub is the one exception, because it cannot spend money by
+    construction. Anything else that forgot to declare itself is guarded: the
+    cost of wrongly gating a free model is one extra flag, while the cost of
+    wrongly waving through a paid one is real money.
+    """
+    if entry["provider"] == "stub":
+        return "free"
+    b = entry.get("billing", "paid")
+    if b not in BILLING_CLASSES:
+        raise SystemExit(f"roster entry {entry} has billing {b!r}; "
+                         f"expected one of {BILLING_CLASSES}")
+    return b
+
+
+def select(roster: list[dict], only: list[str] | None) -> list[dict]:
+    """Enabled entries, narrowed by billing class or provider name if asked."""
+    enabled = [e for e in roster if e.get("enabled", True)]
+    if not only:
+        return enabled
+    return [e for e in enabled if billing(e) in only or e["provider"] in only]
 
 
 def estimate(entry: dict, packs: list, version: str) -> tuple[float | None, str]:
@@ -63,11 +97,17 @@ def main() -> None:
     ap.add_argument("--estimate", action="store_true", help="print the cost and stop")
     ap.add_argument("--confirm-spend", action="store_true",
                     help="required before any paid provider is called")
+    ap.add_argument("--only", nargs="+", default=None, metavar="CLASS_OR_PROVIDER",
+                    help="run only these billing classes (paid, free_tier, "
+                         "self_hosted) or providers (e.g. gemini)")
     ap.add_argument("--smoke", action="store_true")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
-    roster = [e for e in cfg["roster"] if e.get("enabled", True)]
+    roster = select(cfg["roster"], args.only)
+    if not roster:
+        raise SystemExit(f"--only {' '.join(args.only)} "
+                         "matches no enabled roster entry")
     if args.smoke:
         roster = [e for e in roster if e["provider"] == "stub"] or [{"provider": "stub"}]
 
@@ -91,7 +131,7 @@ def main() -> None:
         for v in versions:
             usd, label = estimate(entry, packs, v)
             name = f"{entry['provider']}/{entry.get('model', 'default')} [{v}]"
-            print(f"  {name:<44} {label}")
+            print(f"  {name:<44} {billing(entry):<12} {label}")
             if usd is None:
                 unknown.append(name)
             else:
@@ -99,7 +139,7 @@ def main() -> None:
     print(f"\n  PROJECTED TOTAL: ${total:.4f}"
           + (f"  (plus {len(unknown)} run(s) with no published price)" if unknown else ""))
 
-    paid = [e for e in roster if e["provider"] != "stub"]
+    paid = [e for e in roster if billing(e) == "paid"]
     if args.estimate:
         print("\n  --estimate given; stopping before any call.\n")
         return
@@ -108,6 +148,9 @@ def main() -> None:
               "--confirm-spend to proceed,\n  or --estimate to see the cost "
               "without running anything.\n")
         return
+    if any(billing(e) == "free_tier" for e in roster):
+        print("\n  free_tier entries are only free if the API key's project has "
+              "no billing attached.")
 
     # Each run is a separate process invoking generate_reports.py, so one
     # provider failing (a refusal, an expired key, an unreachable local server)
@@ -129,14 +172,15 @@ def main() -> None:
             print(f"\n===== {label} =====")
             rc = subprocess.run(cmd).returncode
             runs.append({"provider": entry["provider"], "model": entry.get("model"),
-                         "prompt_version": v, "ok": rc == 0})
+                         "billing": billing(entry), "prompt_version": v,
+                         "ok": rc == 0})
             if rc != 0:
                 print(f"  {label} FAILED (exit {rc}) -- continuing with the rest")
 
     manifest = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "packs": packs_path.name, "n_detections": len(packs),
-        "prompt_versions": versions, "runs": runs,
+        "prompt_versions": versions, "only": args.only, "runs": runs,
         "projected_cost_usd": round(total, 4),
     }
     out_dir.mkdir(parents=True, exist_ok=True)

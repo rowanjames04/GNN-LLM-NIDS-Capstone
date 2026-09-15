@@ -18,14 +18,34 @@ n_reports: 200          # the stratified sample size in the study design
 
 # The roster for the fully crossed study: every enabled entry sees every pack,
 # through the same prompt. Disable rather than delete, so the record shows what
-# was considered. Nothing here is called without --confirm-spend.
+# was considered.
+#
+# `billing` decides what the spend gate guards, and `--only` selects arms by it:
+#   paid         real money per call; refused without --confirm-spend
+#   free_tier    no charge on a free-tier key (D36). Assumes the key's Google
+#                Cloud project has NO billing attached -- if it does, calls are
+#                charged, so check before running
+#   self_hosted  weights on hardware we run (D35: Ollama on Google Colab)
+# An entry with no `billing` is treated as paid. Guessing "free" is the error
+# that costs money.
+#
+# The cloud arms run from the Mac:        --only paid free_tier
+# The self-hosted arm runs inside Colab:  --only self_hosted
 roster:
-  - {provider: stub, enabled: true}          # control arm; free, deterministic
-  - {provider: anthropic, model: claude-opus-5, enabled: true}
-  - {provider: anthropic, model: claude-haiku-4-5, enabled: true}   # the tiered-model comparison
-  - {provider: openai, model: gpt-4o, enabled: true}
-  - {provider: gemini, model: gemini-2.0-flash, enabled: false}     # enable once a key exists
-  - {provider: ollama, model: llama3.2:3b, enabled: false}          # enable when compute is settled
+  - {provider: stub, billing: free, enabled: true}          # control arm; deterministic
+  - {provider: anthropic, model: claude-opus-5, billing: paid, enabled: true}
+  - {provider: anthropic, model: claude-haiku-4-5, billing: paid, enabled: true}   # the tiered pair
+  # D36: dropped. The OpenAI API is billed separately from ChatGPT, so GPT would
+  # be new spend with no offsetting benefit. Adapter kept; re-enabling is this edit.
+  - {provider: openai, model: gpt-4o, billing: paid, enabled: false}
+  # D36: newest stable Flash as of 2026-09-15. gemini-2.0-flash was the previous
+  # entry and is past its 1 June 2026 shutdown date.
+  - {provider: gemini, model: gemini-3.8-flash, billing: free_tier, enabled: true}
+  # D35: ~8B and ~14B at 4-bit fit a free Colab GPU (Obsidian: "Model
+  # Quantisation"). Two families as well as two sizes. Tags move when a model is
+  # re-published, so each run records the pulled digest -- quote that, not the tag.
+  - {provider: ollama, model: "llama3.1:8b", billing: self_hosted, enabled: true}
+  - {provider: ollama, model: "qwen2.5:14b", billing: self_hosted, enabled: true}
 
 # Determinism is requested uniformly here and each adapter applies what its
 # provider actually supports, recording the rest as unsupported. The study
@@ -47,18 +67,25 @@ provider_options:
     temperature: 0
     seed: 42
   gemini:
-    model: gemini-2.0-flash
+    model: gemini-3.8-flash
     max_tokens: 2000
     # Gemini accepts both, unlike current Claude models. See the determinism
     # note in the study design.
     temperature: 0
     seed: 42
   ollama:
-    # Fallback 2 from "Compute Access Risk": iHPC is decommissioned and Cetus
-    # unreachable, so the self-hosted arm is a small quantised model on the M4.
-    # That makes V5 "cloud vs small local" rather than "cloud vs large local" --
-    # a stated ceiling, not a silent downgrade.
-    model: llama3.2:3b
+    # D35: served by Ollama inside a Google Colab GPU runtime and reached over
+    # localhost from the same notebook (notebooks/colab_self_hosted_arm.ipynb).
+    # iHPC is decommissioned and Cetus was abandoned after UTS eResearch did not
+    # reply; Colab was Dr Altaf's suggestion (15/09/2026).
+    model: "llama3.1:8b"
+    temperature: 0
+    seed: 42
+    # Pinned rather than left to Ollama's default, because Ollama TRUNCATES a
+    # prompt longer than its context window instead of raising. Prompts measured
+    # at ~500-700 tokens (2026-09-15) plus a report of up to ~2,000 fit easily;
+    # the headroom is for a future few-shot prompt version.
+    num_ctx: 8192
 
 smoke:
   packs: results/evidence/smoke_evidence_NF-ToN-IoT-v2.json

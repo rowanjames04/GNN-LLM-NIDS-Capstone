@@ -9,7 +9,7 @@ local server, and must be asked for explicitly:
 
     python scripts/generate_reports.py --smoke                      # free
     python scripts/generate_reports.py --provider anthropic -n 5    # costs money
-    python scripts/generate_reports.py --provider ollama --model llama3.2:3b
+    python scripts/generate_reports.py --provider ollama --model llama3.1:8b
 
 `--estimate-only` prints what a run would cost without making a call.
 """
@@ -32,6 +32,11 @@ from gnnids.llm.groundedness import (  # noqa: E402
     check_no_jargon, check_uncertainty_conveyed, score_report,
 )
 from gnnids.llm.prompts import DEFAULT_VERSION, build_prompt  # noqa: E402
+
+# Providers whose every call is charged. Gemini can be (on a billed key), but its
+# free tier is how this study uses it (D36); the roster's `billing` field and
+# run_llm_study.py's gate are the real control, this only sets the banner.
+PAID_PROVIDERS = ("anthropic", "openai")
 
 
 def summarise(rows: list[dict]) -> dict:
@@ -103,7 +108,9 @@ def main() -> None:
     if provider != "stub":
         # A deliberate friction point. Every paid run should be a decision.
         est = _estimate(adapter, packs, version)
-        print(f"\n  NOT FREE. Estimated cost for {len(packs)} reports: {est}")
+        paid = provider in PAID_PROVIDERS
+        print(f"\n  {'NOT FREE. ' if paid else ''}Estimated cost for "
+              f"{len(packs)} reports: {est}")
         if args.estimate_only:
             print("  --estimate-only, stopping before any call.\n")
             return

@@ -225,23 +225,28 @@ class GeminiAdapter:
 
 
 class OllamaAdapter:
-    """Self-hosted, local. The V5 arm that iHPC's decommissioning threatened.
+    """Self-hosted. The V5 arm that iHPC's decommissioning threatened.
 
-    With no cluster available the working assumption is small quantised models
-    on the M4 ([[Compute Access Risk]] fallback 2), which changes V5 from
-    *cloud vs large local* to *cloud vs small local*. That is a stated ceiling,
-    not a silent downgrade, and `cost_usd` stays None here on purpose -- a
-    self-hosted model has no per-token price, and recording 0.0 would let it win
-    a cost comparison it is not actually competing in.
+    Served by Ollama inside a Google Colab GPU runtime and reached over
+    localhost from the same notebook (D35, [[Colab Self-Hosted Arm]]). A free
+    Colab GPU holds ~8-14B at 4-bit where the M4 held ~3B, so V5 is *cloud vs
+    mid-size open-weight*. `cost_usd` stays None on purpose -- a self-hosted
+    model has no per-token price, and recording 0.0 would let it win a cost
+    comparison it is not actually competing in.
+
+    `num_ctx` is sent explicitly on every call: Ollama truncates a prompt longer
+    than its context window rather than raising, so leaving it to the server's
+    default would make an over-long prompt a silent defect.
     """
 
     provider = "ollama"
 
-    def __init__(self, model: str = "llama3.2:3b", host: str | None = None,
-                 temperature: float | None = None, seed: int | None = None) -> None:
+    def __init__(self, model: str = "llama3.1:8b", host: str | None = None,
+                 temperature: float | None = None, seed: int | None = None,
+                 num_ctx: int | None = None) -> None:
         self.model = model
         self.host = host or os.environ.get("OLLAMA_HOST")
-        self.temperature, self.seed = temperature, seed
+        self.temperature, self.seed, self.num_ctx = temperature, seed, num_ctx
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
         import ollama
@@ -254,6 +259,8 @@ class OllamaAdapter:
                 options["temperature"] = self.temperature
             if self.seed is not None:
                 options["seed"] = self.seed
+            if self.num_ctx is not None:
+                options["num_ctx"] = self.num_ctx
             r = client.chat(model=self.model, messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user}], options=options or None)
