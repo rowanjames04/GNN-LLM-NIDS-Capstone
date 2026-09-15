@@ -14,6 +14,11 @@ then removed.
 provider, model, prompt version and pack source. A mismatch is refused rather
 than merged: a results file mixing two prompt versions would pass every check
 and measure nothing.
+
+**Each session is recorded separately.** A resumed Colab run can land on a
+different GPU, so every start appends a session line (hardware, commit, model
+build -- see `provenance.py`) and every row carries the index of the session
+that generated it.
 """
 
 from __future__ import annotations
@@ -33,6 +38,7 @@ class ReportLog:
     def __init__(self, path: Path, identity: dict) -> None:
         self.path = Path(path)
         self.identity = {k: identity[k] for k in IDENTITY_KEYS}
+        self.sessions: list[dict] = []
 
     def load(self, pack_ids: list[str], retry_failed: bool = False
              ) -> tuple[dict[str, dict], int]:
@@ -64,6 +70,9 @@ class ReportLog:
                 # A session killed mid-write leaves at most one torn last line.
                 # Dropping it costs one regenerated report, nothing more.
                 continue
+            if "session" in row and "detection_id" not in row:
+                self.sessions.append(row["session"])
+                continue
             rows[row["detection_id"]] = row
 
         unknown = set(rows) - set(pack_ids)
@@ -81,15 +90,20 @@ class ReportLog:
             retried = len(failed)
         return rows, retried
 
-    def start(self, keep: dict[str, dict]) -> None:
-        """Rewrite the log as header + kept rows, ready for appending."""
+    def start(self, keep: dict[str, dict], session: dict | None = None) -> int:
+        """Rewrite the log as header + earlier sessions + kept rows, then open a
+        new session. Returns the new session's index, for stamping rows."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.sessions.append(session or {})
         with self.path.open("w") as f:
             f.write(json.dumps({"header": self.identity}) + "\n")
+            for sess in self.sessions:
+                f.write(json.dumps({"session": sess}) + "\n")
             for row in keep.values():
                 f.write(json.dumps(row) + "\n")
             f.flush()
             os.fsync(f.fileno())
+        return len(self.sessions) - 1
 
     def append(self, row: dict) -> None:
         # fsync per row: a few milliseconds against a generation that takes

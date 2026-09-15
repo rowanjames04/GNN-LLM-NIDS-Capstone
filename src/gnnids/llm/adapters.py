@@ -248,6 +248,35 @@ class OllamaAdapter:
         self.host = host or os.environ.get("OLLAMA_HOST")
         self.temperature, self.seed, self.num_ctx = temperature, seed, num_ctx
 
+    def describe(self) -> dict:
+        """The exact model build and server this run used, queried from Ollama.
+
+        The **digest** is the identity to quote in the report; the tag is only a
+        name, and it is re-pointed when a model is re-published. Never raises --
+        an unreachable server records the error and the run itself will then
+        fail loudly on its first call.
+        """
+        import ollama
+
+        out: dict = {"tag": self.model, "num_ctx": self.num_ctx,
+                     "digest": None, "parameter_size": None,
+                     "quantization_level": None, "family": None,
+                     "server_version": None}
+        try:
+            client = ollama.Client(host=self.host) if self.host else ollama.Client()
+            d = client.show(self.model).details
+            if d is not None:
+                out.update(parameter_size=d.parameter_size,
+                           quantization_level=d.quantization_level,
+                           family=d.family)
+            for m in client.list().models:
+                if m.model == self.model:
+                    out["digest"] = m.digest
+            out["server_version"] = _ollama_server_version(self.host)
+        except Exception as e:                       # noqa: BLE001
+            out["error"] = f"{type(e).__name__}: {e}"
+        return out
+
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
         import ollama
 
@@ -279,6 +308,21 @@ class OllamaAdapter:
                 prompt_version=prompt_version,
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 error=f"{type(e).__name__}: {e}")
+
+
+def _ollama_server_version(host: str | None) -> str | None:
+    """`GET /api/version`. The Python client has no call for it."""
+    import json
+    import urllib.request
+
+    base = host or "http://127.0.0.1:11434"
+    if "://" not in base:
+        base = f"http://{base}"
+    try:
+        with urllib.request.urlopen(f"{base.rstrip('/')}/api/version", timeout=5) as r:
+            return json.loads(r.read()).get("version")
+    except (OSError, ValueError):
+        return None
 
 
 ADAPTERS = {

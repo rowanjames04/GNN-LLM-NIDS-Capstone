@@ -334,3 +334,65 @@ def test_unsupported_determinism_is_recorded_with_a_reason():
 
     assert d["supported"] is False
     assert "unavailable" in d["note"]
+
+
+# ------------------------------------------------ self-hosted provenance (D35)
+
+def test_ollama_describe_records_the_error_instead_of_raising():
+    """An unreachable server must not crash the run before it starts; the first
+    generate call will fail loudly and be recorded instead."""
+    a = build_adapter("ollama", model="llama3.1:8b", host="http://127.0.0.1:9",
+                      num_ctx=8192)
+
+    d = a.describe()
+
+    assert d["tag"] == "llama3.1:8b" and d["num_ctx"] == 8192
+    assert d["digest"] is None
+    assert "error" in d
+
+
+def test_ollama_reads_digest_and_quantisation_from_the_server(monkeypatch):
+    import ollama
+    from types import SimpleNamespace as NS
+
+    class FakeClient:
+        def __init__(self, host=None):
+            pass
+
+        def show(self, model):
+            return NS(details=NS(parameter_size="8.0B",
+                                 quantization_level="Q4_K_M", family="llama"))
+
+        def list(self):
+            return NS(models=[NS(model="other:1b", digest="sha256:nope"),
+                              NS(model="llama3.1:8b", digest="sha256:abc")])
+
+    monkeypatch.setattr(ollama, "Client", FakeClient)
+    monkeypatch.setattr("gnnids.llm.adapters._ollama_server_version", lambda h: "0.9.0")
+
+    d = build_adapter("ollama", model="llama3.1:8b").describe()
+
+    assert d["digest"] == "sha256:abc"
+    assert d["quantization_level"] == "Q4_K_M"
+    assert d["server_version"] == "0.9.0"
+    assert "error" not in d
+
+
+def test_ollama_sends_num_ctx_so_long_prompts_are_not_silently_truncated(monkeypatch):
+    import ollama
+    sent = {}
+
+    class FakeClient:
+        def __init__(self, host=None):
+            pass
+
+        def chat(self, model, messages, options=None):
+            sent.update(options or {})
+            return {"message": {"content": "report"}, "prompt_eval_count": 1,
+                    "eval_count": 1}
+
+    monkeypatch.setattr(ollama, "Client", FakeClient)
+
+    build_adapter("ollama", model="m", host="h", num_ctx=8192).generate("s", "u", "v1")
+
+    assert sent["num_ctx"] == 8192

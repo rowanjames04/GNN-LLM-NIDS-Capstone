@@ -133,3 +133,61 @@ def test_an_interrupted_run_resumes_and_finishes_with_every_pack(tmp_path):
     assert [x["detection_id"] for x in out["reports"]] == ["id-0", "id-1", "id-2"]
     assert out["reports"][1].get("marker") == "from-before-the-crash"
     assert not partial.exists()
+
+
+# ------------------------------------------------------------ per-session provenance
+
+def test_sessions_survive_a_resume_and_rows_can_point_at_them(tmp_path):
+    path = tmp_path / "x.partial.jsonl"
+    first = ReportLog(path, ID)
+    first.load(["id-0", "id-1"])
+    sid0 = first.start({}, {"gpus": [{"name": "Tesla T4"}]})
+    first.append(dict(_row(0), session=sid0))
+
+    second = ReportLog(path, ID)
+    rows, _ = second.load(["id-0", "id-1"])
+    sid1 = second.start(rows, {"gpus": [{"name": "NVIDIA L4"}]})
+
+    assert (sid0, sid1) == (0, 1)
+    assert [s["gpus"][0]["name"] for s in second.sessions] == ["Tesla T4", "NVIDIA L4"]
+    assert rows["id-0"]["session"] == 0
+
+
+def _load_generate():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "generate_reports_under_test", REPO_ROOT / "scripts" / "generate_reports.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_a_resume_onto_different_model_weights_is_refused():
+    """Same tag, different digest: two models under one name."""
+    gen = _load_generate()
+    before = [{"model": {"digest": "sha256:aaa"}, "gpus": None}]
+
+    with pytest.raises(SystemExit):
+        gen._check_session_continuity(before, {"model": {"digest": "sha256:bbb"},
+                                               "gpus": None})
+    gen._check_session_continuity(before, {"model": {"digest": "sha256:aaa"},
+                                           "gpus": None})       # same build: fine
+
+
+def test_a_resume_onto_a_different_gpu_is_flagged_not_refused(capsys):
+    gen = _load_generate()
+
+    gen._check_session_continuity([{"gpus": [{"name": "Tesla T4"}]}],
+                                  {"gpus": [{"name": "NVIDIA L4"}]})
+
+    assert "GPU differs" in capsys.readouterr().out
+
+
+def test_provenance_probes_never_raise_where_the_tool_is_missing(tmp_path):
+    """No nvidia-smi on the Mac and no git repo in tmp: recorded as unknown."""
+    from gnnids.llm.provenance import session
+
+    s = session(tmp_path)
+
+    assert s["git"]["commit"] is None
+    assert "python" in s and "platform" in s

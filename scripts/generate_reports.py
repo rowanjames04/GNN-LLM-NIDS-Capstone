@@ -38,6 +38,7 @@ from gnnids.llm.groundedness import (  # noqa: E402
     check_no_jargon, check_uncertainty_conveyed, score_report,
 )
 from gnnids.llm.prompts import DEFAULT_VERSION, build_prompt  # noqa: E402
+from gnnids.llm.provenance import session as run_session  # noqa: E402
 from gnnids.llm.resume import ReportLog, ResumeMismatch  # noqa: E402
 
 # Providers whose every call is charged. Gemini can be (on a billed key), but its
@@ -145,7 +146,17 @@ def main() -> None:
     if done:
         print(f"\n  resuming: {len(done)} of {len(packs)} already on disk"
               + (f", {retried} failed row(s) dropped for retry" if retried else ""))
-    log.start(done)
+
+    # What this session runs on. Captured now, because a Colab GPU assignment or
+    # an Ollama tag's digest cannot be recovered after the fact (D35).
+    sess = run_session(REPO_ROOT)
+    if hasattr(adapter, "describe"):
+        sess["model"] = adapter.describe()
+        if sess["model"].get("error"):
+            print(f"\n  WARNING: could not describe the model -- "
+                  f"{sess['model']['error']}")
+    _check_session_continuity(log.sessions, sess)
+    session_id = log.start(done, sess)
 
     for pack in packs:
         if pack["detection_id"] in done:
@@ -167,6 +178,7 @@ def main() -> None:
             # roster is not uniform, so this is recorded per response rather
             # than asserted once for the study.
             "determinism": r.extra.get("determinism"),
+            "session": session_id,
         }
         log.append(row)
         done[row["detection_id"]] = row
@@ -186,12 +198,16 @@ def main() -> None:
     summary["determinism"] = det or {"supported": False,
                                      "note": "no determinism controls applied"}
     summary["n_retried_after_failure"] = retried
+    summary["n_sessions"] = len(log.sessions)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "provider": adapter.provider, "model": adapter.model,
         "prompt_version": version, "packs_source": str(packs_path.name),
-        "smoke": args.smoke, "summary": summary, "reports": rows,
+        "smoke": args.smoke, "summary": summary,
+        # One entry per start or resume; each report's `session` indexes it.
+        "provenance": {"sessions": log.sessions},
+        "reports": rows,
     }, indent=2))
     log.discard()
 
@@ -211,6 +227,29 @@ def main() -> None:
     out = out_dir / name
     shown = out.relative_to(REPO_ROOT) if out.is_relative_to(REPO_ROOT) else out
     print(f"\nwritten -> {shown}\n")
+
+
+def _check_session_continuity(previous: list[dict], current: dict) -> None:
+    """Refuse a resume onto a different model build; warn on different hardware.
+
+    A changed digest means the tag now points at different weights, so the two
+    halves of the file would be two models under one name -- that is two runs,
+    and it is refused. A changed GPU changes latency (and can perturb quantised
+    arithmetic slightly) but not which model wrote the report, so it is recorded
+    and flagged rather than refused.
+    """
+    digest = (current.get("model") or {}).get("digest")
+    earlier = {(s.get("model") or {}).get("digest") for s in previous} - {None}
+    if digest and earlier and earlier != {digest}:
+        raise SystemExit(
+            f"model digest changed since this run started ({sorted(earlier)} -> "
+            f"{digest}). The tag now points at different weights. Re-run with "
+            f"--fresh, or pull the original build.")
+    gpu = json.dumps(current.get("gpus"))
+    if any(json.dumps(s.get("gpus")) != gpu for s in previous):
+        print("\n  WARNING: this session's GPU differs from an earlier session of "
+              "the same run.\n  Latency is not comparable across sessions; each "
+              "report records its session.")
 
 
 def _estimate(adapter, packs, version) -> str:

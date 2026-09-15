@@ -52,6 +52,7 @@ def rows() -> list[dict]:
             "n_false_positive": len(fp),
             "groundedness_on_fp": mean(fp, "groundedness"),
             "determinism": (d.get("summary", {}).get("determinism") or {}),
+            "sessions": (d.get("provenance") or {}).get("sessions") or [],
         })
     return out
 
@@ -93,6 +94,8 @@ def main() -> None:
           "removed on the\n  current Claude generation. Report this asymmetry "
           "rather than claiming temperature 0.")
 
+    _print_provenance(data)
+
     stub = [r for r in data if r["provider"] == "stub"]
     if stub and len(data) > 1:
         floor = stub[0]["groundedness"]
@@ -105,6 +108,32 @@ def main() -> None:
               "sampling plan.")
     print("\n  Groundedness measures INVENTED NOTHING, not REASONED CORRECTLY.")
     print("  A fluent, wrong interpretation built from real facts scores 1.0.\n")
+
+
+def _print_provenance(data: list[dict]) -> None:
+    """What each run executed on (D35). A self-hosted result is quoted by its
+    digest and quantisation, and its latency only beside the GPU it ran on."""
+    print(f"\n  {'model':<30} {'sessions':>8}  {'digest':<19} {'quant':<8} "
+          f"{'params':<7} {'gpu':<22} commit")
+    for r in sorted(data, key=lambda x: x["model"] or ""):
+        ss = r["sessions"]
+        if not ss:
+            print(f"  {r['provider']}/{r['model']:<24} {'-':>8}  (no provenance -- "
+                  f"generated before D35)")
+            continue
+        m = ss[-1].get("model") or {}
+        gpus = {g["name"] for s in ss for g in (s.get("gpus") or [])} or {"none"}
+        commits = {(s.get("git") or {}).get("commit") for s in ss} - {None}
+        dirty = any((s.get("git") or {}).get("dirty") for s in ss)
+        print(f"  {r['provider']}/{r['model']:<24} {len(ss):>8}  "
+              f"{(m.get('digest') or '-')[:19]:<19} "
+              f"{m.get('quantization_level') or '-':<8} "
+              f"{m.get('parameter_size') or '-':<7} {', '.join(sorted(gpus)):<22} "
+              f"{','.join(c[:8] for c in sorted(commits)) or '-'}"
+              + ("  DIRTY TREE" if dirty else ""))
+    print("\n  Latency is hardware-bound: the self-hosted arm ran on an assigned "
+          "Colab GPU and\n  the cloud arms include network time. Compare latency "
+          "within an arm, never across.")
 
 
 if __name__ == "__main__":
