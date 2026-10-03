@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T05:31:36.818463+00:00",
+  "generated_at": "2026-10-03T05:46:24.387156+00:00",
   "smoke": false,
   "figures": {
     "ablation": {
@@ -97,22 +97,22 @@
     "channel_weights": {
       "status": "drawn",
       "file": "results_06_channel_weights.png",
-      "caption": "How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 60 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.",
+      "caption": "How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 200 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.",
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-03T05:27:09.350227+00:00"
+          "generated_at": "2026-10-03T05:46:12.335651+00:00"
         }
       ]
     },
     "top_features": {
       "status": "drawn",
       "file": "results_07_top_features.png",
-      "caption": "The features that carry the detections: for each, the share of 60 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.",
+      "caption": "The features that carry the detections: for each, the share of 200 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.",
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-03T05:27:09.350227+00:00"
+          "generated_at": "2026-10-03T05:46:12.335651+00:00"
         }
       ]
     },

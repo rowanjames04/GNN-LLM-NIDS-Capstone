@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-03T05:34:08 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-03T05:46:24 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -158,58 +158,58 @@ PR-AUC of a random model at this prevalence: 0.04.
 
 ## 8. Explainability (over the evidence packs)
 
-*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-03T05:27:09 UTC.*
+*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-03T05:46:12 UTC.*
 
-60 evidence packs: 51 true attacks and 9 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
+200 evidence packs: 170 true attacks and 30 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
 
 ### Share of each decision assigned to the neighbourhood channel
 
 | Group | Packs | Median | 25th–75th percentile | Mean |
 |---|---|---|---|---|
-| all packs | 60 | 0.5782 | 0.3011–0.7714 | 0.5511 |
-| true attacks | 51 | 0.5735 | 0.2894–0.7740 | 0.5480 |
-| false positives | 9 | 0.6683 | 0.3224–0.7114 | 0.5691 |
-| backdoor | 5 | 0.1317 | 0.1317–0.1318 | 0.1449 |
-| ddos | 6 | 0.4556 | 0.4339–0.5433 | 0.4670 |
-| dos | 5 | 0.9115 | 0.8759–0.9152 | 0.8927 |
-| injection | 7 | 0.7047 | 0.6340–0.7172 | 0.6685 |
-| mitm | 5 | 0.8591 | 0.8497–0.8609 | 0.8557 |
-| password | 7 | 0.4509 | 0.4003–0.5092 | 0.4456 |
-| ransomware | 1 | 0.1912 | 0.1912–0.1912 | 0.1912 |
-| scanning | 8 | 0.2245 | 0.2042–0.2628 | 0.2913 |
-| xss | 7 | 0.7653 | 0.7647–0.7740 | 0.7654 |
+| all packs | 200 | 0.6559 | 0.2443–0.8193 | 0.5466 |
+| true attacks | 170 | 0.6202 | 0.2141–0.8390 | 0.5384 |
+| false positives | 30 | 0.8022 | 0.2554–0.8161 | 0.5930 |
+| backdoor | 22 | 0.1462 | 0.1363–0.1596 | 0.1480 |
+| ddos | 21 | 0.2978 | 0.1302–0.4352 | 0.3212 |
+| dos | 21 | 0.8469 | 0.7767–0.9206 | 0.8007 |
+| injection | 21 | 0.7441 | 0.7173–0.7632 | 0.6966 |
+| mitm | 21 | 0.8492 | 0.8474–0.8517 | 0.8646 |
+| password | 22 | 0.4012 | 0.3591–0.5585 | 0.4520 |
+| scanning | 21 | 0.2120 | 0.2003–0.2386 | 0.2389 |
+| xss | 21 | 0.7821 | 0.7578–0.8817 | 0.8078 |
 
 ### Features most often among the top 5 attributed
 
 | Feature | Share of packs | Times it raised suspicion | Times it lowered suspicion |
 |---|---|---|---|
-| L4_DST_PORT | 98% | 62 | 10 |
-| PROTOCOL | 70% | 31 | 11 |
-| L7_PROTO | 42% | 12 | 13 |
-| TCP_WIN_MAX_IN | 32% | 2 | 17 |
-| SHORTEST_FLOW_PKT | 23% | 1 | 13 |
-| IN_BYTES | 18% | 10 | 1 |
-| CLIENT_TCP_FLAGS | 17% | 5 | 5 |
-| L4_SRC_PORT | 15% | 9 | 2 |
-| DURATION_IN | 15% | 0 | 9 |
-| NUM_PKTS_UP_TO_128_BYTES | 15% | 0 | 9 |
+| L4_DST_PORT | 84% | 185 | 21 |
+| PROTOCOL | 64% | 86 | 41 |
+| TCP_WIN_MAX_IN | 44% | 10 | 78 |
+| L7_PROTO | 37% | 39 | 35 |
+| L4_SRC_PORT | 24% | 45 | 9 |
+| SHORTEST_FLOW_PKT | 22% | 1 | 44 |
+| IN_BYTES | 20% | 28 | 12 |
+| CLIENT_TCP_FLAGS | 19% | 32 | 6 |
+| OUT_PKTS | 18% | 32 | 3 |
+| NUM_PKTS_UP_TO_128_BYTES | 17% | 2 | 32 |
 
 A feature and its encoded variants (a port and its port bucket) count as one feature per pack but as separate entries in the last two columns, so those can exceed the pack count.
 
 ### The attack family named in the pack
 
-- Correct for 0.8235 of 51 true attacks in the sample
-- False positives were named as: {'password': 5, 'scanning': 2, 'dos': 2}
-- Ambiguous packs (confidence below 0.9): 3
+- Correct for 0.8529 of 170 true attacks in the sample
+- False positives were named as: {'scanning': 14, 'ddos': 9, 'password': 4, 'dos': 3}
+- Ambiguous packs (confidence below 0.9): 16
 
 ### Influence of single neighbouring flows
 
-**NOT YET MEASURED.** These packs were made before neighbour occlusion was recorded. To produce it: `python scripts/make_evidence.py`.
-Write `[NUM?]` wherever a number from this section is needed.
+- Up to 50 neighbouring flows were removed one at a time per detection (median tested: 50; median sharing a host: 5536)
+- Largest change in the detection score from removing one neighbour: median 1.00e-05, 95th percentile 2.10e-04, maximum 5.27e-03
+- Packs with any neighbour above the 0.01 threshold: 0 of 200
 
 ## 9. Language-model comparison
 
-Evidence packs: 60 (9 false positives). By true family: {'Benign': 9, 'backdoor': 5, 'ddos': 6, 'dos': 5, 'injection': 7, 'mitm': 5, 'password': 7, 'ransomware': 1, 'scanning': 8, 'xss': 7}.
+Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdoor': 22, 'ddos': 21, 'dos': 21, 'injection': 21, 'mitm': 21, 'password': 22, 'scanning': 21, 'xss': 21}.
 
 **NOT YET MEASURED.** No language model has been run; only the template control exists. To produce it: `python scripts/run_llm_study.py`.
 Write `[NUM?]` wherever a number from this section is needed.
@@ -218,8 +218,8 @@ Write `[NUM?]` wherever a number from this section is needed.
 
 | Model | Prompt | Reports | Failed | Groundedness | Fabricated-address reports | Groundedness on false positives | Names predicted class | Substitutes class | Attributed features cited | Cites none | Latency p50 / p95 (s) | Charged (USD) | List price (USD) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| stub/template-v1 | v1 | 60 | 0 | 1.0000 | 0 | 1.0000 (n = 9) | 1.0000 | 0.0000 | 0.4783 | 0.0000 | 0.00 / 0.00 | 0.0000 | unknown |
-| stub/template-v1 | v2 | 60 | 0 | 1.0000 | 0 | 1.0000 (n = 9) | 1.0000 | 0.0000 | 0.4783 | 0.0000 | 0.00 / 0.00 | 0.0000 | unknown |
+| stub/template-v1 | v1 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4850 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| stub/template-v1 | v2 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4850 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
 
 - The stub is a template with no language model: the control arm.
 - Groundedness measures "invented nothing", not "reasoned correctly".
@@ -240,13 +240,13 @@ Write `[NUM?]` wherever a number from this section is needed.
 - **`results/figures/results_03_topology_gain_by_dataset.png`** — Gain in PR-AUC from message passing (full model minus the flow-features-only variant, matched by seed) on each dataset. Each dot is one seed; the tick is the mean; the line marks no gain. The gain is separated from zero on NF-ToN-IoT-v2 and not on NF-UNSW-NB15-v2, where a linear model already scores above 0.99.
 - *zeroday: not drawn yet (results/metrics/zeroday/zeroday_NF-ToN-IoT-v2.json does not exist yet)*
 - **`results/figures/results_05_cross_dataset_transfer.png`** — Cross-dataset transfer with no retraining. For each model and direction, the blue dot is the in-dataset control and the orange dot is the same model scored on the other dataset (bar: one standard deviation over seeds, where more than one was run). Every control is healthy and every transfer falls to the level of a random model. † More than half of this direction's categorical values fall outside the source vocabulary, so it measures a degraded input as well as a different network.
-- **`results/figures/results_06_channel_weights.png`** — How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 60 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.
-- **`results/figures/results_07_top_features.png`** — The features that carry the detections: for each, the share of 60 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.
+- **`results/figures/results_06_channel_weights.png`** — How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 200 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.
+- **`results/figures/results_07_top_features.png`** — The features that carry the detections: for each, the share of 200 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.
 - *confusion: not drawn yet (the results predate scoring of the attack-family head (re-run train_gnn.py))*
 - *llm: not drawn yet (no language-model runs yet -- only the template control exists)*
 
 ## 12. Process
 
-- Automated tests in the repository: 242
+- Automated tests in the repository: 251
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

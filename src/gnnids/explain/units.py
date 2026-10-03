@@ -11,6 +11,14 @@ The forward pipeline is  clip -> log1p(x + shift) -> (x - mean) / std
 through it. **Clipping is not invertible** -- a value winsorised at the 99.999th
 percentile (D22) comes back as the clip bound, not its original magnitude -- so
 inverted values at the bound are flagged rather than presented as measurements.
+
+**Not used for evidence packs since 2026-10-03 (B14).** The inversion is exact in
+arithmetic and lossy in practice: the features are stored as float16, and a
+standardised value at that precision does not return the measurement. Ports came
+back exact 14% of the time; a 0 ms duration came back as 95.4422. Packs now read
+measured values from `raw_values.npy`. `UnitRestorer` stays because it documents
+the forward pipeline's inverse and its tests pin that pipeline down;
+`feature_names` is still what names the model's inputs.
 """
 
 from __future__ import annotations

@@ -108,12 +108,80 @@ def sweep_window_sizes(df, feats, splits, sizes, families) -> dict:
     return out
 
 
+META_COLUMNS = ["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "L4_DST_PORT", "PROTOCOL",
+                "IN_BYTES", "FLOW_DURATION_MILLISECONDS", LABEL_BINARY,
+                LABEL_MULTICLASS]
+
+
+def write_raw_values(df, schema, out_dir: Path) -> None:
+    """Every continuous feature in the units it was measured in, row-aligned
+    with the model's inputs.
+
+    The model's inputs are clipped, log-transformed, standardised and stored as
+    float16. Inverting that does not give the measurement back. Measured
+    2026-10-03 on 4,000 flows: a destination port came back exact 14% of the
+    time and up to 16 off (port 80 as 77.1452); a duration of 0 ms came back as
+    95.4422 every time. Evidence packs were built from those inverted values
+    and presented them as facts.
+
+    So the measured values are kept, as float64 because one throughput column
+    reaches 1e219 (A4), and memory-mapped because 5.9M x 31 is 1.5 GB and a
+    pack needs a few hundred rows of it.
+    """
+    names = list(schema.continuous)
+    raw = np.lib.format.open_memmap(
+        out_dir / "raw_values.npy", mode="w+", dtype=np.float64,
+        shape=(len(df), len(names)))
+    for j, name in enumerate(names):
+        raw[:, j] = df[name].to_numpy(dtype=np.float64)
+    raw.flush()
+    del raw
+    (out_dir / "raw_values.json").write_text(json.dumps(
+        {"columns": names, "n_rows": int(len(df)), "dtype": "float64",
+         "note": "raw measured values, row-aligned with edge_features.npy and "
+                 "meta.parquet"}, indent=2))
+
+
+def write_raw_only(df, schema, out_dir: Path) -> None:
+    """Add raw_values.npy to a dataset that was preprocessed before it existed.
+
+    The frame here was rebuilt by the same load and the same seeded window
+    permutation as the original run. That is only trustworthy if it is checked:
+    every column of the existing meta.parquet must match, row for row, or
+    nothing is written. A raw file misaligned by one window would put another
+    flow's port in every evidence pack.
+    """
+    import pandas as pd
+
+    meta_path = out_dir / "meta.parquet"
+    if not meta_path.exists():
+        raise SystemExit(f"no {meta_path} -- run the full preprocess first")
+    meta = pd.read_parquet(meta_path)
+    if len(meta) != len(df):
+        raise SystemExit(
+            f"row count differs: this load gives {len(df):,}, meta.parquet has "
+            f"{len(meta):,}. The original run used a different --max-rows.")
+    for col in meta.columns:
+        if not np.array_equal(meta[col].to_numpy(), df[col].to_numpy()):
+            raise SystemExit(
+                f"column {col} does not match meta.parquet row for row. The rows "
+                f"are not in the original order; nothing was written.")
+    print(f"  alignment verified: {len(meta.columns)} columns x {len(df):,} rows "
+          f"match meta.parquet exactly")
+    write_raw_values(df, schema, out_dir)
+    print(f"  raw_values.npy written -> {out_dir}\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "configs" / "preprocess.yaml")
     ap.add_argument("--no-sweep", action="store_true")
     ap.add_argument("--max-rows", type=int, default=None,
                     help="cap rows by reading whole parquet row groups (see loader)")
+    ap.add_argument("--raw-only", action="store_true",
+                    help="write raw_values.npy for an EXISTING preprocessed "
+                         "dataset, after verifying row-for-row alignment with its "
+                         "meta.parquet; touches nothing else")
     args = ap.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text())
@@ -157,6 +225,9 @@ def main() -> None:
         print("Splits (contiguous, purge gap "
               f"{sp['purge_gap']:,} rows either side of each boundary)")
     assert_no_overlap(splits)
+    if args.raw_only:
+        write_raw_only(df, schema, REPO_ROOT / cfg["output"]["dir"])
+        return
     for s in splits.values():
         rows = df.iloc[s.start:s.stop]
         print(f"  {s.name:<6} rows {s.start:>9,}-{s.stop:>9,}  "
@@ -239,9 +310,8 @@ def main() -> None:
     # Downstream scripts must not re-read the source parquet: when --max-rows
     # caps the load, the source has more rows than features.npz and the two
     # would silently misalign.
-    df[["IPV4_SRC_ADDR", "IPV4_DST_ADDR", "L4_DST_PORT", "PROTOCOL",
-        "IN_BYTES", "FLOW_DURATION_MILLISECONDS", LABEL_BINARY,
-        LABEL_MULTICLASS]].to_parquet(out_dir / "meta.parquet", index=False)
+    df[META_COLUMNS].to_parquet(out_dir / "meta.parquet", index=False)
+    write_raw_values(df, schema, out_dir)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

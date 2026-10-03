@@ -39,7 +39,7 @@ from gnnids.explain.sampling import Candidate, stratified_sample  # noqa: E402
 from gnnids.explain.evidence import (  # noqa: E402
     build_pack, config_hash, host_context, load_guidance, validate_pack,
 )
-from gnnids.explain.units import UnitRestorer, feature_names  # noqa: E402
+from gnnids.explain.units import feature_names  # noqa: E402
 from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
@@ -57,9 +57,10 @@ def load_model(ckpt_path: Path, device) -> tuple[torch.nn.Module, dict]:
 
 
 def pack_for_detection(
-    *, edge, batch, model, restorer, ip_lookup, families_inv, guidance,
+    *, edge, batch, model, ip_lookup, families_inv, guidance,
     attributions, alpha, scores, class_probs, threshold, ckpt, provenance_extra,
     feature_names, raw_cols, min_neighbour_importance, neighbours_tested,
+    raw_window, raw_names,
 ) -> tuple[dict, dict]:
     """One detection -> one pack, plus diagnostics that stay out of the pack.
 
@@ -71,20 +72,21 @@ def pack_for_detection(
     dst_local = int(batch.edge_index[1, edge])
 
     z_row = batch.edge_attr[edge].detach().cpu().numpy()
-    restored = restorer.restore_row(z_row)
 
-    # The flow, in the units it was measured in. Values the model never saw
-    # (the IPs) come from the metadata; values it did see are inverted back.
+    # The flow, in the units it was measured in -- read from the measurements
+    # themselves, not recovered from the model's inputs. Until 2026-10-03 these
+    # were inverted from the float16 standardised features, which returned port
+    # 80 as 77.1452 and a 0 ms duration as 95.4422, and the pack stated them as
+    # facts (B14). `raw_window` is row-aligned with the model's inputs and its
+    # alignment is verified when it is written (preprocess.py).
+    measured = {name: _measured(raw_window[edge, j])
+                for j, name in enumerate(raw_names)}
     flow = {
         "src_ip": ip_lookup(src_local),
         "dst_ip": ip_lookup(dst_local),
-        **{name: restored[name]["value"] for name in feature_names[:14]
-           if name in restored},
+        **{name: measured[name] for name in feature_names[:14] if name in measured},
         **raw_cols,
     }
-    lower_bounds = [n for n, v in restored.items() if not v.get("exact", True)]
-    if lower_bounds:
-        flow["_values_at_measurement_ceiling"] = lower_bounds
 
     probs = {families_inv[i]: round(float(p), 5) for i, p in enumerate(class_probs)}
     predicted = max(probs, key=probs.get)
@@ -104,8 +106,10 @@ def pack_for_detection(
             {"attribute": round(float(alpha[edge, 0]), 4),
              "topological": round(float(alpha[edge, 1]), 4)}
             if alpha is not None else None),
+        # A continuous feature shows its measured value. A one-hot indicator
+        # (`PROTOCOL=6`) keeps its 1.0: it is a property, not a quantity.
         "top_features": [
-            {**f, "value": restored.get(f["name"], {}).get("value", f["value"])}
+            {**f, "value": measured.get(f["name"], f["value"])}
             for f in top_features(attributions[edge], feature_names, z_row)
         ],
         "influential_neighbours": [],
@@ -157,10 +161,10 @@ def pack_for_detection(
             if tested else
             "No other flow shares a host with this one in this period.")
 
-    ports = np.array([restorer.restore("L4_DST_PORT", float(r[1]))["value"]
-                      for r in batch.edge_attr.detach().cpu().numpy()])
-    byts = np.array([restorer.restore("IN_BYTES", float(r[2]))["value"]
-                     for r in batch.edge_attr.detach().cpu().numpy()])
+    # Measured, for the same reason: counting DISTINCT ports over values
+    # recovered from float16 merges neighbouring ports into one and undercounts.
+    ports = raw_window[:, raw_names.index("L4_DST_PORT")]
+    byts = raw_window[:, raw_names.index("IN_BYTES")]
     context = {
         "window_flow_count": int(batch.edge_index.shape[1]),
         "window_host_count": int(batch.x.shape[0]),
@@ -175,6 +179,27 @@ def pack_for_detection(
         guidance={"attack_family": predicted, **fam_guidance},
         provenance={"checkpoint": ckpt_name(ckpt), **provenance_extra},
     ), diagnostics
+
+
+def _measured(v) -> float | int:
+    """A measured value as JSON: an integer where it is one, else 4 decimals."""
+    v = float(v)
+    if not np.isfinite(v):
+        return 0.0
+    return int(v) if v == int(v) and abs(v) < 1e15 else round(v, 4)
+
+
+def load_raw_values(proc: Path) -> tuple[np.ndarray, list[str]]:
+    """The measured values, memory-mapped. Required, not optional: without them
+    the only source for a pack's numbers is the lossy inversion this replaced."""
+    path, side = proc / "raw_values.npy", proc / "raw_values.json"
+    if not path.exists() or not side.exists():
+        raise SystemExit(
+            f"no raw_values.npy in {proc}. Evidence packs state measured values, "
+            f"and those are not recoverable from the model's inputs. Create it "
+            f"with:\n  python scripts/preprocess.py --config <preprocess config> "
+            f"[--max-rows N] --raw-only")
+    return np.load(path, mmap_mode="r"), json.loads(side.read_text())["columns"]
 
 
 def ckpt_name(ckpt: dict) -> str:
@@ -211,7 +236,6 @@ def main() -> None:
           f"{'   [SMOKE]' if args.smoke else ''}")
     inputs = load_graph_inputs(proc, ds_cfg["name"])
     pipeline_meta = json.loads((proc / "pipeline.json").read_text())
-    restorer = UnitRestorer(pipeline_meta)
     all_feature_names = feature_names(pipeline_meta)
     guidance = load_guidance(REPO_ROOT / cfg["guidance"])
     families_inv = {v: k for k, v in inputs.families.items()}
@@ -225,6 +249,7 @@ def main() -> None:
     import pandas as pd
     meta = pd.read_parquet(proc / "meta.parquet",
                            columns=["IPV4_SRC_ADDR", "IPV4_DST_ADDR"])
+    raw, raw_names = load_raw_values(proc)
 
     s = inputs.splits["test"]
     ds = SnapshotDataset(inputs.src, inputs.dst, inputs.edge_features,
@@ -302,7 +327,7 @@ def main() -> None:
         for c in chosen:
             edge, row = c.edge_index, c.row_index
             pack, diag = pack_for_detection(
-                edge=edge, batch=batch, model=model, restorer=restorer,
+                edge=edge, batch=batch, model=model,
                 ip_lookup=lambda local, b=batch, r=rows: _ip_for(local, b, r, meta),
                 families_inv=families_inv, guidance=guidance,
                 attributions=attributions, alpha=alpha_np, scores=scores,
@@ -316,6 +341,7 @@ def main() -> None:
                 feature_names=all_feature_names,
                 min_neighbour_importance=cfg["min_neighbour_importance"],
                 neighbours_tested=neighbours_tested,
+                raw_window=np.asarray(raw[rows]), raw_names=raw_names,
                 raw_cols={"true_label": c.true_family},
             )
             diagnostics[pack["detection_id"]] = diag
