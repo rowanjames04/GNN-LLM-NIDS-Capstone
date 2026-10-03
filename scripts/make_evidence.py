@@ -59,9 +59,14 @@ def load_model(ckpt_path: Path, device) -> tuple[torch.nn.Module, dict]:
 def pack_for_detection(
     *, edge, batch, model, restorer, ip_lookup, families_inv, guidance,
     attributions, alpha, scores, class_probs, threshold, ckpt, provenance_extra,
-    feature_names, raw_cols, min_neighbour_importance,
-) -> dict:
-    """One detection -> one pack."""
+    feature_names, raw_cols, min_neighbour_importance, neighbours_tested,
+) -> tuple[dict, dict]:
+    """One detection -> one pack, plus diagnostics that stay out of the pack.
+
+    The diagnostics (how many neighbours were tested, the largest influence
+    found) are for the explainability results, not for the language model, so
+    they go to the sampling file. The pack is the frozen GNN/LLM contract.
+    """
     src_local = int(batch.edge_index[0, edge])
     dst_local = int(batch.edge_index[1, edge])
 
@@ -110,8 +115,17 @@ def pack_for_detection(
     ei = batch.edge_index.cpu().numpy()
     touching = np.flatnonzero((ei[0] == src_local) | (ei[1] == dst_local)
                               | (ei[1] == src_local) | (ei[0] == dst_local))
-    for n in neighbour_influence(model, batch.x, batch.edge_index,
-                                 batch.edge_attr, edge, touching):
+    n_touching = int((touching != edge).sum())
+    influences = neighbour_influence(model, batch.x, batch.edge_index,
+                                     batch.edge_attr, edge, touching,
+                                     max_neighbours=neighbours_tested)
+    diagnostics = {
+        "neighbours_sharing_a_host": n_touching,
+        "neighbours_tested": len(influences),
+        "max_abs_influence": (max(abs(n["importance"]) for n in influences)
+                              if influences else None),
+    }
+    for n in influences:
         # Only neighbours that actually moved the score. Occluding one edge in
         # a 10,000-edge window typically moves it by ~1e-4, and listing five
         # such flows under the heading "influential neighbours" would hand the
@@ -129,10 +143,19 @@ def pack_for_detection(
         # Stated, not left as an empty list. Absence of a finding and absence of
         # a measurement look identical in JSON, and the LLM must not narrate the
         # first as though it were the second.
+        # And stated with its denominator. The note used to say "no single
+        # neighbouring flow" after testing five of what could be thousands.
+        tested = diagnostics["neighbours_tested"]
+        scope = (f"None of the {tested} neighbouring flows tested "
+                 f"(of {n_touching} sharing a host with this one)"
+                 if tested < n_touching else
+                 f"None of the {tested} flows sharing a host with this one")
         attribution["neighbour_note"] = (
-            f"No single neighbouring flow changed this score by more than "
+            f"{scope} changed this score by more than "
             f"{min_neighbour_importance}. The topological contribution here is "
-            f"diffuse across the neighbourhood rather than traceable to one flow.")
+            f"diffuse across the neighbourhood rather than traceable to one flow."
+            if tested else
+            "No other flow shares a host with this one in this period.")
 
     ports = np.array([restorer.restore("L4_DST_PORT", float(r[1]))["value"]
                       for r in batch.edge_attr.detach().cpu().numpy()])
@@ -151,7 +174,7 @@ def pack_for_detection(
         context=context,
         guidance={"attack_family": predicted, **fam_guidance},
         provenance={"checkpoint": ckpt_name(ckpt), **provenance_extra},
-    )
+    ), diagnostics
 
 
 def ckpt_name(ckpt: dict) -> str:
@@ -176,6 +199,8 @@ def main() -> None:
     window = cfg["smoke"]["window_size"] if args.smoke else pre_cfg["graph"]["window_size"]
     max_windows = cfg["smoke"]["max_windows"] if args.smoke else cfg["max_windows"]
     ig_steps = cfg["smoke"]["ig_steps"] if args.smoke else cfg["integrated_gradient_steps"]
+    neighbours_tested = (cfg["smoke"].get("neighbours_tested", 5) if args.smoke
+                         else cfg.get("neighbours_tested", 50))
 
     ckpt_path = args.checkpoint or (REPO_ROOT / cfg["checkpoint"])
     if not ckpt_path.exists():
@@ -255,7 +280,7 @@ def main() -> None:
         by_window.setdefault(c.window_index, []).append(c)
 
     print("  pass 2/2: attributing and building packs ...")
-    packs, checked = [], 0
+    packs, checked, diagnostics = [], 0, {}
     for wi in sorted(by_window):
         chosen = by_window[wi]
         batch = ds[wi].to(device)
@@ -276,7 +301,7 @@ def main() -> None:
 
         for c in chosen:
             edge, row = c.edge_index, c.row_index
-            pack = pack_for_detection(
+            pack, diag = pack_for_detection(
                 edge=edge, batch=batch, model=model, restorer=restorer,
                 ip_lookup=lambda local, b=batch, r=rows: _ip_for(local, b, r, meta),
                 families_inv=families_inv, guidance=guidance,
@@ -290,8 +315,10 @@ def main() -> None:
                 },
                 feature_names=all_feature_names,
                 min_neighbour_importance=cfg["min_neighbour_importance"],
+                neighbours_tested=neighbours_tested,
                 raw_cols={"true_label": c.true_family},
             )
+            diagnostics[pack["detection_id"]] = diag
             validate_pack(pack)
             checked += 1
             packs.append(pack)
@@ -307,7 +334,13 @@ def main() -> None:
         json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(),
                     "dataset": ds_cfg["name"], "checkpoint": ckpt_path.name,
                     "threshold": round(float(threshold), 5),
-                    **plan.as_dict()}, indent=2))
+                    **plan.as_dict(),
+                    # Per detection: how many neighbouring flows were occluded,
+                    # of how many, and the largest change any of them made.
+                    "neighbour_occlusion": {
+                        "tested_per_detection_cap": neighbours_tested,
+                        "threshold": cfg["min_neighbour_importance"],
+                        "by_detection": diagnostics}}, indent=2))
 
     print(f"{len(packs)} packs, all {checked} validated against schema "
           f"{packs[0]['schema_version'] if packs else 'n/a'}")

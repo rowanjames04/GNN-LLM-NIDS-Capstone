@@ -129,6 +129,7 @@ def neighbour_influence(
     target: int,
     candidates: np.ndarray,
     max_neighbours: int = 5,
+    seed: int = 0,
 ) -> list[dict]:
     """How far the target's score moves when each neighbouring flow is removed.
 
@@ -140,16 +141,28 @@ def neighbour_influence(
     reports is literally "the score changes by this much without that flow",
     which is also the sentence an analyst wants.
 
-    Its cost is one forward pass per candidate, so candidates are capped.
+    Its cost is one forward pass per candidate, so candidates are capped at
+    `max_neighbours`. **When there are more candidates than the cap, a random
+    sample is tested, not the first few.** Until 2026-10-03 this took
+    `candidates[:5]` -- the five lowest edge indices, i.e. the earliest flows in
+    the window that happened to share a host -- and the evidence pack then
+    reported that "no single neighbouring flow" moved the score. A busy host
+    has thousands of neighbouring flows; five chosen by position support no
+    statement about the rest. The sample is seeded per target so a pack is
+    identical on re-run, and the caller records how many were tested out of how
+    many there were.
     """
     model.eval()
     base_logit, _, _ = model(x, edge_index, edge_attr)
     base = float(torch.sigmoid(base_logit[target]))
 
+    candidates = np.asarray([c for c in candidates if int(c) != int(target)])
+    if len(candidates) > max_neighbours:
+        rng = np.random.default_rng(seed + int(target))
+        candidates = np.sort(rng.choice(candidates, size=max_neighbours, replace=False))
+
     out = []
-    for edge in candidates[:max_neighbours]:
-        if int(edge) == int(target):
-            continue
+    for edge in candidates:
         keep = torch.ones(edge_index.shape[1], dtype=torch.bool, device=edge_index.device)
         keep[int(edge)] = False
         logit, _, _ = model(x, edge_index[:, keep], edge_attr[keep])

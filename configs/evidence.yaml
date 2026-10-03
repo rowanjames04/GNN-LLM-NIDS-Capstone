@@ -42,6 +42,13 @@ integrated_gradient_steps: 32
 # the pack says so explicitly instead.
 min_neighbour_importance: 0.01
 
+# How many neighbouring flows are occluded per detection, at one forward pass
+# each. A busy host has thousands of neighbours, so when there are more than
+# this a seeded random sample is tested and the pack states "N tested of M".
+# Until 2026-10-03 this was the first 5 by position and the pack claimed "no
+# single neighbouring flow" -- B13 in the Defect Register.
+neighbours_tested: 50
+
 smoke:
   window_size: 2000
   max_windows: 2

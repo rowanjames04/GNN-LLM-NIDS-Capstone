@@ -225,3 +225,54 @@ def test_host_context_compares_a_host_to_its_own_window_not_a_global_average():
 def test_config_hash_is_stable_and_order_independent():
     assert config_hash({"a": 1, "b": 2}) == config_hash({"b": 2, "a": 1})
     assert config_hash({"a": 1}) != config_hash({"a": 2})
+
+
+# ------------------------------------------------- neighbour occlusion (B13)
+
+def _star_graph(n_edges=40, edge_dim=6):
+    """One busy host: every edge touches node 0."""
+    torch.manual_seed(0)
+    model = DualChannelGNN(edge_dim=edge_dim, hidden_dim=8, n_mlp_blocks=1,
+                           n_gnn_layers=1, n_classes=3, dropout=0.0).eval()
+    x = torch.zeros(n_edges + 1, 1)
+    edge_index = torch.stack([torch.zeros(n_edges, dtype=torch.long),
+                              torch.arange(1, n_edges + 1)])
+    return model, x, edge_index, torch.randn(n_edges, edge_dim)
+
+
+def test_occlusion_samples_the_neighbourhood_rather_than_taking_the_first_few():
+    """The pack's claim is about the neighbourhood. Testing the five lowest edge
+    indices -- the earliest flows in the window -- supports no claim about the
+    rest, and a busy host has thousands."""
+    from gnnids.explain.attribution import neighbour_influence
+    model, x, ei, ea = _star_graph()
+    candidates = np.arange(40)
+
+    out = neighbour_influence(model, x, ei, ea, target=7, candidates=candidates,
+                              max_neighbours=10)
+    tested = sorted(n["edge"] for n in out)
+
+    assert len(tested) == 10
+    assert 7 not in tested                       # never occludes the target
+    assert tested != list(range(10))             # not the prefix
+    assert max(tested) > 20                      # reaches the late edges
+
+
+def test_occlusion_is_identical_on_rerun():
+    """A pack has to be reproducible, so the sample is seeded per target."""
+    from gnnids.explain.attribution import neighbour_influence
+    model, x, ei, ea = _star_graph()
+
+    a = neighbour_influence(model, x, ei, ea, 7, np.arange(40), max_neighbours=10)
+    b = neighbour_influence(model, x, ei, ea, 7, np.arange(40), max_neighbours=10)
+
+    assert a == b
+
+
+def test_occlusion_tests_every_neighbour_when_there_are_few():
+    from gnnids.explain.attribution import neighbour_influence
+    model, x, ei, ea = _star_graph(n_edges=6)
+
+    out = neighbour_influence(model, x, ei, ea, 2, np.arange(6), max_neighbours=50)
+
+    assert sorted(n["edge"] for n in out) == [0, 1, 3, 4, 5]
