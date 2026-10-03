@@ -116,7 +116,9 @@ def main() -> None:
                          inputs["y"], inputs["y_multiclass"],
                          Split("transfer", 0, inputs["n_rows"]), window)
     print(f"  {len(ds)} windows of {window:,} edges\n")
-    scores, y, _, alpha = infer(model, DataLoader(ds, batch_size=8), device)
+    # The family prediction is discarded: the two datasets do not share an
+    # attack taxonomy, so the multi-class head has no valid target across them.
+    scores, y, _, alpha, _ = infer(model, DataLoader(ds, batch_size=8), device)
 
     target_prev = gnn_cfg["eval"]["target_prevalence"]
     seed = gnn_cfg["output"]["seed"]

@@ -140,6 +140,93 @@ def evaluate(
     return out
 
 
+def evaluate_multiclass(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    family_names: dict[str, int],
+    flagged: np.ndarray | None = None,
+    benign_name: str = "Benign",
+) -> dict:
+    """Score the attack-family head, which until 2026-10-03 was never scored.
+
+    The multi-class head is an auxiliary objective in training (D3), but it is
+    not auxiliary downstream: its argmax is the attack family written into every
+    evidence pack, so it is the family the language model is told about. A
+    report can be perfectly grounded in a pack that names the wrong attack.
+
+    Three views, because one accuracy figure would hide what matters:
+
+    - **Overall** accuracy and macro-F1 over all classes. Macro, not weighted:
+      weighting by support lets `scanning` (hundreds of thousands of flows)
+      drown `mitm` (hundreds), and the rare families are where a head fails.
+    - **Attack-family accuracy**: among true attacks only. Benign dominates the
+      overall figure and is the easy class.
+    - **On true-positive detections**: among attacks the binary head actually
+      flagged -- exactly the population that becomes evidence packs. Also how
+      often the two heads *disagree*, i.e. the binary head raises an alert while
+      this head calls the flow benign.
+
+    The confusion matrix is stored sparsely by name. Under leave-one-attack-out
+    its held-out row answers a question worth reporting: when the model catches
+    an attack it has never seen, which known family does it mistake it for?
+    """
+    inv = {v: k for k, v in family_names.items()}
+    labels = sorted(inv)
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    if len(y_true) == 0:
+        return {}
+
+    precision, recall, f1, support = precision_recall_fscore_support(
+        y_true, y_pred, labels=labels, zero_division=0)
+    present = support > 0          # macro over classes that occur in this split
+
+    per_class, confusion = {}, {}
+    for i, code in enumerate(labels):
+        if not present[i]:
+            continue
+        name = inv[code]
+        per_class[name] = {
+            "n": int(support[i]),
+            "precision": round(float(precision[i]), 5),
+            "recall": round(float(recall[i]), 5),
+            "f1": round(float(f1[i]), 5),
+        }
+        row = np.bincount(y_pred[y_true == code], minlength=max(labels) + 1)
+        confusion[name] = {inv[c]: int(n) for c, n in enumerate(row)
+                           if n and c in inv}
+
+    out = {
+        "n": int(len(y_true)),
+        "accuracy": round(float((y_true == y_pred).mean()), 5),
+        "macro_f1": round(float(f1[present].mean()), 5),
+        "per_class": per_class,
+        "confusion": confusion,
+    }
+
+    benign = family_names.get(benign_name)
+    if benign is not None:
+        attack = y_true != benign
+        if attack.any():
+            out["attack_family_accuracy"] = round(
+                float((y_true[attack] == y_pred[attack]).mean()), 5)
+            out["n_attack"] = int(attack.sum())
+        if flagged is not None:
+            flagged = np.asarray(flagged).astype(bool)
+            tp = attack & flagged
+            if tp.any():
+                out["on_true_positive_detections"] = {
+                    "n": int(tp.sum()),
+                    "family_accuracy": round(
+                        float((y_true[tp] == y_pred[tp]).mean()), 5),
+                    # The alert fired, and the family head says "Benign".
+                    "called_benign": round(float((y_pred[tp] == benign).mean()), 5),
+                }
+            if flagged.any():
+                out["heads_disagree_on_flagged"] = round(
+                    float((y_pred[flagged] == benign).mean()), 5)
+    return out
+
+
 def aggregate_seeds(runs: list[dict]) -> dict:
     """Mean +/- std across seeds for every scalar metric.
 

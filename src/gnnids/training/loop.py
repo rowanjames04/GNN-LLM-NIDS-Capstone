@@ -25,7 +25,7 @@ import torch
 from sklearn.metrics import average_precision_score
 from torch_geometric.loader import DataLoader
 
-from ..eval.metrics import choose_threshold
+from ..eval.metrics import choose_threshold, evaluate_multiclass
 from ..eval.prevalence import report_both, subsample_to_prevalence
 from ..models.dual_channel import DualChannelGNN, channel_attribution
 from ..models.mlp import FocalLoss
@@ -38,21 +38,29 @@ def pick_device(spec: str) -> torch.device:
 
 
 @torch.no_grad()
-def infer(model, loader, device) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Score every edge. Returns (scores, y, y_multiclass, fusion weights)."""
+def infer(model, loader, device
+          ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Score every edge.
+
+    Returns (scores, y, y_multiclass, fusion weights, predicted family). The
+    last is the argmax of the multi-class head -- the same rule
+    `make_evidence.py` uses to name the attack in an evidence pack, so scoring
+    it here measures exactly what the language model is later told.
+    """
     model.eval()
-    scores, ys, yms, alphas = [], [], [], []
+    scores, ys, yms, alphas, preds = [], [], [], [], []
     for batch in loader:
         batch = batch.to(device)
-        logit_b, _, alpha = model(batch.x, batch.edge_index, batch.edge_attr)
+        logit_b, logit_m, alpha = model(batch.x, batch.edge_index, batch.edge_attr)
         scores.append(torch.sigmoid(logit_b).cpu().numpy())
         ys.append(batch.y.cpu().numpy())
         yms.append(batch.y_multiclass.cpu().numpy())
+        preds.append(logit_m.argmax(dim=-1).cpu().numpy())
         if alpha is not None:
             alphas.append(alpha.cpu().numpy())
     return (
         np.concatenate(scores), np.concatenate(ys), np.concatenate(yms),
-        np.concatenate(alphas) if alphas else None,
+        np.concatenate(alphas) if alphas else None, np.concatenate(preds),
     )
 
 
@@ -132,7 +140,7 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
             opt.step()
             total += float(loss.detach())
 
-        val_scores, val_y, _, _ = infer(model, val_loader, device)
+        val_scores, val_y, _, _, _ = infer(model, val_loader, device)
         # Select on PR-AUC at the *target* prevalence, not native. Selecting at
         # 64% attack would optimise for a regime we do not report.
         idx = subsample_to_prevalence(val_y, target_prev, cfg["output"]["seed"])
@@ -155,15 +163,25 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
 
     model.load_state_dict(best_state)
 
-    val_scores, val_y, _, _ = infer(model, val_loader, device)
+    val_scores, val_y, _, _, _ = infer(model, val_loader, device)
     vidx = subsample_to_prevalence(val_y, target_prev, cfg["output"]["seed"])
     threshold = choose_threshold(val_y[vidx], val_scores[vidx], cfg["eval"]["threshold_mode"])
 
     test_loader = DataLoader(datasets["test"], batch_size=tcfg["batch_size"])
-    scores, y, ymc, alpha = infer(model, test_loader, device)
+    scores, y, ymc, alpha, pred_mc = infer(model, test_loader, device)
 
     out = report_both(y, scores, threshold, target_prev, ymc, datasets["families"],
                       cfg["output"]["seed"])
+    # Recorded in the result, not implied by its position in a list: a resumed
+    # or extended campaign merges runs out of order.
+    out["seed"] = seed
+    out["n_gnn_layers"] = cfg["model"]["n_gnn_layers"]
+    # The attack-family head, scored at native prevalence on the whole test
+    # split. `flagged` uses the same threshold as the binary metrics, so the
+    # "on true-positive detections" figure is over the flows that would become
+    # evidence packs.
+    out["multiclass"] = evaluate_multiclass(
+        ymc, pred_mc, datasets["families"], flagged=scores >= threshold)
     out["val_pr_auc_at_target"] = round(float(best_ap), 5)
     out["epochs_run"] = epochs_run
     # `best_epoch` is the diagnostic a fixed budget needs: if it equals the
