@@ -10,6 +10,15 @@ inference, so the graph stays intact while the metrics stay meaningful.
 Usage:
     python scripts/train_gnn.py --ablation full --seeds 1
     python scripts/train_gnn.py                       # all three ablations
+
+    # More seeds for some ablations, keeping every run already on disk (U2):
+    python scripts/train_gnn.py --ablation full channel1_only --seeds 10 --extend
+
+    # A variant gets its own files and checkpoints, never the headline's (U3):
+    python scripts/train_gnn.py --ablation full --n-gnn-layers 3
+
+A campaign interrupted part-way resumes: re-running the same command reuses
+every finished seed whose configuration matches.
 """
 
 from __future__ import annotations
@@ -30,38 +39,119 @@ from gnnids.data.splits import Split  # noqa: E402
 from gnnids.eval.metrics import aggregate_seeds  # noqa: E402
 from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
+from gnnids.training.campaign import (  # noqa: E402
+    checkpoint_name, fingerprint, read_if_matching, stem,
+)
 from gnnids.training.loop import pick_device, train_one  # noqa: E402
+
+ORDER = ("channel1_only", "channel2_only", "full")
+MULTICLASS_SCALARS = ("accuracy", "macro_f1", "attack_family_accuracy")
+
+
+def resolve(args) -> tuple[dict, str | None]:
+    """The config after command-line overrides, and the tag naming this variant.
+
+    A layer-count override changes what is being trained, so it must not write
+    to the headline files. It is tagged automatically if no tag was given.
+    """
+    cfg = yaml.safe_load(args.config.read_text())
+    tag = args.tag
+    if args.n_gnn_layers is not None:
+        cfg["model"]["n_gnn_layers"] = args.n_gnn_layers
+        tag = tag or f"layers{args.n_gnn_layers}"
+    return cfg, tag
+
+
+def requested_ablations(cfg: dict, args) -> list[str]:
+    asked = args.ablation or [k for k, v in cfg["ablations"].items()
+                              if isinstance(v, dict)]
+    return [a for a in ORDER if a in asked]
+
+
+def summarise(merged: dict, key: str) -> None:
+    """Attach per-ablation aggregates, with runs in seed order."""
+    for payload in merged.values():
+        payload["runs"].sort(key=lambda r: r.get("seed", 0))
+        payload["n_seeds"] = len(payload["runs"])
+        payload["aggregate"] = aggregate_seeds([r[key] for r in payload["runs"]])
+        # The attack-family head, aggregated beside the binary metrics so it
+        # cannot be left out of a table by omission.
+        mc = [{k: r["multiclass"].get(k) for k in MULTICLASS_SCALARS}
+              | {"family_accuracy_on_detections":
+                 (r["multiclass"].get("on_true_positive_detections") or {})
+                 .get("family_accuracy")}
+              for r in payload["runs"] if r.get("multiclass")]
+        if mc:
+            payload["multiclass_aggregate"] = aggregate_seeds(mc)
 
 
 def _run_seeds_in_subprocesses(args) -> int:
     """Re-invoke this script once per seed, then merge the partial results."""
     import subprocess
 
-    cfg = yaml.safe_load(args.config.read_text())
+    cfg, tag = resolve(args)
     pre_cfg = yaml.safe_load((REPO_ROOT / cfg["preprocess_config"]).read_text())
     ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
     n_seeds = args.seeds or cfg["train"]["n_seeds"]
     out_dir = REPO_ROOT / cfg["output"]["metrics"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    name = stem(ds_cfg["name"], tag)
+    out_path = out_dir / f"gnn_{name}.json"
+    fp = fingerprint(cfg)
+    wanted = requested_ablations(cfg, args)
 
-    merged, failed, completed = {}, [], []
+    # --extend starts from what the merged file already holds, so adding seeds
+    # to two ablations does not drop the third, or retrain seeds 0-2.
+    merged: dict = {}
+    if args.extend:
+        prior = read_if_matching(out_path, fp)
+        if prior is None and out_path.exists():
+            raise SystemExit(
+                f"--extend: {out_path.name} was produced by a different "
+                f"configuration, so its runs cannot be mixed with new ones. "
+                f"Use --tag for a separate experiment.")
+        merged = (prior or {}).get("results", {})
+
+    def have(ablation: str, seed: int) -> bool:
+        return any(r.get("seed") == seed
+                   for r in merged.get(ablation, {}).get("runs", []))
+
+    def absorb(payloads: dict) -> None:
+        for ab, payload in payloads.items():
+            merged.setdefault(ab, {"spec": payload["spec"], "runs": []})
+            for run in payload["runs"]:
+                if not have(ab, run.get("seed")):
+                    merged[ab]["runs"].append(run)
+
+    failed, completed = [], []
     for seed in range(n_seeds):
+        part = out_dir / f"partial_{name}_seed{seed}.json"
+        # A partial left by an interrupted campaign with this exact config.
+        left = read_if_matching(part, fp)
+        if left:
+            absorb(left["results"])
+            completed.append(part)
+        missing = [a for a in wanted if not have(a, seed)]
+        if not missing:
+            print(f"\n===== seed {seed}: already done, reused =====", flush=True)
+            continue
+
         cmd = [sys.executable, __file__, "--config", str(args.config),
-               "--single-seed", str(seed)]
-        if args.ablation:
-            cmd += ["--ablation"] + list(args.ablation)
+               "--single-seed", str(seed), "--ablation", *missing]
+        if tag:
+            cmd += ["--tag", tag]
+        if args.n_gnn_layers is not None:
+            cmd += ["--n-gnn-layers", str(args.n_gnn_layers)]
         if args.max_windows:
             cmd += ["--max-windows", str(args.max_windows)]
-        print(f"\n===== seed {seed} (fresh process) =====", flush=True)
+        print(f"\n===== seed {seed} (fresh process): {', '.join(missing)} =====",
+              flush=True)
         if subprocess.run(cmd).returncode != 0:
             print(f"  seed {seed} FAILED -- continuing with the rest", flush=True)
             failed.append(seed)
             continue
-        part = out_dir / f"partial_{ds_cfg['name']}_seed{seed}.json"
         if part.exists():
-            for ab, payload in json.loads(part.read_text())["results"].items():
-                merged.setdefault(ab, {"spec": payload["spec"], "runs": []})
-                merged[ab]["runs"].extend(payload["runs"])
+            absorb(json.loads(part.read_text())["results"])
             # C19: the partial is NOT deleted here. Until this fix, completed
             # seeds lived only in this process's memory and the merged file was
             # written after the last seed -- so a parent killed in hour 9 of a
@@ -71,16 +161,12 @@ def _run_seeds_in_subprocesses(args) -> int:
             completed.append(part)
 
     target_prev = cfg["eval"]["target_prevalence"]
-    key = f"at_{target_prev:.0%}"
-    for ab, payload in merged.items():
-        payload["n_seeds"] = len(payload["runs"])
-        payload["aggregate"] = aggregate_seeds([r[key] for r in payload["runs"]])
+    summarise(merged, f"at_{target_prev:.0%}")
 
     comparators = load_comparators(ds_cfg["name"], target_prev)
-    out_path = out_dir / f"gnn_{ds_cfg['name']}.json"
     out_path.write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "dataset": ds_cfg["name"], "config": cfg,
+        "dataset": ds_cfg["name"], "tag": tag, "fingerprint": fp, "config": cfg,
         "seeds_failed": failed,
         "phase3_comparators": comparators,
         "results": merged,
@@ -91,8 +177,7 @@ def _run_seeds_in_subprocesses(args) -> int:
         part.unlink(missing_ok=True)
 
     print()
-    print_comparison(comparators, merged,
-                     ("channel1_only", "channel2_only", "full"), target_prev)
+    print_comparison(comparators, merged, ORDER, target_prev)
     if "full" in merged and "channel1_only" in merged:
         gap = (merged["full"]["aggregate"]["pr_auc"]["mean"]
                - merged["channel1_only"]["aggregate"]["pr_auc"]["mean"])
@@ -203,6 +288,15 @@ def main() -> None:
                     help="internal: run exactly one seed and write a partial file")
     ap.add_argument("--in-process", action="store_true",
                     help="run seeds in this process instead of spawning one each")
+    ap.add_argument("--tag", default=None,
+                    help="name a variant run; it gets its own results file, "
+                         "partials and checkpoints")
+    ap.add_argument("--n-gnn-layers", type=int, default=None,
+                    help="override model.n_gnn_layers (the U3 sweep); tags the "
+                         "run 'layers<K>' unless --tag is given")
+    ap.add_argument("--extend", action="store_true",
+                    help="keep the runs already in the results file and train "
+                         "only the seeds that are missing")
     args = ap.parse_args()
 
     # One seed per process unless told otherwise. PyTorch's Metal allocator
@@ -216,9 +310,11 @@ def main() -> None:
             and (args.seeds or 3) > 1):
         raise SystemExit(_run_seeds_in_subprocesses(args))
 
-    cfg = yaml.safe_load(args.config.read_text())
+    cfg, tag = resolve(args)
+    fp = fingerprint(cfg)
     pre_cfg = yaml.safe_load((REPO_ROOT / cfg["preprocess_config"]).read_text())
     ds_cfg = yaml.safe_load((REPO_ROOT / pre_cfg["dataset_config"]).read_text())
+    run_name = stem(ds_cfg["name"], tag)
     proc = REPO_ROOT / pre_cfg["output"]["dir"]
     window = pre_cfg["graph"]["window_size"]
     n_seeds = args.seeds or cfg["train"]["n_seeds"]
@@ -264,8 +360,7 @@ def main() -> None:
         print("target: no Phase 3 baseline on this reporting path -- run "
               "scripts/train_baselines.py first\n")
 
-    to_run = args.ablation or list(cfg["ablations"].keys() - {"gnn_layer_sweep"})
-    order = [a for a in ("channel1_only", "channel2_only", "full") if a in to_run]
+    order = requested_ablations(cfg, args)
 
     results = {}
     for ablation in order:
@@ -277,7 +372,7 @@ def main() -> None:
             t0 = time.time()
             ckpt = (None if args.smoke else
                     REPO_ROOT / cfg["output"]["checkpoints"] /
-                    f"{ds_cfg['name']}_{ablation}_seed{seed}.pt")
+                    checkpoint_name(ds_cfg["name"], ablation, seed, tag))
             r = train_one(cfg, datasets, edge_dim, n_classes, spec, seed, device, ckpt)
             r["fit_seconds"] = round(time.time() - t0, 1)
             runs.append(r)
@@ -288,27 +383,32 @@ def main() -> None:
                   f"recall {adj['recall']:.4f}  {r['epochs_run']}ep "
                   f"({r['fit_seconds']:.0f}s, epoch {es[0]:.1f}->{es[-1]:.1f}s)")
         key = f"at_{cfg['eval']['target_prevalence']:.0%}"
-        results[ablation] = {
-            "spec": spec, "n_seeds": len(runs), "runs": runs,
-            "aggregate": aggregate_seeds([r[key] for r in runs]),
-        }
+        results[ablation] = {"spec": spec, "runs": runs}
+        summarise({ablation: results[ablation]}, key)
         agg = results[ablation]["aggregate"]
         print(f"  => PR-AUC {agg['pr_auc']['mean']:.4f} +/- {agg['pr_auc']['std']:.4f}"
-              f"   F1 {agg['f1']['mean']:.4f}\n")
+              f"   F1 {agg['f1']['mean']:.4f}")
+        mc = results[ablation].get("multiclass_aggregate", {})
+        if mc:
+            det = mc.get("family_accuracy_on_detections", {}).get("mean")
+            print(f"     family head: macro-F1 {mc['macro_f1']['mean']:.4f}   "
+                  f"right family on detections "
+                  f"{det if det is None else format(det, '.4f')}")
+        print()
 
     out_dir = REPO_ROOT / cfg["output"]["metrics"]
     out_dir.mkdir(parents=True, exist_ok=True)
     # Smoke results are meaningless by construction and must never overwrite a
     # real run. The first smoke test clobbered the Phase 4 results file; they
     # were only recoverable because they had been committed.
-    out_name = (f"smoke_gnn_{ds_cfg['name']}.json" if args.smoke
-                else f"partial_{ds_cfg['name']}_seed{args.single_seed}.json"
+    out_name = (f"smoke_gnn_{run_name}.json" if args.smoke
+                else f"partial_{run_name}_seed{args.single_seed}.json"
                 if args.single_seed is not None
-                else f"gnn_{ds_cfg['name']}.json")
+                else f"gnn_{run_name}.json")
     comparators = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"])
     (out_dir / out_name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "dataset": ds_cfg["name"], "config": cfg,
+        "dataset": ds_cfg["name"], "tag": tag, "fingerprint": fp, "config": cfg,
         "edge_dim": edge_dim, "window_size": window,
         "phase3_comparators": comparators,
         "results": results,
