@@ -43,7 +43,9 @@ def test_the_export_builds_from_the_committed_results():
     for heading in ("## 1. Datasets", "## 6. Zero-day", "## 7. Cross-dataset",
                     "## 9. Language-model comparison"):
         assert heading in text
-    assert "± 0.0000" not in text          # one seed is "one seed", not zero spread
+    # One seed is "one seed", never a standard deviation of exactly zero.
+    assert "± 0.0000 |" not in text
+    assert "(one seed)" in text
 
 
 def test_early_stopped_results_are_marked_superseded_wherever_they_appear(monkeypatch):
