@@ -144,7 +144,7 @@ step_baselines() {
 step_report() {
   run report "$PY" scripts/summarise_transfer.py
   run report "$PY" scripts/summarise_llm_study.py
-  for s in summarise_evidence make_figures export_report_facts; do
+  for s in export_llm_excerpts summarise_evidence make_figures export_report_facts; do
     [[ -f "scripts/$s.py" ]] && run report "$PY" "scripts/$s.py"
   done
 }

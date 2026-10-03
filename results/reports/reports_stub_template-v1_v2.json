@@ -13,10 +13,20 @@
     "reports_with_fabricated_addresses": 0,
     "reports_with_jargon": 0,
     "report_words_mean": 101.5833,
+    "classification_faithful_rate": 1.0,
+    "classification_substituted_rate": 0.0,
+    "attribution_coverage_mean": 0.4783,
+    "attribution_cites_none_rate": 0.0,
     "latency_seconds_mean": 0.0,
+    "latency_seconds_p50": 0.0,
+    "latency_seconds_p95": 0.0,
+    "generation_seconds_total": null,
+    "output_tokens_per_second": null,
     "total_cost_usd": 0.0,
+    "reference_cost_usd": null,
     "ambiguous_detections": 3,
     "uncertainty_conveyed_rate": 1.0,
+    "scoring_version": "2026-10-03",
     "determinism": {
       "supported": false,
       "note": "no determinism controls applied"
@@ -66,7 +76,29 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_SRC_PORT",
+          "L7_PROTO",
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "61aa03f1-4c43-4b6b-a86d-0cf8c57b2112",
@@ -111,7 +143,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS",
+          "DST_TO_SRC_SECOND_BYTES",
+          "DNS_QUERY_TYPE"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "0604f88a-cf6e-431c-b529-fa55cc4801a4",
@@ -156,7 +212,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "85aaf8e1-1f36-4033-96ef-30004a704234",
@@ -201,7 +280,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "e3aa886a-bb6f-4db2-a3b4-45bda09b7b31",
@@ -246,7 +348,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DNS_QUERY_TYPE"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "39069e84-3193-4294-a54c-24a0032e8356",
@@ -291,7 +416,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "SERVER_TCP_FLAGS"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "074293df-8668-4a96-ae2c-27a7912a17ba",
@@ -336,7 +485,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L4_SRC_PORT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_FLAGS"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "ec4f323a-340a-4259-b1fa-a2b33db813b9",
@@ -381,7 +553,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "Benign",
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_128_TO_256_BYTES"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "b89ab74e-58ce-40ef-a037-85f7daba0eaf",
@@ -426,7 +623,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "SERVER_TCP_FLAGS",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_OUT",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "59cac1e2-1648-47dd-92c4-669ad7829b15",
@@ -471,7 +692,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT",
+          "OUT_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "7ebe1237-cfd1-4b71-b303-2e49983a4a8e",
@@ -516,7 +761,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "IN_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "PROTOCOL"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "d164870d-3c89-4929-9eb4-68ee6338a697",
@@ -561,7 +830,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "81d8bc1d-04bc-4c0e-b364-86bdf7027c20",
@@ -606,7 +898,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "401b2575-a273-41c0-8b6c-800fff9e49e6",
@@ -651,7 +967,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "injection",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN",
+          "LONGEST_FLOW_PKT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9d63ff31-7580-4def-a415-af9571811675",
@@ -696,7 +1037,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "PROTOCOL"
+        ],
+        "coverage": 0.25,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9caea542-404b-4d42-953d-e89ef7cfbf46",
@@ -741,7 +1105,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "98188dc6-4fc3-4a77-a3c1-cdbb3d2ae939",
@@ -786,7 +1174,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "injection",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "LONGEST_FLOW_PKT"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "PROTOCOL",
+          "SRC_TO_DST_SECOND_BYTES"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "4777866d-bae9-43f7-bf4c-1cf8deced9a4",
@@ -831,7 +1244,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "L7_PROTO",
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "3b820afd-ec87-443b-b7e7-740170dbe014",
@@ -876,7 +1313,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "bc35012c-c452-4e2e-8e73-5a6dd2d4d2f5",
@@ -928,7 +1388,31 @@
         ],
         "uncertainty_conveyed": true
       },
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "DURATION_IN",
+          "SRC_TO_DST_AVG_THROUGHPUT",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "FLOW_DURATION_MILLISECONDS"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "80e837c7-5876-4c8c-b311-26cae99b4910",
@@ -973,7 +1457,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "SHORTEST_FLOW_PKT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "L7_PROTO",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "5ebb258f-a83e-4f38-974a-9642d6b145af",
@@ -1018,7 +1526,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "SHORTEST_FLOW_PKT",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "L7_PROTO",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "4bee9807-8387-488d-acbc-09e591e8cb14",
@@ -1063,7 +1595,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS",
+          "DNS_QUERY_TYPE",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "0bbd7fa1-ea79-418c-93f1-53c1244f4c5b",
@@ -1108,7 +1665,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_IN",
+          "SRC_TO_DST_AVG_THROUGHPUT",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DST_TO_SRC_SECOND_BYTES",
+          "SERVER_TCP_FLAGS"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "852e6cb5-4ee8-47b9-b1dc-0e1ac823838f",
@@ -1153,7 +1734,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_IN",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "FLOW_DURATION_MILLISECONDS",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "570e1dbf-4078-43d8-9418-aba0cc814ea2",
@@ -1198,7 +1803,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_IN",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "SERVER_TCP_FLAGS",
+          "FLOW_DURATION_MILLISECONDS"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "3e67306f-3722-415a-8573-0c7a08bd80ae",
@@ -1243,7 +1872,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "955cfcad-b127-412e-9a11-efaa58461b49",
@@ -1288,7 +1940,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_IN",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SRC_TO_DST_SECOND_BYTES",
+          "TCP_WIN_MAX_IN",
+          "L7_PROTO"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "c1d728aa-4948-4ba2-b4bf-348501ec1501",
@@ -1333,7 +2009,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "660dc504-24da-4e36-99ea-5acf4b51b41a",
@@ -1378,7 +2077,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "SHORTEST_FLOW_PKT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "L7_PROTO",
+          "L4_SRC_PORT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9f437146-338f-4c4d-9d62-d54ab090e80e",
@@ -1423,7 +2146,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "NUM_PKTS_256_TO_512_BYTES",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "b71e1e14-fa08-4e73-a39e-ef2e2c928796",
@@ -1468,7 +2215,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "IN_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "L7_PROTO"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "2ed8c768-d363-467e-9e1d-6878ff3f77a5",
@@ -1520,7 +2291,32 @@
         ],
         "uncertainty_conveyed": true
       },
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DURATION_IN",
+          "NUM_PKTS_256_TO_512_BYTES",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "OUT_PKTS"
+        ],
+        "coverage": 0.2,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "56ef8ee2-e4c7-468a-aa8a-f99efd9bf47c",
@@ -1572,7 +2368,32 @@
         ],
         "uncertainty_conveyed": true
       },
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DURATION_IN",
+          "NUM_PKTS_256_TO_512_BYTES",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "SRC_TO_DST_SECOND_BYTES"
+        ],
+        "coverage": 0.2,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "6b088b76-04e9-4c68-ad58-c4ec91732384",
@@ -1617,7 +2438,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "160b7de6-64a3-4ab8-acf7-c82654b227d2",
@@ -1662,7 +2507,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "DST_TO_SRC_SECOND_BYTES"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "7c585c0c-ba5d-4d7c-b8cd-69b5bcea491a",
@@ -1707,7 +2576,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DST_TO_SRC_SECOND_BYTES",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "8e6309aa-b09e-4007-b303-6b4ee945adbb",
@@ -1752,7 +2644,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "33dee435-0c65-4e44-8536-2d39c8901997",
@@ -1797,7 +2713,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "bca31efb-241c-43ae-8f17-9579f773ddeb",
@@ -1842,7 +2782,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "OUT_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "1578af09-a95e-4f19-b082-33396bb18b96",
@@ -1887,7 +2851,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "OUT_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "8631ed89-100e-448f-b2e7-19e848df15cd",
@@ -1932,7 +2920,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "OUT_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "a468b2fe-6b6a-44f1-91ab-310f71937c19",
@@ -1977,7 +2989,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "OUT_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "7e099a73-a1ba-497b-bce5-550826f69adb",
@@ -2022,7 +3058,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES"
+        ],
+        "features_missed": [
+          "SERVER_TCP_FLAGS",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "a4a20401-92e4-4208-820e-f25b4fc282e5",
@@ -2067,7 +3127,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "OUT_PKTS"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "6e06b353-6775-4946-958c-492f3a534612",
@@ -2112,7 +3196,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "injection",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "FLOW_DURATION_MILLISECONDS"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN",
+          "DURATION_IN"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "7611ca30-060d-429f-bb22-f1615fd5f1dd",
@@ -2157,7 +3266,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DURATION_IN",
+          "L4_SRC_PORT",
+          "PROTOCOL",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "coverage": 0.2,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "ed320e73-546e-4409-acf7-212327ba50c4",
@@ -2202,7 +3335,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "NUM_PKTS_128_TO_256_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN",
+          "TCP_WIN_MAX_OUT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "6d731761-1024-44fd-a5c0-d729b4274f7d",
@@ -2247,7 +3404,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "SERVER_TCP_FLAGS",
+          "L7_PROTO"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9f1b64cb-b9a5-4cab-9156-3af08bba614c",
@@ -2292,7 +3473,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "f4708193-e97c-4374-b016-1d2638d3d460",
@@ -2337,7 +3541,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "FTP_COMMAND_RET_CODE",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "22885951-9aed-4619-9e4b-0345d8804466",
@@ -2382,7 +3610,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "IN_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "bd177fe6-6499-4b8e-88cc-9a4233c209e2",
@@ -2427,7 +3678,30 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "FTP_COMMAND_RET_CODE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "78a249ef-eaf1-4f98-99cd-aa70c7c5e627",
@@ -2472,7 +3746,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "TCP_FLAGS",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9edaab4c-9a75-4e51-82f4-2863900fa5ec",
@@ -2517,7 +3815,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "TCP_FLAGS"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "6d5fa9c7-5c69-4921-8350-2dfb4f31de45",
@@ -2562,7 +3884,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DNS_TTL_ANSWER",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "ICMP_TYPE"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "30452741-26c9-473f-a83a-74d9c29b6bfc",
@@ -2607,7 +3953,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DNS_TTL_ANSWER",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "9b814e55-6526-4caf-b0c6-f468ca307a2a",
@@ -2652,7 +4022,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DNS_TTL_ANSWER",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "e75b5ec3-7981-4eae-aaa4-ec380d8bf0c0",
@@ -2697,7 +4091,31 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_1024_TO_1514_BYTES"
+        ],
+        "features_missed": [
+          "NUM_PKTS_512_TO_1024_BYTES",
+          "LONGEST_FLOW_PKT",
+          "DST_TO_SRC_SECOND_BYTES"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     },
     {
       "detection_id": "16b67d59-3a8f-4ee6-86d8-d6974493de34",
@@ -2742,7 +4160,32 @@
         "clean": true
       },
       "uncertainty": null,
-      "determinism": null
+      "determinism": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "NUM_PKTS_128_TO_256_BYTES",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN",
+          "TCP_WIN_MAX_OUT"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      }
     }
-  ]
+  ],
+  "rescored_at": "2026-10-03T05:22:21.001904+00:00"
 }

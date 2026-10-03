@@ -51,6 +51,14 @@ def rows() -> list[dict]:
             "reference_cost": s.get("reference_cost_usd",
                                     0.0 if d.get("provider") == "stub" else None),
             "uncertainty_rate": s.get("uncertainty_conveyed_rate"),
+            "class_faithful": s.get("classification_faithful_rate"),
+            "class_substituted": s.get("classification_substituted_rate"),
+            "attr_coverage": s.get("attribution_coverage_mean"),
+            "attr_cites_none": s.get("attribution_cites_none_rate"),
+            "latency_p50": s.get("latency_seconds_p50"),
+            "latency_p95": s.get("latency_seconds_p95"),
+            "tokens_per_second": s.get("output_tokens_per_second"),
+            "generation_seconds": s.get("generation_seconds_total"),
             # The false-positive arm, scored separately: on detections the
             # detector got WRONG, does the model still invent nothing?
             "n_false_positive": len(fp),
@@ -90,6 +98,22 @@ def main() -> None:
         print(f"  {name:<30} {r['n_false_positive']:>9} "
               f"{fmt(r['groundedness_on_fp']):>17} {fmt(r['uncertainty_rate']):>22} "
               f"{r['n_failed']:>7}")
+
+    # Did the report relay the detector's conclusions? Lexical checks -- see
+    # src/gnnids/llm/fidelity.py for what they cannot see.
+    print(f"\n  {'model':<30} {'prompt':<7} {'names class':>12} {'substitutes':>12} "
+          f"{'feat. cited':>12} {'cites none':>11} {'p50(s)':>7} {'p95(s)':>7} "
+          f"{'tok/s':>7}")
+    for r in sorted(data, key=lambda x: x["model"] or ""):
+        name = f"{r['provider']}/{r['model']}"
+        print(f"  {name:<30} {r['prompt'] or '-':<7} {fmt(r['class_faithful']):>12} "
+              f"{fmt(r['class_substituted']):>12} {fmt(r['attr_coverage']):>12} "
+              f"{fmt(r['attr_cites_none']):>11} {fmt(r['latency_p50'], '.2f'):>7} "
+              f"{fmt(r['latency_p95'], '.2f'):>7} "
+              f"{fmt(r['tokens_per_second'], '.1f'):>7}")
+    if any(r["class_faithful"] is None for r in data):
+        print("  n/a = written before these checks existed; run "
+              "scripts/rescore_reports.py (free, no model calls).")
 
     print(f"\n  {'model':<30} {'determinism applied':<24} note")
     for r in sorted(data, key=lambda x: x["model"] or ""):

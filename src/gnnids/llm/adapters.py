@@ -409,7 +409,8 @@ class OllamaAdapter:
                 input_tokens=r.get("prompt_eval_count"),
                 output_tokens=r.get("eval_count"),
                 cost_usd=None,
-                extra={"determinism": _determinism(self.temperature, self.seed)},
+                extra={"determinism": _determinism(self.temperature, self.seed),
+                       "timing": _ollama_timing(r)},
             )
         except Exception as e:                       # noqa: BLE001
             r = LLMResponse(
@@ -424,6 +425,27 @@ class OllamaAdapter:
             if isinstance(e, ConnectionError):
                 r.extra[INFRASTRUCTURE_ERROR] = "Ollama server unreachable"
             return r
+
+
+def _ollama_timing(r) -> dict:
+    """Where the time went, as the Ollama server measured it (nanoseconds in,
+    seconds out).
+
+    `latency_seconds` is wall-clock from the client and includes loading the
+    model into memory on the first call. `generation_seconds` is the time the
+    model spent producing tokens -- on a GPU runtime, the GPU-seconds the study
+    design asks for on the self-hosted arm. Until 2026-10-03 the server returned
+    these with every response and the adapter discarded them.
+    """
+    def seconds(key):
+        v = r.get(key)
+        return round(v / 1e9, 3) if isinstance(v, (int, float)) else None
+    return {
+        "generation_seconds": seconds("eval_duration"),
+        "prompt_seconds": seconds("prompt_eval_duration"),
+        "load_seconds": seconds("load_duration"),
+        "total_seconds": seconds("total_duration"),
+    }
 
 
 def _ollama_server_version(host: str | None) -> str | None:

@@ -36,12 +36,10 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from gnnids.llm.adapters import (  # noqa: E402
     INFRASTRUCTURE_ERROR, LIST_PRICES, build_adapter, reference_cost,
 )
-from gnnids.llm.groundedness import (  # noqa: E402
-    check_no_jargon, check_uncertainty_conveyed, score_report,
-)
 from gnnids.llm.prompts import DEFAULT_VERSION, build_prompt  # noqa: E402
 from gnnids.llm.provenance import session as run_session  # noqa: E402
 from gnnids.llm.resume import ReportLog, ResumeMismatch  # noqa: E402
+from gnnids.llm.scoring import score_all, summarise  # noqa: E402,F401
 
 # Providers whose every call is charged. Gemini can be (on a billed key), but its
 # free tier is how this study uses it (D36); the roster's `billing` field and
@@ -51,48 +49,6 @@ PAID_PROVIDERS = ("anthropic", "openai")
 # EX_TEMPFAIL from sysexits.h: the run stopped for a reason that may clear (a
 # quota, a restarted server) and can be resumed. Distinct from a crash.
 EXIT_RESUMABLE = 75
-
-
-def summarise(rows: list[dict]) -> dict:
-    """Aggregate the metric families that survive aggregation.
-
-    Groundedness is averaged over successful reports only, and the failure count
-    is reported beside it -- a model whose errored runs were dropped would look
-    better than one that returned a flawed report, which is backwards.
-    """
-    ok = [r for r in rows if r["ok"]]
-
-    def total(key):
-        # C21: an unknown cost is unknown, not zero. Summing None as 0.0 printed
-        # free-tier Gemini and Colab Ollama as $0.0000 -- a price they do not
-        # have, in the one column where the study compares prices.
-        vals = [r.get(key) for r in ok]
-        if any(v is None for v in vals):
-            return None
-        return round(sum(vals), 6)
-
-    def mean(key, source="scores"):
-        vals = [r[source][key] for r in ok
-                if isinstance(r[source].get(key), (int, float))]
-        return round(sum(vals) / len(vals), 4) if vals else None
-
-    unc = [r["uncertainty"] for r in ok if r.get("uncertainty")]
-    return {
-        "n": len(rows), "n_ok": len(ok), "n_failed": len(rows) - len(ok),
-        "groundedness_mean": mean("groundedness"),
-        "reports_with_fabricated_addresses": sum(
-            1 for r in ok if r["scores"]["fabricated_addresses"]),
-        "reports_with_jargon": sum(1 for r in ok if not r["jargon"]["clean"]),
-        "report_words_mean": mean("report_words"),
-        "latency_seconds_mean": round(
-            sum(r["latency_seconds"] for r in ok) / len(ok), 3) if ok else None,
-        "total_cost_usd": total("cost_usd"),
-        "reference_cost_usd": total("reference_cost_usd"),
-        "ambiguous_detections": len(unc),
-        "uncertainty_conveyed_rate": (
-            round(sum(u["uncertainty_conveyed"] for u in unc) / len(unc), 4)
-            if unc else None),
-    }
 
 
 def main() -> None:
@@ -196,10 +152,11 @@ def main() -> None:
             "reference_cost_usd": reference_cost(adapter.provider, adapter.model,
                                                  r.input_tokens, r.output_tokens),
             "input_tokens": r.input_tokens, "output_tokens": r.output_tokens,
-            "scores": score_report(pack, r.text) if r.ok else {},
-            "jargon": check_no_jargon(r.text) if r.ok else {},
-            "uncertainty": (check_uncertainty_conveyed(pack, r.text)
-                            if r.ok else None),
+            # Groundedness, jargon, uncertainty, and the two fidelity checks --
+            # one function, shared with rescore_reports.py.
+            **score_all(pack, r.text, r.ok),
+            # Server-reported generation time, where the provider gives one.
+            "timing": r.extra.get("timing"),
             # What determinism controls this call could actually be given. The
             # roster is not uniform, so this is recorded per response rather
             # than asserted once for the study.
@@ -242,8 +199,12 @@ def main() -> None:
     print("=" * 70)
     for k in ("n_ok", "n_failed", "groundedness_mean",
               "reports_with_fabricated_addresses", "reports_with_jargon",
-              "report_words_mean", "latency_seconds_mean", "total_cost_usd",
-              "reference_cost_usd",
+              "report_words_mean", "classification_faithful_rate",
+              "classification_substituted_rate", "attribution_coverage_mean",
+              "attribution_cites_none_rate", "latency_seconds_mean",
+              "latency_seconds_p50", "latency_seconds_p95",
+              "generation_seconds_total", "output_tokens_per_second",
+              "total_cost_usd", "reference_cost_usd",
               "ambiguous_detections", "uncertainty_conveyed_rate"):
         print(f"  {k:<38} {summary[k]}")
     print("\n  Groundedness means 'invented nothing', NOT 'reasoned correctly'.")
