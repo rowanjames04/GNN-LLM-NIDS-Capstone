@@ -124,3 +124,52 @@ def test_role_test_and_role_train_select_disjoint_attack_rows():
     assert (ymc[train_rows] == FAMILIES["ddos"]).sum() == 0
     assert (ymc[test_rows] == FAMILIES["ddos"]).sum() == 6
     assert set(np.unique(ymc[test_rows])) == {0, FAMILIES["ddos"]}
+
+
+# ------------------------------------------- what an unseen family is mistaken for
+
+def _load_zeroday():
+    import importlib.util
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location(
+        "train_zeroday_under_test", root / "scripts" / "train_zeroday.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_mistaken_for_pools_seeds_and_reports_shares():
+    """The family head has never seen the held-out family, so it cannot be
+    right. Which wrong family it names is what an evidence pack would tell the
+    language model about a novel attack."""
+    zd = _load_zeroday()
+    runs = [
+        {"multiclass": {"confusion": {"scanning": {"Benign": 60, "ddos": 40},
+                                      "Benign": {"Benign": 900}}}},
+        {"multiclass": {"confusion": {"scanning": {"Benign": 20, "ddos": 80}}}},
+    ]
+
+    out = zd.mistaken_for(runs, "scanning")
+
+    assert out == {"ddos": 0.6, "Benign": 0.4}          # 120 and 80 of 200
+    assert list(out) == ["ddos", "Benign"]              # largest first
+
+
+def test_mistaken_for_is_empty_when_nothing_was_scored():
+    zd = _load_zeroday()
+
+    assert zd.mistaken_for([{}, {"multiclass": {}}], "scanning") == {}
+
+
+def test_each_run_has_its_own_partial_file():
+    """24 runs, 24 files. A shared name is how a finished run gets overwritten
+    by the next one (C20)."""
+    from pathlib import Path
+    zd = _load_zeroday()
+    ctx = {"out_dir": Path("/tmp/x"), "ds_cfg": {"name": "NF-ToN-IoT-v2"}}
+
+    names = {zd.partial_path(ctx, f, s).name
+             for f in ("scanning", "xss") for s in (0, 1, 2)}
+
+    assert len(names) == 6
