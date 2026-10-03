@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-10-03T05:31:36.818463+00:00",
+  "smoke": false,
+  "figures": {
+    "ablation": {
+      "status": "drawn",
+      "file": "results_01_topology_ablation.png",
+      "caption": "Topology ablation on NF-ToN-IoT-v2. Each dot is one seed (n = 3 per variant); the tick is the mean. The variants share architecture, optimiser, depth and width, so the gap between the first and third is the contribution of message passing. Trained with early stopping (superseded by the fixed-budget re-run).",
+      "sources": [
+        {
+          "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+        }
+      ]
+    },
+    "gnn_vs_xgboost": {
+      "status": "drawn",
+      "file": "results_02_gnn_vs_xgboost.png",
+      "caption": "The graph model against XGBoost on NF-ToN-IoT-v2, both reported at 4% prevalence. Left: ranking quality. Right: the operating point reached at the validation-chosen threshold. Each dot is one seed; the tick is the mean. The two panels have separate scales and must be read together: the graph model ranks better and operates worse. Graph model trained with early stopping (superseded by the fixed-budget re-run).",
+      "sources": [
+        {
+          "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+        },
+        {
+          "file": "results/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-25T06:01:10.770504+00:00"
+        }
+      ]
+    },
+    "topology_by_dataset": {
+      "status": "drawn",
+      "file": "results_03_topology_gain_by_dataset.png",
+      "caption": "Gain in PR-AUC from message passing (full model minus the flow-features-only variant, matched by seed) on each dataset. Each dot is one seed; the tick is the mean; the line marks no gain. The gain is separated from zero on NF-ToN-IoT-v2 and not on NF-UNSW-NB15-v2, where a linear model already scores above 0.99.",
+      "sources": [
+        {
+          "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+        },
+        {
+          "file": "results/metrics/gnn/gnn_NF-UNSW-NB15-v2.json",
+          "generated_at": "2026-08-31T04:54:19.992514+00:00"
+        }
+      ]
+    },
+    "zeroday": {
+      "status": "skipped",
+      "reason": "results/metrics/zeroday/zeroday_NF-ToN-IoT-v2.json does not exist yet"
+    },
+    "transfer": {
+      "status": "drawn",
+      "file": "results_05_cross_dataset_transfer.png",
+      "caption": "Cross-dataset transfer with no retraining. For each model and direction, the blue dot is the in-dataset control and the orange dot is the same model scored on the other dataset (bar: one standard deviation over seeds, where more than one was run). Every control is healthy and every transfer falls to the level of a random model. \u2020 More than half of this direction's categorical values fall outside the source vocabulary, so it measures a degraded input as well as a different network.",
+      "sources": [
+        {
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-31T05:14:19.584522+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed0.json",
+          "generated_at": "2026-08-31T05:15:15.243112+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed1.json",
+          "generated_at": "2026-08-31T05:13:46.049625+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed2.json",
+          "generated_at": "2026-08-31T05:14:01.266558+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-31T05:02:54.546935+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-UNSW-NB15-v2.json",
+          "generated_at": "2026-08-31T05:03:25.313100+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_xgboost_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-31T05:14:50.705294+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_xgboost_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2.json",
+          "generated_at": "2026-08-31T05:06:58.808363+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_xgboost_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-08-31T05:07:56.222601+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_xgboost_NF-UNSW-NB15-v2_to_NF-UNSW-NB15-v2.json",
+          "generated_at": "2026-08-31T05:08:19.003522+00:00"
+        }
+      ]
+    },
+    "channel_weights": {
+      "status": "drawn",
+      "file": "results_06_channel_weights.png",
+      "caption": "How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 60 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.",
+      "sources": [
+        {
+          "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
+          "generated_at": "2026-10-03T05:27:09.350227+00:00"
+        }
+      ]
+    },
+    "top_features": {
+      "status": "drawn",
+      "file": "results_07_top_features.png",
+      "caption": "The features that carry the detections: for each, the share of 60 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.",
+      "sources": [
+        {
+          "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
+          "generated_at": "2026-10-03T05:27:09.350227+00:00"
+        }
+      ]
+    },
+    "confusion": {
+      "status": "skipped",
+      "reason": "the results predate scoring of the attack-family head (re-run train_gnn.py)"
+    },
+    "llm": {
+      "status": "skipped",
+      "reason": "no language-model runs yet -- only the template control exists"
+    }
+  }
+}
