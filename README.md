@@ -58,8 +58,9 @@ windows. Smoke output is written under a `smoke_` name and is never a result.
 ### 1. Data
 
 ```bash
-python scripts/download_data.py                      # fetch, verify checksum, CSV -> Parquet
-python scripts/verify_dataset.py
+python scripts/download_data.py                                      # NF-UNSW-NB15-v2
+python scripts/download_data.py --config configs/dataset_toniot.yaml # NF-ToN-IoT-v2
+python scripts/verify_dataset.py                    # what is actually in the file
 python scripts/preprocess.py                                             # NF-UNSW-NB15-v2
 python scripts/preprocess.py --config configs/preprocess_toniot.yaml --max-rows 6000000
 ```
