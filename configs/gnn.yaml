@@ -40,14 +40,15 @@ train:
   # than the seed ends up dominating the spread. Seed 0 ran 16 epochs in one
   # campaign and 28 in another, worth +0.0054 PR-AUC.
   #
-  # Set `early_stopping: false` to run the full `max_epochs` and keep the
-  # best-validation state anyway. Nothing is lost -- the best checkpoint is
+  # With `early_stopping: false` the loop runs the full `max_epochs` and keeps
+  # the best-validation state anyway. Nothing is lost -- the best checkpoint is
   # already tracked -- and every run in a campaign becomes comparable by
   # construction. Costs ~13 min/seed at ~19.5 s/epoch instead of ~6-9.
   #
-  # RECOMMENDED FOR STAGE C: false. Left true here so nothing about the
-  # existing Phase 4 results changes without an explicit decision.
-  early_stopping: true
+  # DECIDED 2026-10-03 (D39): false, for every Stage C run. The Phase 4 results
+  # from 2026-08-23 used early stopping and are superseded by the re-run; the
+  # leave-one-attack-out campaign inherits this setting through zeroday.yaml.
+  early_stopping: false
   patience: 6           # ignored when early_stopping is false
   grad_clip: 1.0
   focal_alpha: 0.75     # D8
@@ -69,7 +70,11 @@ ablations:
   channel1_only: {use_channel1: true,  use_channel2: false}   # = the MLP baseline
   channel2_only: {use_channel1: false, use_channel2: true}    # = plain E-GraphSAGE
   full:          {use_channel1: true,  use_channel2: true}
-  # Run after the headline result, not before.
+  # The U3 sweep. Not an ablation of its own: each value is run as
+  #   python scripts/train_gnn.py --ablation full --n-gnn-layers K
+  # which writes gnn_<dataset>__layersK.json and its own checkpoints, so the
+  # headline run (K = model.n_gnn_layers) is never overwritten. Run after the
+  # headline result, not before.
   gnn_layer_sweep: [1, 2, 3]
 
 output:

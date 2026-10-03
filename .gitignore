@@ -94,3 +94,7 @@ results/reports/study_manifest.json
 # In-progress report logs from an interrupted LLM run (src/gnnids/llm/resume.py).
 # Deleted once the run completes; never a result in their own right.
 results/reports/*.partial.jsonl
+
+# Per-launch logs from scripts/run_stage_c.sh. The results they describe are
+# committed; the logs are a local record of how a night went.
+results/logs/
