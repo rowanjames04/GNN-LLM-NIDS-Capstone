@@ -32,8 +32,7 @@ ollama>=0.4
 
 # UI (Phase 8 replay demo)
 streamlit>=1.39
-plotly>=5.24           # not yet used -- for the pending topology view
-pyvis>=0.3.2           # not yet used -- for the pending topology view
+plotly>=5.24           # the neighbourhood graph in the demo (ui/topology.py)
 
 # Config / CLI / secrets
 pyyaml>=6.0
@@ -57,3 +56,6 @@ ruff>=0.7
 #   networkx          torch-geometric covers the graph handling actually used
 #   scipy             transitive via scikit-learn; never imported directly
 #   typer, rich, tqdm never used -- the scripts are argparse CLIs
+#   pyvis             listed for a topology view that was built with plotly
+#                     instead: one fewer dependency, and it renders inside
+#                     Streamlit without an HTML file round-trip
