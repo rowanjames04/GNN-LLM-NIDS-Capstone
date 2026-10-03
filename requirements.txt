@@ -34,9 +34,8 @@ ollama>=0.4
 streamlit>=1.39
 plotly>=5.24           # the neighbourhood graph in the demo (ui/topology.py)
 
-# Config / CLI / secrets
+# Config
 pyyaml>=6.0
-python-dotenv>=1.0     # API keys live in .env, git-ignored
 
 # Dev
 pytest>=8.3
@@ -56,6 +55,9 @@ ruff>=0.7
 #   networkx          torch-geometric covers the graph handling actually used
 #   scipy             transitive via scikit-learn; never imported directly
 #   typer, rich, tqdm never used -- the scripts are argparse CLIs
+#   python-dotenv     never imported -- nothing loads a .env file. The model SDKs
+#                     read API keys from the environment, so keys are exported
+#                     in the shell (see the README)
 #   pyvis             listed for a topology view that was built with plotly
 #                     instead: one fewer dependency, and it renders inside
 #                     Streamlit without an HTML file round-trip

@@ -108,8 +108,14 @@ python scripts/run_llm_study.py --estimate                           # projected
 python scripts/run_llm_study.py --only paid free_tier --confirm-spend
 ```
 
-The cloud models need `ANTHROPIC_API_KEY` and `GEMINI_API_KEY` in `.env`. No
-paid call is made without `--confirm-spend`. The self-hosted models run in
+The cloud models read `ANTHROPIC_API_KEY` and `GEMINI_API_KEY` from the
+environment. Nothing loads a `.env` file automatically, so export them first:
+
+```bash
+set -a; source .env; set +a      # if the keys are kept in a git-ignored .env
+```
+
+No paid call is made without `--confirm-spend`. The self-hosted models run in
 Google Colab from `notebooks/colab_self_hosted_arm.ipynb`. Report generation is
 resumable, and `python scripts/rescore_reports.py` re-applies the scoring to
 saved reports without calling any model.

@@ -279,7 +279,8 @@ class GeminiAdapter:
         from google.genai import types
 
         # Credentials come from GEMINI_API_KEY / GOOGLE_API_KEY in the
-        # environment; nothing is passed in code (secrets live in .env).
+        # environment; nothing is passed in code, and nothing loads a .env
+        # file -- export the key in the shell first (see the README).
         client = genai.Client()
         cfg = {"system_instruction": system, "max_output_tokens": self.max_tokens}
         if self.temperature is not None:
