@@ -137,8 +137,11 @@ step_zeroday() { run zeroday "$PY" -u scripts/train_zeroday.py --seeds 3; }
 step_baselines() {
   # Two invocations: the MLP imports torch, and although XGBoost is not being
   # re-run here, keeping torch out of the scikit-learn process costs nothing.
-  run baselines "$PY" -u scripts/train_baselines.py --models logreg random_forest
-  run baselines "$PY" -u scripts/train_baselines.py --models mlp
+  # --preprocess-config is required: train_baselines.py defaults to
+  # NF-UNSW-NB15-v2, and the baselines the head-to-head needs are ToN-IoT's.
+  run baselines "$PY" -u scripts/train_baselines.py --preprocess-config "$TONIOT_PRE" \
+    --models logreg random_forest
+  run baselines "$PY" -u scripts/train_baselines.py --preprocess-config "$TONIOT_PRE" --models mlp
 }
 
 step_report() {
