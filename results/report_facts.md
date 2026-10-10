@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-10T09:42:06 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-10T10:10:14 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -50,16 +50,20 @@
 
 ### NF-ToN-IoT-v2
 
-*Source: `results/metrics/baselines/baselines_NF-ToN-IoT-v2.json`, generated 2026-08-25T06:01:10 UTC.*
+*Source: `results/metrics/baselines/baselines_NF-ToN-IoT-v2.json`, generated 2026-10-10T10:10:12 UTC.*
 
 Reported at 4% prevalence (PR-AUC of a random model: 0.04).
 
 | Model :: features | PR-AUC | F1 | FPR at 95% recall |
 |---|---|---|---|
+| logreg::flow | 0.9748 ± 0.0005 (n = 3) | 0.9174 ± 0.0039 (n = 3) | 0.00480 ± 0.00035 (n = 3) |
+| logreg::flow+host | 0.9833 ± 0.0066 (n = 3) | 0.9287 ± 0.0245 (n = 3) | 0.00497 ± 0.00346 (n = 3) |
+| mlp::flow | 0.9832 ± 0.0014 (n = 3) | 0.9322 ± 0.0091 (n = 3) | 0.00336 ± 0.00034 (n = 3) |
+| mlp::flow+host | 0.9833 ± 0.0089 (n = 3) | 0.8938 ± 0.0779 (n = 3) | 0.00812 ± 0.00847 (n = 3) |
+| random_forest::flow | 0.9710 ± 0.0006 (n = 3) | 0.9300 ± 0.0001 (n = 3) | 0.00453 ± 0.00003 (n = 3) |
+| random_forest::flow+host | 0.9753 ± 0.0005 (n = 3) | 0.8805 ± 0.0068 (n = 3) | 0.00383 ± 0.00017 (n = 3) |
 | xgboost::flow | 0.9860 ± 0.0005 (n = 3) | 0.9416 ± 0.0004 (n = 3) | 0.00284 ± 0.00006 (n = 3) |
 | xgboost::flow+host | 0.9809 ± 0.0011 (n = 3) | 0.9497 ± 0.0011 (n = 3) | 0.00237 ± 0.00012 (n = 3) |
-
-**Do not quote:** logreg::flow, logreg::flow+host, mlp::flow, mlp::flow+host, random_forest::flow, random_forest::flow+host. These were run before the reporting path was fixed and are at native prevalence, not 4%. Re-run with `python scripts/train_baselines.py`.
 
 ### NF-UNSW-NB15-v2
 
@@ -188,7 +192,7 @@ PR-AUC of a random model at this prevalence: 0.04.
 
 ## 8. Explainability (over the evidence packs)
 
-*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-10T09:42:05 UTC.*
+*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-10T10:10:13 UTC.*
 
 200 evidence packs: 170 true attacks and 30 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
 
