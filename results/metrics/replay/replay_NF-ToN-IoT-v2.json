@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-10-10T04:57:23.663551+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "checkpoint": "NF-ToN-IoT-v2_full_seed0.pt",
+  "note": "replay drives the demo and measures latency and trigger efficiency; it is NOT a real-time claim (D7)",
+  "smoke": false,
+  "window_size": 10000,
+  "threshold": 0.87859,
+  "stats": {
+    "windows": 100,
+    "flows": 1000000,
+    "alerts": 621320,
+    "true_positives": 620502,
+    "false_positives": 818,
+    "attacks_seen": 654658,
+    "precision": 0.9987,
+    "recall": 0.9478,
+    "alerts_per_1000_flows": 621.32,
+    "trigger_rate": 0.93,
+    "scoring_ms_median": 18.06,
+    "scoring_ms_p95": 26.96
+  }
+}

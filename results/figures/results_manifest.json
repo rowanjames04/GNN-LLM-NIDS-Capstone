@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-10-03T05:46:24.387156+00:00",
+  "generated_at": "2026-10-10T09:42:06.716915+00:00",
   "smoke": false,
   "figures": {
     "ablation": {
       "status": "drawn",
       "file": "results_01_topology_ablation.png",
-      "caption": "Topology ablation on NF-ToN-IoT-v2. Each dot is one seed (n = 3 per variant); the tick is the mean. The variants share architecture, optimiser, depth and width, so the gap between the first and third is the contribution of message passing. Trained with early stopping (superseded by the fixed-budget re-run).",
+      "caption": "Topology ablation on NF-ToN-IoT-v2. Each dot is one seed (n = 3 per variant); the tick is the mean. The variants share architecture, optimiser, depth and width, so the gap between the first and third is the contribution of message passing. Trained with fixed training budget.",
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+          "generated_at": "2026-10-10T04:53:38.489966+00:00"
         }
       ]
     },
     "gnn_vs_xgboost": {
       "status": "drawn",
       "file": "results_02_gnn_vs_xgboost.png",
-      "caption": "The graph model against XGBoost on NF-ToN-IoT-v2, both reported at 4% prevalence. Left: ranking quality. Right: the operating point reached at the validation-chosen threshold. Each dot is one seed; the tick is the mean. The two panels have separate scales and must be read together: the graph model ranks better and operates worse. Graph model trained with early stopping (superseded by the fixed-budget re-run).",
+      "caption": "The graph model against XGBoost on NF-ToN-IoT-v2, both reported at 4% prevalence. Left: ranking quality. Right: the operating point reached at the validation-chosen threshold. Each dot is one seed; the tick is the mean. The two panels have separate scales and must be read together: the graph model ranks better and operates worse. Graph model trained with fixed training budget.",
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+          "generated_at": "2026-10-10T04:53:38.489966+00:00"
         },
         {
           "file": "results/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
@@ -35,7 +35,7 @@
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-23T04:20:51.778081+00:00"
+          "generated_at": "2026-10-10T04:53:38.489966+00:00"
         },
         {
           "file": "results/metrics/gnn/gnn_NF-UNSW-NB15-v2.json",
@@ -44,8 +44,15 @@
       ]
     },
     "zeroday": {
-      "status": "skipped",
-      "reason": "results/metrics/zeroday/zeroday_NF-ToN-IoT-v2.json does not exist yet"
+      "status": "drawn",
+      "file": "results_04_zero_day_recall.png",
+      "caption": "Leave-one-attack-out on NF-ToN-IoT-v2: recall on each attack family when that family was removed entirely from training and validation. Each dot is one seed; the tick is the mean. Families are ordered by the number of held-out flows in the test split, shown in brackets. Hollow dots mark families with fewer than 20,000 test flows, whose recall is correspondingly uncertain. Not measurable on this dataset: ransomware.",
+      "sources": [
+        {
+          "file": "results/metrics/zeroday/zeroday_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-10-10T09:31:41.847677+00:00"
+        }
+      ]
     },
     "transfer": {
       "status": "drawn",
@@ -53,20 +60,20 @@
       "caption": "Cross-dataset transfer with no retraining. For each model and direction, the blue dot is the in-dataset control and the orange dot is the same model scored on the other dataset (bar: one standard deviation over seeds, where more than one was run). Every control is healthy and every transfer falls to the level of a random model. \u2020 More than half of this direction's categorical values fall outside the source vocabulary, so it measures a degraded input as well as a different network.",
       "sources": [
         {
-          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-31T05:14:19.584522+00:00"
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2__NF-ToN-IoT-v2_full_seed0.json",
+          "generated_at": "2026-10-10T04:54:38.019870+00:00"
         },
         {
-          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed0.json",
-          "generated_at": "2026-08-31T05:15:15.243112+00:00"
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed0.json",
+          "generated_at": "2026-10-10T04:53:53.361425+00:00"
         },
         {
-          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed1.json",
-          "generated_at": "2026-08-31T05:13:46.049625+00:00"
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed1.json",
+          "generated_at": "2026-10-10T04:54:07.634330+00:00"
         },
         {
-          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2_seed2.json",
-          "generated_at": "2026-08-31T05:14:01.266558+00:00"
+          "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed2.json",
+          "generated_at": "2026-10-10T04:54:21.900681+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2.json",
@@ -101,7 +108,7 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-03T05:46:12.335651+00:00"
+          "generated_at": "2026-10-10T09:42:05.933112+00:00"
         }
       ]
     },
@@ -112,13 +119,20 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-03T05:46:12.335651+00:00"
+          "generated_at": "2026-10-10T09:42:05.933112+00:00"
         }
       ]
     },
     "confusion": {
-      "status": "skipped",
-      "reason": "the results predate scoring of the attack-family head (re-run train_gnn.py)"
+      "status": "drawn",
+      "file": "results_08_attack_family_confusion.png",
+      "caption": "The attack-family head on the NF-ToN-IoT-v2 test split, seed 0: each row shows how flows of one true family were named. Cells below 0.05 are left unlabelled. Macro-F1 0.846; on true-positive detections the named family is correct for 98.0%.",
+      "sources": [
+        {
+          "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
+          "generated_at": "2026-10-10T04:53:38.489966+00:00"
+        }
+      ]
     },
     "llm": {
       "status": "skipped",

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-03T05:46:12.335651+00:00",
+  "generated_at": "2026-10-10T09:42:05.933112+00:00",
   "packs_source": "evidence_NF-ToN-IoT-v2.json",
   "checkpoint": "NF-ToN-IoT-v2_full_seed0.pt",
-  "threshold": 0.86577,
+  "threshold": 0.87859,
   "summary": {
     "n_packs": 200,
     "n_true_attacks": 170,
@@ -21,403 +21,411 @@
     "topological_weight": {
       "all": {
         "n": 200,
-        "mean": 0.5466,
-        "std": 0.2923,
-        "min": 0.0736,
-        "p25": 0.2443,
-        "median": 0.6559,
-        "p75": 0.8193,
-        "max": 0.9423
+        "mean": 0.5452,
+        "std": 0.2871,
+        "min": 0.0824,
+        "p25": 0.2469,
+        "median": 0.6482,
+        "p75": 0.8024,
+        "max": 0.9428
       },
       "true_attacks": {
         "n": 170,
-        "mean": 0.5384,
-        "std": 0.2945,
-        "min": 0.0736,
-        "p25": 0.2141,
-        "median": 0.6202,
-        "p75": 0.839,
-        "max": 0.9423
+        "mean": 0.5198,
+        "std": 0.2978,
+        "min": 0.0824,
+        "p25": 0.2334,
+        "median": 0.5729,
+        "p75": 0.8027,
+        "max": 0.9428
       },
       "false_positives": {
         "n": 30,
-        "mean": 0.593,
-        "std": 0.2749,
-        "min": 0.2546,
-        "p25": 0.2554,
-        "median": 0.8022,
-        "p75": 0.8161,
-        "max": 0.9288
+        "mean": 0.6892,
+        "std": 0.1495,
+        "min": 0.3284,
+        "p25": 0.6749,
+        "median": 0.7125,
+        "p75": 0.7861,
+        "max": 0.8792
       },
       "by_true_family": {
         "Benign": {
           "n": 30,
-          "mean": 0.593,
-          "std": 0.2749,
-          "min": 0.2546,
-          "p25": 0.2554,
-          "median": 0.8022,
-          "p75": 0.8161,
-          "max": 0.9288
+          "mean": 0.6892,
+          "std": 0.1495,
+          "min": 0.3284,
+          "p25": 0.6749,
+          "median": 0.7125,
+          "p75": 0.7861,
+          "max": 0.8792
         },
         "backdoor": {
           "n": 22,
-          "mean": 0.148,
-          "std": 0.0107,
-          "min": 0.1363,
-          "p25": 0.1363,
-          "median": 0.1462,
-          "p75": 0.1596,
-          "max": 0.1607
+          "mean": 0.0863,
+          "std": 0.0038,
+          "min": 0.0824,
+          "p25": 0.0825,
+          "median": 0.0839,
+          "p75": 0.0903,
+          "max": 0.0909
         },
         "ddos": {
           "n": 21,
-          "mean": 0.3212,
-          "std": 0.2055,
-          "min": 0.0736,
-          "p25": 0.1302,
-          "median": 0.2978,
-          "p75": 0.4352,
-          "max": 0.8496
+          "mean": 0.3784,
+          "std": 0.2019,
+          "min": 0.1204,
+          "p25": 0.1526,
+          "median": 0.4342,
+          "p75": 0.4823,
+          "max": 0.9051
         },
         "dos": {
           "n": 21,
-          "mean": 0.8007,
-          "std": 0.1512,
-          "min": 0.4301,
-          "p25": 0.7767,
-          "median": 0.8469,
-          "p75": 0.9206,
-          "max": 0.9419
+          "mean": 0.8068,
+          "std": 0.1389,
+          "min": 0.4275,
+          "p25": 0.7947,
+          "median": 0.8109,
+          "p75": 0.9231,
+          "max": 0.9344
         },
         "injection": {
           "n": 21,
-          "mean": 0.6966,
-          "std": 0.1494,
-          "min": 0.1879,
-          "p25": 0.7173,
-          "median": 0.7441,
-          "p75": 0.7632,
-          "max": 0.7838
+          "mean": 0.7055,
+          "std": 0.1708,
+          "min": 0.1523,
+          "p25": 0.6971,
+          "median": 0.7462,
+          "p75": 0.7891,
+          "max": 0.9276
         },
         "mitm": {
           "n": 21,
-          "mean": 0.8646,
-          "std": 0.0336,
-          "min": 0.8444,
-          "p25": 0.8474,
-          "median": 0.8492,
-          "p75": 0.8517,
-          "max": 0.9423
+          "mean": 0.8292,
+          "std": 0.0488,
+          "min": 0.8,
+          "p25": 0.8034,
+          "median": 0.8076,
+          "p75": 0.813,
+          "max": 0.9428
         },
         "password": {
           "n": 22,
-          "mean": 0.452,
-          "std": 0.1323,
-          "min": 0.2451,
-          "p25": 0.3591,
-          "median": 0.4012,
-          "p75": 0.5585,
-          "max": 0.7253
+          "mean": 0.365,
+          "std": 0.1682,
+          "min": 0.2113,
+          "p25": 0.2407,
+          "median": 0.2921,
+          "p75": 0.4699,
+          "max": 0.8633
         },
         "scanning": {
           "n": 21,
-          "mean": 0.2389,
-          "std": 0.1077,
-          "min": 0.144,
-          "p25": 0.2003,
-          "median": 0.212,
-          "p75": 0.2386,
-          "max": 0.7047
+          "mean": 0.2583,
+          "std": 0.0745,
+          "min": 0.1459,
+          "p25": 0.2174,
+          "median": 0.243,
+          "p75": 0.2947,
+          "max": 0.5007
         },
         "xss": {
           "n": 21,
-          "mean": 0.8078,
-          "std": 0.0802,
-          "min": 0.6647,
-          "p25": 0.7578,
-          "median": 0.7821,
-          "p75": 0.8817,
-          "max": 0.9341
+          "mean": 0.757,
+          "std": 0.1101,
+          "min": 0.63,
+          "p25": 0.66,
+          "median": 0.726,
+          "p75": 0.8388,
+          "max": 0.938
         }
       },
-      "share_of_packs_above_half": 0.55
+      "share_of_packs_above_half": 0.575
     },
     "features_shown_to_the_model": {
       "top_k": 5,
       "ranked": [
         {
           "feature": "L4_DST_PORT",
-          "packs": 168,
-          "share_of_packs": 0.84,
-          "mean_abs_contribution": 1.3065,
-          "raises_suspicion": 185,
-          "lowers_suspicion": 21
+          "packs": 173,
+          "share_of_packs": 0.865,
+          "mean_abs_contribution": 1.7087,
+          "raises_suspicion": 183,
+          "lowers_suspicion": 20
         },
         {
           "feature": "PROTOCOL",
-          "packs": 127,
-          "share_of_packs": 0.635,
-          "mean_abs_contribution": 1.1319,
-          "raises_suspicion": 86,
-          "lowers_suspicion": 41
-        },
-        {
-          "feature": "TCP_WIN_MAX_IN",
-          "packs": 88,
-          "share_of_packs": 0.44,
-          "mean_abs_contribution": 1.3084,
-          "raises_suspicion": 10,
-          "lowers_suspicion": 78
+          "packs": 143,
+          "share_of_packs": 0.715,
+          "mean_abs_contribution": 1.5204,
+          "raises_suspicion": 104,
+          "lowers_suspicion": 39
         },
         {
           "feature": "L7_PROTO",
-          "packs": 74,
-          "share_of_packs": 0.37,
-          "mean_abs_contribution": 0.8644,
-          "raises_suspicion": 39,
-          "lowers_suspicion": 35
+          "packs": 100,
+          "share_of_packs": 0.5,
+          "mean_abs_contribution": 1.3527,
+          "raises_suspicion": 43,
+          "lowers_suspicion": 57
         },
         {
-          "feature": "L4_SRC_PORT",
-          "packs": 49,
-          "share_of_packs": 0.245,
-          "mean_abs_contribution": 0.8778,
-          "raises_suspicion": 45,
-          "lowers_suspicion": 9
+          "feature": "TCP_WIN_MAX_IN",
+          "packs": 57,
+          "share_of_packs": 0.285,
+          "mean_abs_contribution": 1.932,
+          "raises_suspicion": 9,
+          "lowers_suspicion": 48
         },
         {
           "feature": "SHORTEST_FLOW_PKT",
-          "packs": 45,
-          "share_of_packs": 0.225,
-          "mean_abs_contribution": 0.9808,
-          "raises_suspicion": 1,
-          "lowers_suspicion": 44
+          "packs": 55,
+          "share_of_packs": 0.275,
+          "mean_abs_contribution": 1.9912,
+          "raises_suspicion": 4,
+          "lowers_suspicion": 51
         },
         {
-          "feature": "IN_BYTES",
-          "packs": 40,
-          "share_of_packs": 0.2,
-          "mean_abs_contribution": 1.0141,
-          "raises_suspicion": 28,
-          "lowers_suspicion": 12
+          "feature": "DNS_QUERY_TYPE",
+          "packs": 50,
+          "share_of_packs": 0.25,
+          "mean_abs_contribution": 1.0531,
+          "raises_suspicion": 14,
+          "lowers_suspicion": 37
+        },
+        {
+          "feature": "L4_SRC_PORT",
+          "packs": 33,
+          "share_of_packs": 0.165,
+          "mean_abs_contribution": 1.0585,
+          "raises_suspicion": 25,
+          "lowers_suspicion": 11
         },
         {
           "feature": "CLIENT_TCP_FLAGS",
-          "packs": 38,
-          "share_of_packs": 0.19,
-          "mean_abs_contribution": 1.4528,
-          "raises_suspicion": 32,
-          "lowers_suspicion": 6
+          "packs": 32,
+          "share_of_packs": 0.16,
+          "mean_abs_contribution": 1.6697,
+          "raises_suspicion": 19,
+          "lowers_suspicion": 13
         },
         {
-          "feature": "OUT_PKTS",
-          "packs": 35,
-          "share_of_packs": 0.175,
-          "mean_abs_contribution": 0.8388,
-          "raises_suspicion": 32,
-          "lowers_suspicion": 3
+          "feature": "IN_BYTES",
+          "packs": 31,
+          "share_of_packs": 0.155,
+          "mean_abs_contribution": 1.4292,
+          "raises_suspicion": 30,
+          "lowers_suspicion": 1
         },
         {
           "feature": "NUM_PKTS_UP_TO_128_BYTES",
-          "packs": 34,
-          "share_of_packs": 0.17,
-          "mean_abs_contribution": 1.0503,
-          "raises_suspicion": 2,
-          "lowers_suspicion": 32
-        },
-        {
-          "feature": "NUM_PKTS_512_TO_1024_BYTES",
-          "packs": 30,
-          "share_of_packs": 0.15,
-          "mean_abs_contribution": 1.1582,
+          "packs": 26,
+          "share_of_packs": 0.13,
+          "mean_abs_contribution": 1.9266,
           "raises_suspicion": 0,
-          "lowers_suspicion": 30
+          "lowers_suspicion": 26
         },
         {
           "feature": "IN_PKTS",
-          "packs": 23,
-          "share_of_packs": 0.115,
-          "mean_abs_contribution": 1.5442,
-          "raises_suspicion": 22,
+          "packs": 25,
+          "share_of_packs": 0.125,
+          "mean_abs_contribution": 1.8,
+          "raises_suspicion": 25,
+          "lowers_suspicion": 0
+        },
+        {
+          "feature": "TCP_WIN_MAX_OUT",
+          "packs": 24,
+          "share_of_packs": 0.12,
+          "mean_abs_contribution": 1.9633,
+          "raises_suspicion": 16,
+          "lowers_suspicion": 8
+        },
+        {
+          "feature": "SERVER_TCP_FLAGS",
+          "packs": 21,
+          "share_of_packs": 0.105,
+          "mean_abs_contribution": 1.201,
+          "raises_suspicion": 20,
           "lowers_suspicion": 1
         },
         {
           "feature": "DURATION_IN",
-          "packs": 22,
-          "share_of_packs": 0.11,
-          "mean_abs_contribution": 1.6901,
-          "raises_suspicion": 2,
-          "lowers_suspicion": 20
-        },
-        {
-          "feature": "LONGEST_FLOW_PKT",
-          "packs": 22,
-          "share_of_packs": 0.11,
-          "mean_abs_contribution": 1.1741,
-          "raises_suspicion": 0,
-          "lowers_suspicion": 22
-        },
-        {
-          "feature": "DNS_QUERY_TYPE",
           "packs": 21,
           "share_of_packs": 0.105,
-          "mean_abs_contribution": 0.7932,
-          "raises_suspicion": 5,
-          "lowers_suspicion": 16
-        },
-        {
-          "feature": "SERVER_TCP_FLAGS",
-          "packs": 20,
-          "share_of_packs": 0.1,
-          "mean_abs_contribution": 1.1499,
-          "raises_suspicion": 19,
-          "lowers_suspicion": 1
+          "mean_abs_contribution": 1.6687,
+          "raises_suspicion": 0,
+          "lowers_suspicion": 21
         },
         {
           "feature": "NUM_PKTS_1024_TO_1514_BYTES",
-          "packs": 17,
-          "share_of_packs": 0.085,
-          "mean_abs_contribution": 1.613,
+          "packs": 21,
+          "share_of_packs": 0.105,
+          "mean_abs_contribution": 2.5532,
           "raises_suspicion": 0,
-          "lowers_suspicion": 17
+          "lowers_suspicion": 21
         },
         {
-          "feature": "TCP_FLAGS",
-          "packs": 13,
-          "share_of_packs": 0.065,
-          "mean_abs_contribution": 0.9159,
-          "raises_suspicion": 6,
-          "lowers_suspicion": 7
+          "feature": "FTP_COMMAND_RET_CODE",
+          "packs": 18,
+          "share_of_packs": 0.09,
+          "mean_abs_contribution": 0.5555,
+          "raises_suspicion": 4,
+          "lowers_suspicion": 14
         },
         {
-          "feature": "DST_TO_SRC_SECOND_BYTES",
-          "packs": 12,
-          "share_of_packs": 0.06,
-          "mean_abs_contribution": 1.0148,
-          "raises_suspicion": 9,
-          "lowers_suspicion": 3
+          "feature": "FLOW_DURATION_MILLISECONDS",
+          "packs": 18,
+          "share_of_packs": 0.09,
+          "mean_abs_contribution": 1.7386,
+          "raises_suspicion": 17,
+          "lowers_suspicion": 1
         },
         {
           "feature": "NUM_PKTS_128_TO_256_BYTES",
+          "packs": 18,
+          "share_of_packs": 0.09,
+          "mean_abs_contribution": 1.9016,
+          "raises_suspicion": 0,
+          "lowers_suspicion": 18
+        },
+        {
+          "feature": "NUM_PKTS_512_TO_1024_BYTES",
+          "packs": 12,
+          "share_of_packs": 0.06,
+          "mean_abs_contribution": 1.3831,
+          "raises_suspicion": 0,
+          "lowers_suspicion": 12
+        },
+        {
+          "feature": "LONGEST_FLOW_PKT",
           "packs": 11,
           "share_of_packs": 0.055,
-          "mean_abs_contribution": 2.7051,
+          "mean_abs_contribution": 1.7828,
           "raises_suspicion": 0,
           "lowers_suspicion": 11
         },
         {
-          "feature": "SRC_TO_DST_SECOND_BYTES",
-          "packs": 11,
-          "share_of_packs": 0.055,
-          "mean_abs_contribution": 0.5419,
-          "raises_suspicion": 6,
+          "feature": "TCP_FLAGS",
+          "packs": 10,
+          "share_of_packs": 0.05,
+          "mean_abs_contribution": 0.8022,
+          "raises_suspicion": 5,
           "lowers_suspicion": 5
         },
         {
           "feature": "DNS_TTL_ANSWER",
-          "packs": 11,
-          "share_of_packs": 0.055,
-          "mean_abs_contribution": 0.8263,
-          "raises_suspicion": 0,
-          "lowers_suspicion": 11
-        },
-        {
-          "feature": "FLOW_DURATION_MILLISECONDS",
           "packs": 10,
           "share_of_packs": 0.05,
-          "mean_abs_contribution": 1.1453,
-          "raises_suspicion": 9,
-          "lowers_suspicion": 1
+          "mean_abs_contribution": 0.8858,
+          "raises_suspicion": 0,
+          "lowers_suspicion": 10
         },
         {
-          "feature": "ICMP_TYPE",
-          "packs": 7,
-          "share_of_packs": 0.035,
-          "mean_abs_contribution": 0.9285,
-          "raises_suspicion": 4,
+          "feature": "DST_TO_SRC_SECOND_BYTES",
+          "packs": 9,
+          "share_of_packs": 0.045,
+          "mean_abs_contribution": 1.4373,
+          "raises_suspicion": 6,
           "lowers_suspicion": 3
         },
         {
-          "feature": "TCP_WIN_MAX_OUT",
-          "packs": 7,
-          "share_of_packs": 0.035,
-          "mean_abs_contribution": 1.5556,
+          "feature": "ICMP_TYPE",
+          "packs": 9,
+          "share_of_packs": 0.045,
+          "mean_abs_contribution": 0.9496,
+          "raises_suspicion": 9,
+          "lowers_suspicion": 0
+        },
+        {
+          "feature": "DURATION_OUT",
+          "packs": 9,
+          "share_of_packs": 0.045,
+          "mean_abs_contribution": 1.2726,
           "raises_suspicion": 6,
-          "lowers_suspicion": 1
+          "lowers_suspicion": 3
+        },
+        {
+          "feature": "OUT_PKTS",
+          "packs": 8,
+          "share_of_packs": 0.04,
+          "mean_abs_contribution": 1.2516,
+          "raises_suspicion": 5,
+          "lowers_suspicion": 3
         },
         {
           "feature": "NUM_PKTS_256_TO_512_BYTES",
           "packs": 6,
           "share_of_packs": 0.03,
-          "mean_abs_contribution": 0.7399,
-          "raises_suspicion": 3,
-          "lowers_suspicion": 3
+          "mean_abs_contribution": 0.907,
+          "raises_suspicion": 2,
+          "lowers_suspicion": 4
         },
         {
-          "feature": "FTP_COMMAND_RET_CODE",
+          "feature": "OUT_BYTES",
           "packs": 5,
           "share_of_packs": 0.025,
-          "mean_abs_contribution": 0.3426,
+          "mean_abs_contribution": 1.0015,
           "raises_suspicion": 1,
           "lowers_suspicion": 4
         },
         {
-          "feature": "MAX_IP_PKT_LEN",
-          "packs": 3,
-          "share_of_packs": 0.015,
-          "mean_abs_contribution": 1.3446,
-          "raises_suspicion": 3,
-          "lowers_suspicion": 0
-        },
-        {
-          "feature": "SRC_TO_DST_AVG_THROUGHPUT",
-          "packs": 3,
-          "share_of_packs": 0.015,
-          "mean_abs_contribution": 1.338,
-          "raises_suspicion": 1,
+          "feature": "DST_TO_SRC_AVG_THROUGHPUT",
+          "packs": 4,
+          "share_of_packs": 0.02,
+          "mean_abs_contribution": 1.0094,
+          "raises_suspicion": 2,
           "lowers_suspicion": 2
         },
         {
-          "feature": "RETRANSMITTED_OUT_BYTES",
-          "packs": 3,
-          "share_of_packs": 0.015,
-          "mean_abs_contribution": 0.9577,
-          "raises_suspicion": 2,
+          "feature": "SRC_TO_DST_AVG_THROUGHPUT",
+          "packs": 2,
+          "share_of_packs": 0.01,
+          "mean_abs_contribution": 1.8327,
+          "raises_suspicion": 1,
           "lowers_suspicion": 1
         },
         {
-          "feature": "DST_TO_SRC_AVG_THROUGHPUT",
+          "feature": "MAX_IP_PKT_LEN",
+          "packs": 2,
+          "share_of_packs": 0.01,
+          "mean_abs_contribution": 1.8007,
+          "raises_suspicion": 2,
+          "lowers_suspicion": 0
+        },
+        {
+          "feature": "SRC_TO_DST_SECOND_BYTES",
+          "packs": 2,
+          "share_of_packs": 0.01,
+          "mean_abs_contribution": 0.9312,
+          "raises_suspicion": 2,
+          "lowers_suspicion": 0
+        },
+        {
+          "feature": "RETRANSMITTED_IN_PKTS",
           "packs": 1,
           "share_of_packs": 0.005,
-          "mean_abs_contribution": 0.3283,
+          "mean_abs_contribution": 2.2827,
           "raises_suspicion": 0,
           "lowers_suspicion": 1
-        },
-        {
-          "feature": "RETRANSMITTED_OUT_PKTS",
-          "packs": 1,
-          "share_of_packs": 0.005,
-          "mean_abs_contribution": 1.374,
-          "raises_suspicion": 1,
-          "lowers_suspicion": 0
         }
       ],
       "top3_by_true_family": {
         "Benign": [
-          "TCP_WIN_MAX_IN",
           "L4_DST_PORT",
-          "SERVER_TCP_FLAGS"
+          "PROTOCOL",
+          "L7_PROTO"
         ],
         "backdoor": [
-          "IN_PKTS",
+          "L7_PROTO",
           "NUM_PKTS_UP_TO_128_BYTES",
-          "OUT_PKTS"
+          "IN_PKTS"
         ],
         "ddos": [
           "L4_DST_PORT",
           "PROTOCOL",
-          "TCP_WIN_MAX_IN"
+          "L7_PROTO"
         ],
         "dos": [
           "L4_DST_PORT",
@@ -427,7 +435,7 @@
         "injection": [
           "L4_DST_PORT",
           "PROTOCOL",
-          "TCP_WIN_MAX_IN"
+          "NUM_PKTS_1024_TO_1514_BYTES"
         ],
         "mitm": [
           "L4_DST_PORT",
@@ -437,7 +445,7 @@
         "password": [
           "L4_DST_PORT",
           "TCP_WIN_MAX_IN",
-          "PROTOCOL"
+          "NUM_PKTS_128_TO_256_BYTES"
         ],
         "scanning": [
           "PROTOCOL",
@@ -447,34 +455,35 @@
         "xss": [
           "L4_DST_PORT",
           "PROTOCOL",
-          "TCP_WIN_MAX_IN"
+          "L7_PROTO"
         ]
       }
     },
     "family_named_to_the_model": {
-      "correct_on_true_attacks": 0.8529,
+      "correct_on_true_attacks": 0.8588,
       "n_true_attacks": 170,
       "false_positives_named_as": {
-        "scanning": 14,
-        "ddos": 9,
-        "password": 4,
-        "dos": 3
+        "scanning": 21,
+        "password": 5,
+        "xss": 2,
+        "injection": 1,
+        "ddos": 1
       },
-      "ambiguous_packs": 16
+      "ambiguous_packs": 22
     },
     "neighbour_occlusion": {
       "threshold": 0.01,
       "tested_per_detection_cap": 50,
-      "packs_with_an_influential_neighbour": 0,
+      "packs_with_an_influential_neighbour": 1,
       "neighbours_sharing_a_host": {
         "n": 200,
-        "mean": 5343.485,
-        "std": 2392.4159,
+        "mean": 5571.545,
+        "std": 2129.5445,
         "min": 119.0,
-        "p25": 3648.5,
-        "median": 5535.5,
-        "p75": 6842.0,
-        "max": 9921.0
+        "p25": 3747.5,
+        "median": 5554.0,
+        "p75": 6856.0,
+        "max": 9934.0
       },
       "neighbours_tested": {
         "n": 200,
@@ -489,8 +498,8 @@
       "max_abs_influence": {
         "n": 200,
         "median": 1e-05,
-        "p95": 0.00021,
-        "max": 0.00527
+        "p95": 0.0002809999999999996,
+        "max": 0.01541
       }
     }
   }
