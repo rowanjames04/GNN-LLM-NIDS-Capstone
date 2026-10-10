@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-03T05:46:24 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-10T03:31:30 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -247,6 +247,6 @@ Write `[NUM?]` wherever a number from this section is needed.
 
 ## 12. Process
 
-- Automated tests in the repository: 251
+- Automated tests in the repository: 257
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 
