@@ -14,10 +14,10 @@ the number worth seeing before committing: a roster of five models over 200
 packs is five times the per-model estimate. `free_tier` and `self_hosted`
 entries run without the flag (see `billing` in configs/llm.yaml).
 
-**Arms run in different places** (D35). The cloud arms run from the Mac; the
-self-hosted arm runs inside a Colab notebook next to its Ollama server. `--only`
-selects by billing class or provider name, so each place runs only its half and
-Colab never tries to reach Claude without a key.
+**The study is self-hosted only** (D43): the enabled roster is the template
+control and open-weight models served by Ollama inside a Colab notebook (D35).
+`--only` selects by billing class or provider name. The cloud adapters remain
+and their roster entries are disabled; the spend gate still guards them.
 
 Usage:
     python scripts/run_llm_study.py --smoke                          # stub only, free

@@ -8,8 +8,8 @@ and from what its two hosts are doing. For each detection it assembles a
 structured evidence pack, which a language model turns into a plain-language
 incident report. The project measures three things: what message passing adds
 over a topology-blind model, how much of that survives on attack families and
-networks the model has never seen, and how faithfully different cloud and
-self-hosted language models relay the evidence.
+networks the model has never seen, and how faithfully different self-hosted,
+open-weight language models relay the evidence.
 
 UTS Honours capstone (41030), 2026. Supervisor: Dr Tanzeela Altaf.
 
@@ -103,20 +103,19 @@ python scripts/train_gnn.py --ablation full --n-gnn-layers 3     # a tagged vari
 
 ### 3. Language-model study
 
-```bash
-python scripts/run_llm_study.py --estimate                           # projected cost, calls nothing
-python scripts/run_llm_study.py --only paid free_tier --confirm-spend
-```
-
-The cloud models read `ANTHROPIC_API_KEY` and `GEMINI_API_KEY` from the
-environment. Nothing loads a `.env` file automatically, so export them first:
+The study compares open-weight models served by Ollama, and nothing else: the
+use case is a security team that will not send detection evidence to a
+third-party model API. The models run on a Google Colab GPU from
+`notebooks/colab_self_hosted_arm.ipynb`, which stands in for hardware such a
+team would own. A template with no model is the control arm.
 
 ```bash
-set -a; source .env; set +a      # if the keys are kept in a git-ignored .env
+python scripts/run_llm_study.py --only stub              # the control arm, anywhere
+python scripts/run_llm_study.py --only self_hosted       # inside the Colab notebook
 ```
 
-No paid call is made without `--confirm-spend`. The self-hosted models run in
-Google Colab from `notebooks/colab_self_hosted_arm.ipynb`. Report generation is
+Adapters for Anthropic, OpenAI and Gemini exist and are disabled in
+`configs/llm.yaml`; no call to any of them was ever made. Report generation is
 resumable, and `python scripts/rescore_reports.py` re-applies the scoring to
 saved reports without calling any model.
 
