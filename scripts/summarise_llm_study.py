@@ -116,15 +116,22 @@ def main() -> None:
               "scripts/rescore_reports.py (free, no model calls).")
 
     print(f"\n  {'model':<30} {'determinism applied':<24} note")
+    applied_seen = set()
     for r in sorted(data, key=lambda x: x["model"] or ""):
         d = r["determinism"]
         applied = ("temperature+seed" if d.get("temperature") is not None and d.get("seed") is not None
                    else "temperature" if d.get("temperature") is not None
                    else "seed" if d.get("seed") is not None else "none")
         print(f"  {r['provider']}/{r['model']:<24} {applied:<24} {d.get('note', '')}")
-    print("\n  The roster is NOT uniform on determinism: sampling controls were "
-          "removed on the\n  current Claude generation. Report this asymmetry "
-          "rather than claiming temperature 0.")
+        if r["provider"] != "stub":
+            applied_seen.add(applied)
+    if len(applied_seen) > 1:
+        print("\n  The roster is NOT uniform on determinism. Report what each model "
+              "was given\n  rather than claiming one setting for all.")
+    elif applied_seen:
+        print(f"\n  Every model was given the same controls ({applied_seen.pop()}). "
+              "That fixes the\n  request, not the output: quantised inference on a GPU "
+              "is not guaranteed bitwise\n  repeatable.")
 
     _print_provenance(data)
 
@@ -163,9 +170,9 @@ def _print_provenance(data: list[dict]) -> None:
               f"{m.get('parameter_size') or '-':<7} {', '.join(sorted(gpus)):<22} "
               f"{','.join(c[:8] for c in sorted(commits)) or '-'}"
               + ("  DIRTY TREE" if dirty else ""))
-    print("\n  Latency is hardware-bound: the self-hosted arm ran on an assigned "
-          "Colab GPU and\n  the cloud arms include network time. Compare latency "
-          "within an arm, never across.")
+    print("\n  Latency is hardware-bound: Colab assigns the GPU per session. "
+          "Compare latency only\n  between models that ran on the same GPU, and "
+          "never against a model served elsewhere.")
 
 
 if __name__ == "__main__":
