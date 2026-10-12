@@ -104,8 +104,8 @@ python scripts/train_gnn.py --ablation full --n-gnn-layers 3     # a tagged vari
 ### 3. Language-model study
 
 The study compares open-weight models, called through Ollama's hosted service
-(ollama.com). A template with no model is the control arm. The calls are billed
-per token and the evidence packs are sent to that service, so this is not an
+(ollama.com) on its free usage credits. A template with no model is the
+control arm. The evidence packs are sent to that service, so this is not an
 on-premises run; the packs are derived from a public benchmark.
 
 ```bash
@@ -114,10 +114,10 @@ python scripts/run_llm_study.py --estimate               # projected cost, calls
 
 ```bash
 set -a; source .env; set +a                              # OLLAMA_API_KEY
-python scripts/run_llm_study.py --only ollama --confirm-spend
+python scripts/run_llm_study.py --only ollama
 ```
 
-No paid call is made without `--confirm-spend`. Adapters for Anthropic, OpenAI
+No entry marked `billing: paid` is called without `--confirm-spend`. Adapters for Anthropic, OpenAI
 and Gemini exist and are disabled in `configs/llm.yaml`, as is a roster of
 smaller models for a local Ollama server (`notebooks/colab_self_hosted_arm.ipynb`
 runs those on a Colab GPU). Report generation is resumable, and

@@ -24,8 +24,13 @@ n_reports: 200          # the stratified sample size in the study design
 # models only (D43 stands on that point), but served by ollama.com, not by
 # hardware we run: a free Colab GPU has the same 16 GB as the Mac, and Rowan
 # chose larger models over keeping the run in-house. Consequences recorded in
-# the Decision Register: the evidence packs are sent to a third-party API, the
-# calls are billed per token, and the serving hardware is not disclosed.
+# the Decision Register: the evidence packs are sent to a third-party API and
+# the serving hardware is not disclosed.
+#
+# D45 (2026-10-12): the roster is the six models the account's FREE usage
+# credits cover. No subscription and no purchased credit, so nothing is charged
+# and the entries are `free_tier`. If credit is ever added to the account,
+# change them to `paid` so the spend gate applies.
 #
 # `billing` decides what the spend gate guards, and `--only` selects arms by it:
 #   paid         real money per call; refused without --confirm-spend
@@ -36,7 +41,7 @@ n_reports: 200          # the stratified sample size in the study design
 #
 # The study runs from the Mac:
 #   set -a; source .env; set +a          # OLLAMA_API_KEY
-#   python scripts/run_llm_study.py --only ollama --confirm-spend
+#   python scripts/run_llm_study.py --only ollama
 roster:
   - {provider: stub, billing: free, enabled: true}          # control arm; deterministic
   # D43: disabled. Closed-weight vendor models are out of scope.
@@ -44,16 +49,22 @@ roster:
   - {provider: anthropic, model: claude-haiku-4-5, billing: paid, enabled: false}
   - {provider: openai, model: gpt-4o, billing: paid, enabled: false}        # D36
   - {provider: gemini, model: gemini-3.8-flash, billing: free_tier, enabled: false}
-  # D44: six open-weight models from Ollama's hosted catalogue, five developers,
-  # and one same-family size pair (gpt-oss 20b against 120b). Size and
-  # quantisation are what ollama.com/api/show reported on 2026-10-12; each run
-  # records them again with the digest -- quote the digest, not the tag.
-  - {provider: ollama, model: "gpt-oss:20b", billing: paid, enabled: true}           # OpenAI, 21B, MXFP4
-  - {provider: ollama, model: "gpt-oss:120b", billing: paid, enabled: true}          # OpenAI, 117B, MXFP4
-  - {provider: ollama, model: "gemma4:31b", billing: paid, enabled: true}            # Google, 33B, BF16
-  - {provider: ollama, model: "nemotron-3-nano:30b", billing: paid, enabled: true}   # NVIDIA, 32B, FP8
-  - {provider: ollama, model: "mistral-large-3:675b", billing: paid, enabled: true}  # Mistral, 675B, FP8; no thinking
-  - {provider: ollama, model: "deepseek-v4.1-flash", billing: paid, enabled: true}   # DeepSeek, 763B, FP8
+  # D45: the six models free credits cover. Three developers, 21B to 550B, and
+  # two same-family ladders: gpt-oss 20b/120b and nemotron-3 nano/super/ultra.
+  # Names, sizes and quantisation are as ollama.com/api/show returned them on
+  # 2026-10-12 with this account's key; `nemotron-3-super` and
+  # `nemotron-3-ultra` take NO size tag (`nemotron-3-super:120b` is a 404).
+  # Each run records size, quantisation and digest again -- quote the digest.
+  - {provider: ollama, model: "gpt-oss:20b", billing: free_tier, enabled: true}          # OpenAI, 21B, MXFP4
+  - {provider: ollama, model: "gpt-oss:120b", billing: free_tier, enabled: true}         # OpenAI, 117B, MXFP4
+  - {provider: ollama, model: "gemma4:31b", billing: free_tier, enabled: true}           # Google, 33B, BF16
+  - {provider: ollama, model: "nemotron-3-nano:30b", billing: free_tier, enabled: true}  # NVIDIA, 32B, FP8
+  - {provider: ollama, model: "nemotron-3-super", billing: free_tier, enabled: true}     # NVIDIA, 120B, NVFP4
+  - {provider: ollama, model: "nemotron-3-ultra", billing: free_tier, enabled: true}     # NVIDIA, 550B, quantisation not reported
+  # D44's other two picks. Not covered by free credits; enabling needs purchased
+  # credit or a subscription, and `billing: paid`.
+  - {provider: ollama, model: "mistral-large-3:675b", billing: paid, enabled: false}     # Mistral, 675B, FP8
+  - {provider: ollama, model: "deepseek-v4.1-flash", billing: paid, enabled: false}      # DeepSeek, 763B, FP8
   # D43's roster, for a local or Colab Ollama server. Not in the hosted
   # catalogue. Running these needs `host` removed from provider_options.ollama.
   - {provider: ollama, model: "llama3.1:8b", billing: self_hosted, enabled: false}

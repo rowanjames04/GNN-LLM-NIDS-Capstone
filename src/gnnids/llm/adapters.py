@@ -48,16 +48,19 @@ GEMINI_PRICING = {
 }
 
 # Ollama's hosted service, USD per million tokens, standard (peak) rate, read
-# from ollama.com/pricing on 2026-10-12 (D44). Off-peak is half this for some
-# models and is NOT modelled: `cost_usd` for a hosted call is therefore the
-# list-price figure, an upper bound on what the account was charged. Thinking
-# tokens are billed as output and are included in the count the server returns.
-# A model run on a local Ollama server is not in this table and has no price.
+# from ollama.com/pricing on 2026-10-12 (D44). These are LIST prices. The study
+# ran on the account's free usage credits (D45), so nothing was charged and a
+# hosted call records `cost_usd=None`; this table feeds `reference_cost_usd`,
+# what the same calls would cost a paying account. Thinking tokens are billed
+# as output and are in the count the server returns. A model on a local Ollama
+# server is not in this table and has no price.
 OLLAMA_CLOUD_PRICING = {
     "gpt-oss:20b": (0.07, 0.30),
     "gpt-oss:120b": (0.15, 0.60),
     "gemma4:31b": (0.14, 0.40),
     "nemotron-3-nano:30b": (0.06, 0.24),
+    "nemotron-3-super": (0.015, 0.60),
+    "nemotron-3-ultra": (0.10, 3.00),
     "mistral-large-3:675b": (0.50, 1.50),
     "deepseek-v4.1-flash": (0.30, 1.20),
 }
@@ -360,9 +363,10 @@ class OllamaAdapter:
     is not ours and not disclosed. With no host the adapter talks to a local
     server instead, which is how D35 and D43 ran it; that path still works.
 
-    `cost_usd` is the list-price cost for a hosted call and None for a local
-    one -- a model on our own hardware has no per-token price, and recording 0.0
-    would let it win a cost comparison it is not competing in.
+    `cost_usd` is None in both modes. A local model has no per-token price, and
+    the hosted calls drew on free usage credits (D45), so what was *charged* is
+    not a figure this code can know. The list price is recorded separately as
+    `reference_cost_usd`. Recording 0.0 would let either win a cost comparison.
 
     `num_ctx`, temperature and seed are sent on every call. A local server
     honours them. Whether the hosted service does is not documented, so the
@@ -444,9 +448,7 @@ class OllamaAdapter:
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 input_tokens=r.get("prompt_eval_count"),
                 output_tokens=r.get("eval_count"),
-                cost_usd=(_cost(self.model, OLLAMA_CLOUD_PRICING,
-                                r.get("prompt_eval_count"), r.get("eval_count"))
-                          if self.hosted else None),
+                cost_usd=None,
                 extra={"determinism": _determinism(
                            self.temperature, self.seed,
                            "requested; the hosted service does not document "

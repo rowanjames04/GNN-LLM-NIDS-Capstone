@@ -625,7 +625,8 @@ def _hosted_client(monkeypatch, reply=None, error=None):
     return seen
 
 
-def test_hosted_ollama_sends_the_key_and_prices_the_call(monkeypatch):
+def test_hosted_ollama_sends_the_key_and_claims_no_charge(monkeypatch):
+    from gnnids.llm.adapters import reference_cost
     monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
     seen = _hosted_client(monkeypatch, reply={
         "message": {"content": "report", "thinking": "hmm"},
@@ -635,7 +636,8 @@ def test_hosted_ollama_sends_the_key_and_prices_the_call(monkeypatch):
                       temperature=0, seed=42).generate("s", "u", "v1")
 
     assert seen["headers"] == {"Authorization": "Bearer test-key"}
-    assert r.cost_usd == 0.37
+    assert r.cost_usd is None                 # free credits: the charge is unknown
+    assert reference_cost("ollama", "gpt-oss:20b", 1_000_000, 1_000_000) == 0.37
     assert r.extra["thinking_chars"] == 3
     assert "requested" in r.extra["determinism"]["note"]
 

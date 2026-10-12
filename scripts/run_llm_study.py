@@ -15,15 +15,15 @@ packs is five times the per-model estimate. `free_tier` and `self_hosted`
 entries run without the flag (see `billing` in configs/llm.yaml).
 
 **The study runs on Ollama's hosted service** (D44): open-weight models, called
-from the Mac with `OLLAMA_API_KEY` set. Those entries are `billing: paid`, so
-the spend gate applies. `--only` selects by billing class or provider name.
+from the Mac with `OLLAMA_API_KEY` set, on the account's free usage credits
+(D45), so those entries are `free_tier` and need no spend flag. `--only` selects by billing class or provider name.
 The closed-weight cloud adapters and the local-server roster remain, disabled.
 
 Usage:
     python scripts/run_llm_study.py --smoke                          # stub only, free
     python scripts/run_llm_study.py --estimate                       # cost, then stop
     python scripts/run_llm_study.py --only paid free_tier --confirm-spend
-    python scripts/run_llm_study.py --only ollama --confirm-spend      # the study
+    python scripts/run_llm_study.py --only ollama                      # the study
 """
 
 from __future__ import annotations
