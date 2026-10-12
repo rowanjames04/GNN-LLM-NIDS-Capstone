@@ -657,7 +657,8 @@ def test_a_local_ollama_server_gets_no_key_and_no_price(monkeypatch):
 
 def test_a_rejected_key_or_spent_credit_stops_the_run(monkeypatch):
     import ollama
-    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR, OllamaAdapter
+    monkeypatch.setattr(OllamaAdapter, "sleep", staticmethod(lambda s: None))
     for status in (401, 402, 429, 503):
         _hosted_client(monkeypatch, error=ollama.ResponseError("nope", status))
         r = build_adapter("ollama", model="gpt-oss:20b",
@@ -687,3 +688,30 @@ def test_a_number_ending_a_sentence_is_read_on_both_sides():
     assert extract_entities("from 192.168.1.30 to port 8080.")["numbers"] == {"8080"}
     pack = {"note": "No neighbour changed this score by more than 0.01. Diffuse."}
     assert score_report(pack, "No neighbour moved it more than 0.01, so")["n_ungrounded"] == 0
+
+
+def test_a_short_rate_limit_is_waited_out_not_treated_as_the_end(monkeypatch):
+    import ollama
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR, OllamaAdapter
+    slept, calls = [], []
+
+    class FakeClient:
+        def __init__(self, host=None, headers=None):
+            pass
+
+        def chat(self, model, messages, options=None):
+            calls.append(1)
+            if len(calls) < 3:
+                raise ollama.ResponseError("slow down", 429)
+            return {"message": {"content": "report"}, "prompt_eval_count": 1,
+                    "eval_count": 1}
+
+    monkeypatch.setattr(ollama, "Client", FakeClient)
+    monkeypatch.setattr(OllamaAdapter, "sleep", staticmethod(slept.append))
+
+    r = build_adapter("ollama", model="gpt-oss:20b",
+                      host="https://ollama.com").generate("s", "u", "v1")
+
+    assert r.ok and r.text == "report"
+    assert slept == [20, 60]
+    assert INFRASTRUCTURE_ERROR not in r.extra

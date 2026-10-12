@@ -90,6 +90,45 @@ class ReportLog:
             retried = len(failed)
         return rows, retried
 
+    def seed_from_finished(self, finished: Path, pack_ids: list[str]) -> str | None:
+        """Carry a finished file's reports into a new log, so a run can be
+        extended to more packs (D46) and a re-run of a finished model costs
+        nothing.
+
+        Returns "complete" when the finished file already covers every pack
+        asked for, "seeded" when its reports were copied into the log for an
+        extension, and None when there is nothing to carry. Before this, a
+        finished run left no log behind, so running the same command again
+        regenerated all of its reports and overwrote the file (C30).
+        """
+        finished = Path(finished)
+        if self.path.exists() or not finished.exists():
+            return None
+        data = json.loads(finished.read_text())
+        if {k: data.get(k) for k in IDENTITY_KEYS} != self.identity:
+            raise ResumeMismatch(
+                f"{finished.name} was written by a different run than this one "
+                f"({self.identity}). Move it aside or pass --fresh.")
+        rows = {r["detection_id"]: r for r in data.get("reports", [])}
+        if set(pack_ids) <= set(rows):
+            return "complete"
+        unknown = set(rows) - set(pack_ids)
+        if unknown:
+            raise ResumeMismatch(
+                f"{finished.name} holds {len(unknown)} detection(s) not in the "
+                f"current pack set -- the packs changed since it was written. "
+                f"Move it aside or pass --fresh.")
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("w") as f:
+            f.write(json.dumps({"header": self.identity}) + "\n")
+            for sess in data.get("provenance", {}).get("sessions", []):
+                f.write(json.dumps({"session": sess}) + "\n")
+            for row in rows.values():
+                f.write(json.dumps(row) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        return "seeded"
+
     def start(self, keep: dict[str, dict], session: dict | None = None) -> int:
         """Rewrite the log as header + earlier sessions + kept rows, then open a
         new session. Returns the new session's index, for stamping rows."""

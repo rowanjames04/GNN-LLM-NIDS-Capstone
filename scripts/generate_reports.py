@@ -39,6 +39,7 @@ from gnnids.llm.adapters import (  # noqa: E402
 from gnnids.llm.prompts import DEFAULT_VERSION, build_prompt  # noqa: E402
 from gnnids.llm.provenance import session as run_session  # noqa: E402
 from gnnids.llm.resume import ReportLog, ResumeMismatch  # noqa: E402
+from gnnids.llm.order import balanced_order
 from gnnids.llm.scoring import score_all, summarise  # noqa: E402,F401
 
 # Providers whose every call is charged. Gemini can be (on a billed key), but its
@@ -78,7 +79,8 @@ def main() -> None:
         raise SystemExit(
             f"no evidence packs at {packs_path}. Run scripts/make_evidence.py first.")
 
-    packs = json.loads(packs_path.read_text())
+    # Balanced before it is cut, so the first N are a fair sample (D46).
+    packs = balanced_order(json.loads(packs_path.read_text()))
     n = args.n_reports or (cfg["smoke"]["n_reports"] if args.smoke else cfg["n_reports"])
     packs = packs[:n]
 
@@ -112,6 +114,14 @@ def main() -> None:
     if args.fresh:
         log.discard()
     try:
+        # A finished file from an earlier, shorter run: nothing to do if it
+        # already covers these packs, otherwise carry its reports forward.
+        carried = None if args.fresh else log.seed_from_finished(
+            out_dir / name, [p["detection_id"] for p in packs])
+        if carried == "complete":
+            print(f"\n  already complete: {name} holds all {len(packs)} "
+                  f"reports asked for. Nothing called. (--fresh to redo.)\n")
+            return
         done, retried = log.load([p["detection_id"] for p in packs],
                                  retry_failed=args.retry_failed)
     except ResumeMismatch as e:

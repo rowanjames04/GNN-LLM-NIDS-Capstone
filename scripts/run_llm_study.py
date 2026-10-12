@@ -41,6 +41,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from gnnids.llm.adapters import LIST_PRICES  # noqa: E402
+from gnnids.llm.order import balanced_order
 from gnnids.llm.prompts import build_prompt  # noqa: E402
 
 BILLING_CLASSES = ("free", "paid", "free_tier", "self_hosted")
@@ -111,6 +112,9 @@ def main() -> None:
     ap.add_argument("--only", nargs="+", default=None, metavar="CLASS_OR_PROVIDER",
                     help="run only these billing classes (paid, free_tier, "
                          "self_hosted) or providers (e.g. gemini)")
+    ap.add_argument("--round-size", type=int, default=None,
+                    help="packs per round (default: round_size in the config, "
+                         "or everything in one round)")
     ap.add_argument("--smoke", action="store_true")
     args = ap.parse_args()
 
@@ -127,7 +131,7 @@ def main() -> None:
     if not packs_path.exists():
         raise SystemExit(f"no evidence packs at {packs_path}. "
                          f"Run scripts/make_evidence.py first.")
-    packs = json.loads(packs_path.read_text())
+    packs = balanced_order(json.loads(packs_path.read_text()))
     n = args.n_reports or (cfg["smoke"]["n_reports"] if args.smoke else cfg["n_reports"])
     packs = packs[:n]
     versions = args.prompt_versions or [cfg.get("prompt_version", "v1")]
@@ -168,35 +172,66 @@ def main() -> None:
     # cannot take the sweep down with it. A partial roster is still a result;
     # a crashed sweep is not.
     out_dir = REPO_ROOT / cfg["output"]["dir"]
-    runs = []
-    for entry in roster:
-        for v in versions:
-            cmd = [sys.executable, str(REPO_ROOT / "scripts" / "generate_reports.py"),
-                   "--provider", entry["provider"], "--prompt-version", v,
-                   "--packs", str(packs_path), "-n", str(len(packs)),
-                   "--config", str(args.config)]
-            if entry.get("model"):
-                cmd += ["--model", entry["model"]]
-            if args.smoke:
-                cmd += ["--smoke"]
-            label = f"{entry['provider']}/{entry.get('model', 'default')} [{v}]"
-            print(f"\n===== {label} =====")
-            rc = subprocess.run(cmd).returncode
-            # 75 is generate_reports.py's "stopped, resumable" (a quota or a
-            # dead server): not a failure of the model, and not finished either.
-            status = {0: "complete", 75: "stopped_resumable"}.get(rc, "failed")
-            runs.append({"provider": entry["provider"], "model": entry.get("model"),
-                         "billing": billing(entry), "prompt_version": v,
-                         "ok": rc == 0, "status": status})
-            if status == "stopped_resumable":
-                print(f"  {label} STOPPED -- resumable; re-run this sweep later")
-            elif rc != 0:
-                print(f"  {label} FAILED (exit {rc}) -- continuing with the rest")
+    # Rounds (D46). The sweep goes prompt version by prompt version, and inside
+    # a version it takes the packs a round at a time through EVERY model before
+    # starting the next round. Wherever it stops -- free credit, a rate limit, a
+    # closed laptop -- every model has reports for the same packs, so what
+    # exists is a valid comparison on fewer packs rather than a full result for
+    # some models and nothing for the rest. The pack order is balanced, so each
+    # round is itself a fair sample. The first listed version is the study; a
+    # later one (the prompt-sensitivity ablation) starts only once it is done.
+    size = args.round_size or cfg.get("round_size") or len(packs)
+    targets = list(range(size, len(packs), size)) + [len(packs)]
+    status: dict[tuple, dict] = {}
+    stopped = False
+    for v in versions:
+        for rnd, target in enumerate(targets, 1):
+            print(f"\n########## prompt {v} -- round {rnd} of {len(targets)}: "
+                  f"packs 1-{target} ##########")
+            for entry in roster:
+                cmd = [sys.executable, str(REPO_ROOT / "scripts" / "generate_reports.py"),
+                       "--provider", entry["provider"], "--prompt-version", v,
+                       "--packs", str(packs_path), "-n", str(target),
+                       "--config", str(args.config)]
+                if entry.get("model"):
+                    cmd += ["--model", entry["model"]]
+                if args.smoke:
+                    cmd += ["--smoke"]
+                label = f"{entry['provider']}/{entry.get('model', 'default')} [{v}]"
+                print(f"\n===== {label} -- to {target} packs =====")
+                rc = subprocess.run(cmd).returncode
+                # 75 is generate_reports.py's "stopped, resumable" (a quota or a
+                # dead server): not a failure of the model, and not finished.
+                state = {0: "complete", 75: "stopped_resumable"}.get(rc, "failed")
+                key = (entry["provider"], entry.get("model"), v)
+                rec = status.setdefault(key, {
+                    "provider": entry["provider"], "model": entry.get("model"),
+                    "billing": billing(entry), "prompt_version": v,
+                    "packs_completed": 0})
+                if rc == 0:
+                    rec["packs_completed"] = target
+                rec["status"] = state
+                rec["ok"] = rc == 0 and target == len(packs)
+                if state == "stopped_resumable":
+                    # One account serves the whole roster, so the next model
+                    # would stop the same way. Ending here keeps the rounds even.
+                    print(f"  {label} STOPPED in round {rnd} -- resumable. Ending "
+                          f"the sweep here; re-run the same command to continue.")
+                    stopped = True
+                    break
+                if rc != 0:
+                    print(f"  {label} FAILED (exit {rc}) -- continuing with the rest")
+            if stopped:
+                break
+        if stopped:
+            break
+    runs = list(status.values())
 
     manifest = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "packs": packs_path.name, "n_detections": len(packs),
-        "prompt_versions": versions, "only": args.only, "runs": runs,
+        "prompt_versions": versions, "only": args.only,
+        "round_size": size, "stopped_early": stopped, "runs": runs,
         "projected_cost_usd": round(total, 4),
     }
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -205,6 +240,12 @@ def main() -> None:
 
     ok = sum(1 for r in runs if r["ok"])
     print(f"\n{ok}/{len(runs)} runs completed.")
+    for r in runs:
+        print(f"  {r['provider']}/{r.get('model') or 'default'} [{r['prompt_version']}]"
+              f"  {r['packs_completed']} of {len(packs)} packs  ({r['status']})")
+    if stopped:
+        print("\n  Stopped early. Every model that ran has the same packs up to the "
+              "last finished\n  round; the same command resumes from there.")
     # The Colab notebook writes to Google Drive, outside the repo, where an
     # unconditional relative_to() would crash after the sweep had finished.
     out = out_dir / name

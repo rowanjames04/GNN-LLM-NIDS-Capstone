@@ -16,6 +16,11 @@ prompt_version: v1
 packs: results/evidence/evidence_NF-ToN-IoT-v2.json
 n_reports: 200          # the stratified sample size in the study design
 
+# D46: packs go through every model a round at a time, in a balanced order, so a
+# run that stops early (free credit, a rate limit) leaves the same packs done
+# for every model. 40 packs is about 4 per attack family and 6 false positives.
+round_size: 40
+
 # The roster for the fully crossed study: every enabled entry sees every pack,
 # through the same prompt. Disable rather than delete, so the record shows what
 # was considered.

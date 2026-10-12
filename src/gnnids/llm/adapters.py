@@ -374,6 +374,8 @@ class OllamaAdapter:
     """
 
     provider = "ollama"
+    RATE_LIMIT_WAITS = (20, 60, 180)          # seconds between retries of a 429
+    sleep = staticmethod(time.sleep)          # replaced in tests
 
     def __init__(self, model: str = "llama3.1:8b", host: str | None = None,
                  temperature: float | None = None, seed: int | None = None,
@@ -439,9 +441,20 @@ class OllamaAdapter:
                 options["seed"] = self.seed
             if self.num_ctx is not None:
                 options["num_ctx"] = self.num_ctx
-            r = client.chat(model=self.model, messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user}], options=options or None)
+            # A 429 is usually a short rate limit, not spent credit. Waiting a
+            # few minutes in total is cheaper than ending a round; if it still
+            # refuses, the except below stops the run for a later resume.
+            for attempt in range(len(self.RATE_LIMIT_WAITS) + 1):
+                try:
+                    r = client.chat(model=self.model, messages=[
+                        {"role": "system", "content": system},
+                        {"role": "user", "content": user}], options=options or None)
+                    break
+                except Exception as e:               # noqa: BLE001
+                    if (getattr(e, "status_code", None) != 429
+                            or attempt == len(self.RATE_LIMIT_WAITS)):
+                        raise
+                    self.sleep(self.RATE_LIMIT_WAITS[attempt])
             return LLMResponse(
                 text=r["message"]["content"], model=self.model,
                 provider=self.provider, prompt_version=prompt_version,

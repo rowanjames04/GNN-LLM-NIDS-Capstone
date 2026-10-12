@@ -219,3 +219,49 @@ def test_an_infrastructure_stop_records_nothing_and_leaves_a_resumable_log(tmp_p
                         {"provider": "ollama", "model": "m", "prompt_version": "v1",
                          "packs_source": "packs.json"}).load(["id-0", "id-1", "id-2"])
     assert rows == {}
+
+
+# --- D46 / C30: rounds, and re-running a finished model ----------------------
+
+def _packs(n_per=4):
+    return [{"detection_id": f"{lab}-{i}", "flow": {"true_label": lab}}
+            for lab in ("scanning", "ddos", "Benign") for i in range(n_per)]
+
+
+def test_every_prefix_of_the_balanced_order_is_spread_across_groups():
+    from collections import Counter
+
+    from gnnids.llm.order import balanced_order
+
+    packs = _packs(8) + [{"detection_id": f"x-{i}", "flow": {"true_label": "xss"}}
+                         for i in range(4)]
+    ordered = balanced_order(packs)
+
+    assert sorted(p["detection_id"] for p in ordered) == sorted(
+        p["detection_id"] for p in packs)
+    assert balanced_order(packs) == ordered                    # no randomness
+    first = Counter(p["flow"]["true_label"] for p in ordered[:7])
+    assert first == {"scanning": 2, "ddos": 2, "Benign": 2, "xss": 1}
+
+
+def test_a_finished_run_is_not_regenerated_and_can_be_extended(tmp_path):
+    from gnnids.llm.resume import ReportLog, ResumeMismatch
+
+    ident = {"provider": "ollama", "model": "m", "prompt_version": "v1",
+             "packs_source": "p.json"}
+    finished = tmp_path / "reports.json"
+    finished.write_text(json.dumps({**ident, "provenance": {"sessions": [{"gpu": "a"}]},
+                                    "reports": [{"detection_id": "a", "ok": True},
+                                                {"detection_id": "b", "ok": True}]}))
+
+    log = ReportLog(tmp_path / "reports.partial.jsonl", ident)
+    assert log.seed_from_finished(finished, ["a", "b"]) == "complete"
+    assert not log.path.exists()                               # nothing to resume
+
+    assert log.seed_from_finished(finished, ["a", "b", "c"]) == "seeded"
+    done, _ = log.load(["a", "b", "c"])
+    assert set(done) == {"a", "b"} and log.sessions == [{"gpu": "a"}]
+
+    other = ReportLog(tmp_path / "other.partial.jsonl", {**ident, "model": "n"})
+    with pytest.raises(ResumeMismatch):
+        other.seed_from_finished(finished, ["a", "b", "c"])
