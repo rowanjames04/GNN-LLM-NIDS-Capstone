@@ -451,8 +451,8 @@ class OllamaAdapter:
                 cost_usd=None,
                 extra={"determinism": _determinism(
                            self.temperature, self.seed,
-                           "requested; the hosted service does not document "
-                           "whether sampling options are honoured"
+                           "requested; on the hosted service repeated "
+                           "calls returned different text (measured 2026-10-12)"
                            if self.hosted else None),
                        "timing": _ollama_timing(r),
                        # Most hosted models reason before answering. The
