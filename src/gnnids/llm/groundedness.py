@@ -34,7 +34,18 @@ MITRE = re.compile(r"\bT\d{4}(?:\.\d{3})?\b")
 # excluded deliberately: a model restating 0.96 as "96%" is a faithful
 # reformatting, not an invention, and counting it as ungrounded would punish
 # the clearer report.
-NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?(?!\s*%)(?![\w.])")
+#
+# A number may be followed by a full stop that ends a sentence, but not by one
+# that continues it (`192.168` inside an address). The earlier pattern refused
+# any trailing full stop, so "by more than 0.01." in a pack was not read as
+# evidence while "more than 0.01," in a report was read as a claim (C29).
+NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?(?!\s*%)(?!\w|\.\d)")
+
+# Typographic thousands separators: narrow no-break space, no-break space, thin
+# space. Several models write 4,371 as "4 371" with one of these, and without
+# this the scorer read two numbers, "4" and "371", and called the second one
+# invented (C29). An ordinary space is left alone: "ports 80 443" is two numbers.
+_THOUSANDS_SPACE = re.compile(r"(?<=\d)[\u202f\u00a0\u2009](?=\d{3}(?!\d))")
 
 # Numbers a report may use freely: section counts, "one", ordinary small
 # integers used as prose. Requiring 0-10 to appear in the evidence would flag
@@ -44,6 +55,7 @@ FREE_NUMBERS = {str(i) for i in range(11)}
 
 def extract_entities(text: str) -> dict[str, set[str]]:
     """Technical specifics a claim could be built from."""
+    text = _THOUSANDS_SPACE.sub("", text)
     return {
         "ips": set(IPV4.findall(text)),
         "mitre": set(MITRE.findall(text)),

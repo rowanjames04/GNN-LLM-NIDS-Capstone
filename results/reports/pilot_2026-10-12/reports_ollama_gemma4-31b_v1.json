@@ -1,0 +1,474 @@
+{
+  "generated_at": "2026-10-12T08:06:16.466482+00:00",
+  "provider": "ollama",
+  "model": "gemma4:31b",
+  "prompt_version": "v1",
+  "packs_source": "evidence_NF-ToN-IoT-v2.json",
+  "smoke": false,
+  "summary": {
+    "n": 5,
+    "n_ok": 5,
+    "n_failed": 0,
+    "groundedness_mean": 1.0,
+    "reports_with_fabricated_addresses": 0,
+    "reports_with_jargon": 0,
+    "report_words_mean": 154.0,
+    "classification_faithful_rate": 1.0,
+    "classification_substituted_rate": 0.0,
+    "attribution_coverage_mean": 0.71,
+    "attribution_cites_none_rate": 0.0,
+    "latency_seconds_mean": 1.714,
+    "latency_seconds_p50": 1.521,
+    "latency_seconds_p95": 2.443,
+    "generation_seconds_total": null,
+    "output_tokens_per_second": null,
+    "total_cost_usd": null,
+    "reference_cost_usd": 0.001012,
+    "ambiguous_detections": 0,
+    "uncertainty_conveyed_rate": null,
+    "scoring_version": "2026-10-03",
+    "determinism": {
+      "temperature": 0,
+      "seed": 42,
+      "supported": true,
+      "note": "requested; the hosted service does not document whether sampling options are honoured"
+    },
+    "n_retried_after_failure": 0,
+    "n_sessions": 1
+  },
+  "provenance": {
+    "sessions": [
+      {
+        "started_at": "2026-10-12T08:06:06.746064+00:00",
+        "git": {
+          "commit": "ed66137e823dfe14f0a85862abcd4710417c598b",
+          "dirty": false
+        },
+        "python": "3.13.0",
+        "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+        "gpus": null,
+        "model": {
+          "tag": "gemma4:31b",
+          "num_ctx": 8192,
+          "digest": "221b330d11a8",
+          "parameter_size": "32682372656",
+          "quantization_level": "BF16",
+          "family": "gemma4",
+          "server_version": null,
+          "served_by": "ollama cloud"
+        }
+      }
+    ]
+  },
+  "reports": [
+    {
+      "detection_id": "088bd000-6ad3-4d49-923b-0be1eee5f70a",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nHost 192.168.1.30 connected to 192.168.1.46 on destination port 65370. The flow consisted of one incoming packet (48 bytes) and zero outgoing bytes, with a duration of 0ms. During this period, the source host made 4,371 connections to 11 distinct addresses across 3,647 ports, which is 5.5 times the typical number of addresses for a host in this environment.\n\n## Why it was flagged\nThe activity was classified as scanning with high confidence. The assessment was raised by the use of protocol 6 and CLIENT_TCP_FLAGS value 2. The high volume of connections to numerous ports and addresses from the source host contributed to the detection.\n\n## What to do next\n* Rate-limit and alert on hosts contacting an unusual number of distinct destinations.\n* Restrict east-west traffic using network segmentation.\n* Ensure exposed services are inventoried and patched.",
+      "latency_seconds": 2.64,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000193,
+      "input_tokens": 748,
+      "output_tokens": 221,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 8,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 6,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 140
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.104
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "846b1f3e-72d1-45a8-bdba-6ee9fb7b9cf7",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nHost 192.168.1.30 connected to 192.168.1.46 on port 46. The connection consisted of one incoming packet (48 bytes) and zero outgoing bytes. During this period, the source host made 4,371 connections to 11 distinct addresses across 3,647 ports, which is 5.5 times the typical number of addresses for a host in this environment.\n\n## Why it was flagged\nThe activity was classified as scanning with high confidence. The assessment was raised by the use of protocol 6, the measurement of one incoming packet, and the client TCP flags being set to 2. The detection was further supported by the source host's high volume of connections across a large number of ports and addresses.\n\n## What to do next\n* Rate-limit and alert on hosts contacting an unusual number of distinct destinations.\n* Restrict east-west traffic using network segmentation.\n* Ensure exposed services are inventoried and patched.",
+      "latency_seconds": 1.262,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000192,
+      "input_tokens": 736,
+      "output_tokens": 223,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 8,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 6,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 148
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "IN_PKTS",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "TCP_WIN_MAX_OUT"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 0.789
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "650ba289-387c-4043-a94d-7487e2f418ad",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nHost 192.168.1.32 connected to 192.168.1.180 on destination port 30603. The flow consisted of one packet (48 bytes in, 0 bytes out) with a duration of 0ms. During this period, the source host made 3,739 connections to 10 distinct addresses across 3,319 ports, which is 5.0 times the typical number of addresses for a host in this environment. The destination host made 2,118 connections to 3 distinct addresses across 2,116 ports.\n\n## Why it was flagged\nThe activity was classified as scanning with 1.0 confidence. The assessment was raised by the protocol (6), the client TCP flags (2), and the DNS query type. The score was lowered by the L7 protocol (0.0) and the L4 destination port bucket (1).\n\n## What to do next\n* Rate-limit and alert on hosts contacting an unusual number of distinct destinations.\n* Restrict east-west traffic using network segmentation.\n* Ensure exposed services are inventoried and patched.",
+      "latency_seconds": 1.653,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000208,
+      "input_tokens": 750,
+      "output_tokens": 257,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 8,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 6,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 154
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.242
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "93155a5d-4b24-4bcc-8634-7e67b3b1df72",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nA host at 192.168.1.30 initiated a connection to 192.168.1.180 on destination port 28114. The flow consisted of one incoming packet (48 bytes) and zero outgoing bytes, with a duration of 0ms. \n\nDuring this period, the source host made 4,371 connections to 11 distinct addresses across 3,647 ports, which is 5.5 times the typical number of addresses for a host in this environment. The destination host made 2,118 connections to 3 distinct addresses across 2,116 ports, 1.2 times its typical number of addresses.\n\n## Why it was flagged\nThe activity was classified as scanning with high confidence. This assessment was driven by the TCP flags (2), the protocol (6), and the DNS query type. The high volume of connections to a large number of ports from the source host further supports this classification.\n\n## What to do next\n* Rate-limit and alert on hosts contacting an unusual number of distinct destinations.\n* Restrict east-west traffic using network segmentation.\n* Ensure all exposed services are inventoried and patched.",
+      "latency_seconds": 1.492,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000212,
+      "input_tokens": 752,
+      "output_tokens": 267,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 169
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.103
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "2259b528-f560-4d7a-9824-fc7717e9d3ac",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nHost 192.168.1.30 sent a single TCP packet (Protocol 6) with CLIENT_TCP_FLAGS 2 to port 45511 on host 192.168.1.180. During this period, the source host made 4,530 connections to 9 distinct addresses across 4,472 ports, which is 4.5 times the typical number of addresses for a host in this environment. The destination host made 3,014 connections to 3 distinct addresses across 2,970 ports, 1.5 times its typical number of addresses.\n\n## Why it was flagged\nThe activity was classified as scanning with 1.0 confidence. The detection was driven by the TCP protocol, the specific TCP flags used, and the DNS query type. The high volume of connections to a large number of ports and distinct addresses from the source host contributed to the alert.\n\n## What to do next\n* Rate-limit and alert on hosts contacting an unusual number of distinct destinations.\n* Restrict east-west traffic using network segmentation.\n* Ensure exposed services are inventoried and patched.",
+      "latency_seconds": 1.521,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000207,
+      "input_tokens": 749,
+      "output_tokens": 256,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 9,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 7,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 159
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "L4_DST_PORT"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 0.996
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    }
+  ],
+  "rescored_after_C29": true
+}

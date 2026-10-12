@@ -1,0 +1,473 @@
+{
+  "generated_at": "2026-10-12T08:07:30.870992+00:00",
+  "provider": "ollama",
+  "model": "nemotron-3-super",
+  "prompt_version": "v1",
+  "packs_source": "evidence_NF-ToN-IoT-v2.json",
+  "smoke": false,
+  "summary": {
+    "n": 5,
+    "n_ok": 5,
+    "n_failed": 0,
+    "groundedness_mean": 0.7478,
+    "reports_with_fabricated_addresses": 0,
+    "reports_with_jargon": 0,
+    "report_words_mean": 244.4,
+    "classification_faithful_rate": 1.0,
+    "classification_substituted_rate": 0.0,
+    "attribution_coverage_mean": 0.87,
+    "attribution_cites_none_rate": 0.0,
+    "latency_seconds_mean": 9.0,
+    "latency_seconds_p50": 8.845,
+    "latency_seconds_p95": 10.189,
+    "generation_seconds_total": null,
+    "output_tokens_per_second": null,
+    "total_cost_usd": null,
+    "reference_cost_usd": 0.002566,
+    "ambiguous_detections": 0,
+    "uncertainty_conveyed_rate": null,
+    "scoring_version": "2026-10-03",
+    "determinism": {
+      "temperature": 0,
+      "seed": 42,
+      "supported": true,
+      "note": "requested; the hosted service does not document whether sampling options are honoured"
+    },
+    "n_retried_after_failure": 0,
+    "n_sessions": 1
+  },
+  "provenance": {
+    "sessions": [
+      {
+        "started_at": "2026-10-12T08:06:44.937958+00:00",
+        "git": {
+          "commit": "ed66137e823dfe14f0a85862abcd4710417c598b",
+          "dirty": false
+        },
+        "python": "3.13.0",
+        "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+        "gpus": null,
+        "model": {
+          "tag": "nemotron-3-super",
+          "num_ctx": 8192,
+          "digest": "da11955bb451",
+          "parameter_size": "120000000000",
+          "quantization_level": "NVFP4",
+          "family": "nemotron_h_moe",
+          "server_version": null,
+          "served_by": "ollama cloud"
+        }
+      }
+    ]
+  },
+  "reports": [
+    {
+      "detection_id": "088bd000-6ad3-4d49-923b-0be1eee5f70a",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nA single TCP flow from 192.168.1.30 to 192.168.1.46 on destination port 65370 was observed. It consisted of one inbound packet (48 bytes), no outbound traffic, and lasted approximately 0\u202fms. The flow used protocol\u202f6 (TCP) and had a client TCP flag value of\u202f2. The detector assigned the scanning category with confidence\u202f0.99999; no other category was plausible.\n\n## Why it was flagged\nThe flow\u2019s score\u202f0.99269 exceeds the alert threshold\u202f0.87859. Factors that raised the score were the TCP protocol and client TCP flag\u202f2. Factors that lowered it were the high destination port (65370), the absence of an L7 protocol, and the small TCP window (4096). Host\u2011level behavior also contributed: the source host made 4371 connections to 11 distinct addresses across 3647 ports (5.5\u00d7 the typical number of addresses), while the destination host contacted only one address across 1100 ports (0.4\u00d7 typical).\n\n## What to do next\n- Apply rate\u2011limiting and alerting on hosts that contact an unusually large number of distinct destinations.  \n- Restrict east\u2011west traffic using network segmentation.  \n- Inventory and patch any exposed services on the destination host (192.168.1.46).  \n- Monitor the source host (192.168.1.30) for further scanning activity and consider isolating it pending investigation.",
+      "latency_seconds": 8.726,
+      "cost_usd": null,
+      "reference_cost_usd": 0.00054,
+      "input_tokens": 732,
+      "output_tokens": 882,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 204
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L4_DST_PORT",
+          "L7_PROTO"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 8.217
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "846b1f3e-72d1-45a8-bdba-6ee9fb7b9cf7",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened  \nA single TCP flow was observed from source\u202f192.168.1.30 to destination\u202f192.168.1.46 on destination port\u202f46. The flow consisted of one inbound packet (48\u202fbytes) with no outbound traffic, lasted 0\u202fms, and carried TCP flags indicating a SYN (client TCP flags\u202f=\u202f2). The flow\u2019s L7 protocol was\u202f0 (no recognized application), while the transport protocol was TCP (protocol\u202f=\u202f6), which raised the detection score. The source host generated 4\u202f371 connections during the period, contacting 11 distinct addresses across 3\u202f647 ports\u20145.5\u202ftimes the typical address diversity for a host in this environment. The destination host saw 1\u202f100 connections to a single address spread over 1\u202f100 ports, 0.4\u202ftimes the typical address diversity.\n\n## Why it was flagged  \nThe detector scored the flow 0.99186, exceeding the alert threshold of 0.87859. The most likely category is **scanning** with a confidence of 0.99999; no other category was plausible. Features that increased the score were the TCP protocol, the single inbound packet, and the SYN flag. Features that decreased it were the lack of an L7 protocol, a zero TCP window size advertised outward, and the short duration. Neighboring flows did not materially affect the score (change\u202f<\u202f0.01), indicating the assessment is based on the flow\u2019s own characteristics rather than a specific adjacent flow.\n\n## What to do next  \n- Apply rate\u2011limiting and generate alerts for hosts that contact an unusually high number of distinct destinations (as seen with the source host).  \n- Consider enforcing east\u2011west network segmentation to limit lateral probing.  \n- Verify that any services exposed on port\u202f46 (or other high\u2011numbered ports) are inventoried, patched, and necessary.  \n- Monitor the source host (192.168.1.30) for further connection bursts and the destination host (192.168.1.46) for unexpected inbound traffic.",
+      "latency_seconds": 10.482,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000507,
+      "input_tokens": 720,
+      "output_tokens": 827,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 295
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "PROTOCOL",
+          "IN_PKTS",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_OUT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 9.899
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "650ba289-387c-4043-a94d-7487e2f418ad",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened  \nA single TCP packet was sent from 192.168.1.32 to 192.168.1.180 on destination port 30603. The packet carried 48\u202fbytes in, no bytes out, lasted 0\u202fms, and had a protocol value of 6 (TCP) with client TCP flags equal to 2. The flow\u2019s L7 protocol was 0.0, the DNS query type was recorded as \u201cother,\u201d and the destination\u2011port bucket was 1.\n\n## Why it was flagged  \nThe detector assigned a score of 0.99687, well above the alert threshold of 0.87859. The score was raised by the TCP protocol flag, the client TCP flag value\u202f2, and the \u201cother\u201d DNS query type, while it was lowered by the L7 protocol value\u202f0.0 and the low\u2011bucket destination port. The source host had made 3\u202f739 connections to 10 distinct addresses across 3\u202f319 ports\u2014about five times the typical number of destinations for a host in this environment\u2014contributing to the high score. No other category was plausible; the most likely category is scanning with confidence\u202f1.0.\n\n## What to do next  \n- Apply rate\u2011limiting and alerting for hosts that contact an unusually large number of distinct destinations.  \n- Enforce east\u2011west traffic segmentation to limit lateral probing.  \n- Inventory and patch any exposed services on the destination host.  \n- Review logs from 192.168.1.32 for additional connection attempts and consider isolating the host pending further investigation.",
+      "latency_seconds": 8.845,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000511,
+      "input_tokens": 730,
+      "output_tokens": 834,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 8,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 6,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 224
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 8.332
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "93155a5d-4b24-4bcc-8634-7e67b3b1df72",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA single TCP flow was observed from 192.168.1.30 (source) to 192.168.1.180 (destination) on port 28114. The flow consisted of one inbound packet (48\u202fbytes, no outbound data) and lasted 0\u202fms. The source host initiated 4\u202f371 connections to 11 distinct addresses across 3\u202f647 ports, which is 5.5\u202ftimes the typical number of distinct destinations for a host in this environment. The destination host made 2\u202f118 connections to three distinct addresses across 2\u202f116 ports, 1.2\u202ftimes its typical address count.\n\n**Why it was flagged**  \nThe detection engine assigned a score of 0.9934, well above the alert threshold of 0.87859. The most likely category was \u201cscanning\u201d with a confidence of 0.99999; no other category was considered plausible. Features that raised the score included the TCP protocol (value\u202f6), client TCP flag\u202f2, and the DNS query type being \u201cother\u201d. Features that lowered the score were L7 protocol\u202f0.0 and the L4 destination\u2011port bucket\u202f1. Neighboring flows had negligible influence on the score (change\u202f<\u202f0.01 each). The high volume of distinct destination contacts by the source host contributed to the assessment.\n\n**What to do next**  \n- Review the source host (192.168.1.30) for unusual outbound connection patterns and consider applying rate\u2011limiting or alerting on contacts with many distinct destinations.  \n- Examine the destination host (192.168.1.180) for unexpected inbound traffic on port 28114.  \n- Implement network segmentation to restrict east\u2011west traffic between these hosts.  \n- Ensure any exposed services on the destination are inventoried and patched.  \n- Reference the associated techniques T1046, T1595, and T1018 for further context on scanning behavior.",
+      "latency_seconds": 7.93,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000531,
+      "input_tokens": 734,
+      "output_tokens": 866,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 18,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 3,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 13,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 263
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 7.536
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "2259b528-f560-4d7a-9824-fc7717e9d3ac",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "## What happened\nA single TCP flow was observed from source\u202f192.168.1.30 to destination\u202f192.168.1.180 on port\u202f45511. The flow consisted of one inbound packet (48\u202fbytes) with no outbound traffic, lasted 0\u202fms, and carried TCP flag\u202f2 (SYN). The protocol field was 6 (TCP).\n\n## Why it was flagged\nThe detector assigned a score of\u202f0.99694, well above the alert threshold of\u202f0.87859. The most likely category was \u201cscanning\u201d with confidence\u202f1.0; no other category was considered plausible. Supporting traffic features that contributed to the score included the TCP protocol value, the SYN flag, and the DNS query type being \u201cother\u201d. Features that lowered the score were the destination\u2011port bucket and the measured port\u202f45511. Host\u2011level behavior also raised suspicion: the source host made\u202f4\u202f530 connections to\u202f9 distinct addresses across\u202f4\u202f472 ports (\u22484.5\u00d7 the typical address count), and the destination host made\u202f3\u202f014 connections to\u202f3 distinct addresses across\u202f2\u202f970 ports (\u22481.5\u00d7 the typical address count). Neighboring flows did not significantly alter the score.\n\n## What to do next\n- Investigate host\u202f192.168.1.30 for unusual outbound connection patterns.\n- Review host\u202f192.168.1.180 for inbound connection anomalies.\n- Apply standard mitigations: rate\u2011limit and alert on hosts contacting many distinct destinations, segment east\u2011west traffic, and ensure any exposed services are inventoried and patched.\n- Consider checking for activity related to techniques\u202fT1046,\u202fT1595, and\u202fT1018 (network scanning, discovery, and service enumeration).",
+      "latency_seconds": 9.016,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000477,
+      "input_tokens": 729,
+      "output_tokens": 776,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 15,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 3,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 236
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "PROTOCOL",
+          "L4_DST_PORT",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 8.55
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; the hosted service does not document whether sampling options are honoured"
+      },
+      "session": 0
+    }
+  ],
+  "rescored_after_C29": true
+}

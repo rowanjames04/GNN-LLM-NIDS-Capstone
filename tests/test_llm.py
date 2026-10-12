@@ -668,3 +668,22 @@ def test_a_rejected_key_or_spent_credit_stops_the_run(monkeypatch):
     r = build_adapter("ollama", model="gpt-oss:20b",
                       host="https://ollama.com").generate("s", "u", "v1")
     assert INFRASTRUCTURE_ERROR not in r.extra
+
+
+# --- C29: found on the first hosted pilot, 2026-10-12 -------------------------
+
+def test_a_thin_space_thousands_separator_is_one_number():
+    from gnnids.llm.groundedness import extract_entities
+
+    for sep in (" ", " ", " "):
+        assert extract_entities(f"opened 4{sep}371 connections")["numbers"] == {"4371"}
+    assert extract_entities("ports 80 443")["numbers"] == {"80", "443"}
+
+
+def test_a_number_ending_a_sentence_is_read_on_both_sides():
+    from gnnids.llm.groundedness import extract_entities, score_report
+
+    assert extract_entities("changed by more than 0.01. The rest")["numbers"] == {"0.01"}
+    assert extract_entities("from 192.168.1.30 to port 8080.")["numbers"] == {"8080"}
+    pack = {"note": "No neighbour changed this score by more than 0.01. Diffuse."}
+    assert score_report(pack, "No neighbour moved it more than 0.01, so")["n_ungrounded"] == 0
