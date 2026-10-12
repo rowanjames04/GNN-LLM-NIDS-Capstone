@@ -14,16 +14,16 @@ the number worth seeing before committing: a roster of five models over 200
 packs is five times the per-model estimate. `free_tier` and `self_hosted`
 entries run without the flag (see `billing` in configs/llm.yaml).
 
-**The study is self-hosted only** (D43): the enabled roster is the template
-control and open-weight models served by Ollama inside a Colab notebook (D35).
-`--only` selects by billing class or provider name. The cloud adapters remain
-and their roster entries are disabled; the spend gate still guards them.
+**The study runs on Ollama's hosted service** (D44): open-weight models, called
+from the Mac with `OLLAMA_API_KEY` set. Those entries are `billing: paid`, so
+the spend gate applies. `--only` selects by billing class or provider name.
+The closed-weight cloud adapters and the local-server roster remain, disabled.
 
 Usage:
     python scripts/run_llm_study.py --smoke                          # stub only, free
     python scripts/run_llm_study.py --estimate                       # cost, then stop
     python scripts/run_llm_study.py --only paid free_tier --confirm-spend
-    python scripts/run_llm_study.py --only self_hosted                # in Colab
+    python scripts/run_llm_study.py --only ollama --confirm-spend      # the study
 """
 
 from __future__ import annotations
@@ -77,7 +77,9 @@ def estimate(entry: dict, packs: list, version: str) -> tuple[float | None, str]
     Returns what would actually be *charged*: a free-tier entry projects zero,
     with its list price shown beside it so the reference figure is not lost.
     Output is guessed at 350 tokens per report, which excludes any thinking a
-    model does before answering -- treat the figure as a floor for such models.
+    model does before answering. Most of the hosted roster thinks, and thinking
+    is billed as output, so treat the figure as a floor: the pilot gives the
+    real number.
     """
     provider, model = entry["provider"], entry.get("model")
     if provider == "stub":

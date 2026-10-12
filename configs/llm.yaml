@@ -20,41 +20,48 @@ n_reports: 200          # the stratified sample size in the study design
 # through the same prompt. Disable rather than delete, so the record shows what
 # was considered.
 #
-# D43 (2026-10-11): the study is SELF-HOSTED ONLY. The use case is a security
-# team that will not send detection evidence to a third-party model API, so the
-# models compared are open-weight models the team could run itself. The cloud
-# entries are disabled, not deleted: the adapters and their tests stay, and the
-# record shows they were considered. No cloud call was ever made.
+# D44 (2026-10-12): the study runs on OLLAMA'S HOSTED SERVICE. Open-weight
+# models only (D43 stands on that point), but served by ollama.com, not by
+# hardware we run: a free Colab GPU has the same 16 GB as the Mac, and Rowan
+# chose larger models over keeping the run in-house. Consequences recorded in
+# the Decision Register: the evidence packs are sent to a third-party API, the
+# calls are billed per token, and the serving hardware is not disclosed.
 #
 # `billing` decides what the spend gate guards, and `--only` selects arms by it:
 #   paid         real money per call; refused without --confirm-spend
 #   free_tier    no charge on a free-tier key (D36)
-#   self_hosted  weights on hardware we run (D35: Ollama on Google Colab)
+#   self_hosted  weights on hardware we run (D35, D43)
 # An entry with no `billing` is treated as paid. Guessing "free" is the error
 # that costs money.
 #
-# The whole study runs inside Colab:  --only stub self_hosted
+# The study runs from the Mac:
+#   set -a; source .env; set +a          # OLLAMA_API_KEY
+#   python scripts/run_llm_study.py --only ollama --confirm-spend
 roster:
   - {provider: stub, billing: free, enabled: true}          # control arm; deterministic
-  # D43: disabled. Sending evidence packs to a vendor API is the thing the
-  # project's use case rules out.
+  # D43: disabled. Closed-weight vendor models are out of scope.
   - {provider: anthropic, model: claude-opus-5, billing: paid, enabled: false}
   - {provider: anthropic, model: claude-haiku-4-5, billing: paid, enabled: false}
   - {provider: openai, model: gpt-4o, billing: paid, enabled: false}        # D36
   - {provider: gemini, model: gemini-3.8-flash, billing: free_tier, enabled: false}
-  # D43: four open-weight families, all of which fit a free Colab GPU at 4-bit
-  # (Obsidian: "Model Quantisation"), plus one same-family size pair
-  # (qwen2.5 7b against 14b) for the tiered-model question the Claude pair used
-  # to answer. Tags move when a model is re-published, so each run records the
-  # pulled digest -- quote that, not the tag. All six tags below were checked
-  # against the Ollama registry on 2026-10-11.
-  - {provider: ollama, model: "llama3.1:8b", billing: self_hosted, enabled: true}       # Meta
-  - {provider: ollama, model: "qwen2.5:7b", billing: self_hosted, enabled: true}        # Alibaba, small tier
-  - {provider: ollama, model: "qwen2.5:14b", billing: self_hosted, enabled: true}       # Alibaba, large tier
-  - {provider: ollama, model: "gemma3:12b", billing: self_hosted, enabled: true}        # Google
-  - {provider: ollama, model: "mistral-nemo:12b", billing: self_hosted, enabled: true}  # Mistral
-  # A fifth family, held back for Colab time. Enabling it is this edit.
-  - {provider: ollama, model: "phi4:14b", billing: self_hosted, enabled: false}         # Microsoft
+  # D44: six open-weight models from Ollama's hosted catalogue, five developers,
+  # and one same-family size pair (gpt-oss 20b against 120b). Size and
+  # quantisation are what ollama.com/api/show reported on 2026-10-12; each run
+  # records them again with the digest -- quote the digest, not the tag.
+  - {provider: ollama, model: "gpt-oss:20b", billing: paid, enabled: true}           # OpenAI, 21B, MXFP4
+  - {provider: ollama, model: "gpt-oss:120b", billing: paid, enabled: true}          # OpenAI, 117B, MXFP4
+  - {provider: ollama, model: "gemma4:31b", billing: paid, enabled: true}            # Google, 33B, BF16
+  - {provider: ollama, model: "nemotron-3-nano:30b", billing: paid, enabled: true}   # NVIDIA, 32B, FP8
+  - {provider: ollama, model: "mistral-large-3:675b", billing: paid, enabled: true}  # Mistral, 675B, FP8; no thinking
+  - {provider: ollama, model: "deepseek-v4.1-flash", billing: paid, enabled: true}   # DeepSeek, 763B, FP8
+  # D43's roster, for a local or Colab Ollama server. Not in the hosted
+  # catalogue. Running these needs `host` removed from provider_options.ollama.
+  - {provider: ollama, model: "llama3.1:8b", billing: self_hosted, enabled: false}
+  - {provider: ollama, model: "qwen2.5:7b", billing: self_hosted, enabled: false}
+  - {provider: ollama, model: "qwen2.5:14b", billing: self_hosted, enabled: false}
+  - {provider: ollama, model: "gemma3:12b", billing: self_hosted, enabled: false}
+  - {provider: ollama, model: "mistral-nemo:12b", billing: self_hosted, enabled: false}
+  - {provider: ollama, model: "phi4:14b", billing: self_hosted, enabled: false}
 
 # Determinism is requested uniformly here and each adapter applies what its
 # provider actually supports, recording the rest as unsupported. The study
@@ -90,17 +97,19 @@ provider_options:
     max_retries: 5
     backoff_seconds: 10
   ollama:
-    # D35: served by Ollama inside a Google Colab GPU runtime and reached over
-    # localhost from the same notebook (notebooks/colab_self_hosted_arm.ipynb).
-    # iHPC is decommissioned and Cetus was abandoned after UTS eResearch did not
-    # reply; Colab was Dr Altaf's suggestion (15/09/2026).
-    model: "llama3.1:8b"
+    # D44: Ollama's hosted service. The key is read from the environment
+    # variable named here; nothing loads .env automatically. Remove `host` to
+    # use a local server instead (D35, D43).
+    host: https://ollama.com
+    api_key_env: OLLAMA_API_KEY
+    model: "gpt-oss:20b"
+    # Sent on every call and recorded as REQUESTED. A local server honours all
+    # three; the hosted service does not document whether it does. Check on the
+    # pilot: run the same pack twice and compare.
     temperature: 0
     seed: 42
-    # Pinned rather than left to Ollama's default, because Ollama TRUNCATES a
-    # prompt longer than its context window instead of raising. Prompts measured
-    # at ~500-700 tokens (2026-09-15) plus a report of up to ~2,000 fit easily;
-    # the headroom is for a future few-shot prompt version.
+    # A local server truncates a prompt longer than its context window instead
+    # of raising. Prompts measured at ~500-700 tokens (2026-09-15).
     num_ctx: 8192
 
 smoke:

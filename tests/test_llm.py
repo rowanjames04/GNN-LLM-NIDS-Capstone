@@ -604,3 +604,65 @@ def test_an_unreachable_ollama_server_is_infrastructure(monkeypatch):
     r = build_adapter("ollama", model="m", host="h").generate("s", "u", "v1")
 
     assert r.extra[INFRASTRUCTURE_ERROR] == "Ollama server unreachable"
+
+
+# --- Ollama's hosted service (D44) -------------------------------------------
+
+def _hosted_client(monkeypatch, reply=None, error=None):
+    import ollama
+    seen = {}
+
+    class FakeClient:
+        def __init__(self, host=None, headers=None):
+            seen.update(host=host, headers=headers)
+
+        def chat(self, model, messages, options=None):
+            if error:
+                raise error
+            return reply
+
+    monkeypatch.setattr(ollama, "Client", FakeClient)
+    return seen
+
+
+def test_hosted_ollama_sends_the_key_and_prices_the_call(monkeypatch):
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    seen = _hosted_client(monkeypatch, reply={
+        "message": {"content": "report", "thinking": "hmm"},
+        "prompt_eval_count": 1_000_000, "eval_count": 1_000_000})
+
+    r = build_adapter("ollama", model="gpt-oss:20b", host="https://ollama.com",
+                      temperature=0, seed=42).generate("s", "u", "v1")
+
+    assert seen["headers"] == {"Authorization": "Bearer test-key"}
+    assert r.cost_usd == 0.37
+    assert r.extra["thinking_chars"] == 3
+    assert "requested" in r.extra["determinism"]["note"]
+
+
+def test_a_local_ollama_server_gets_no_key_and_no_price(monkeypatch):
+    """The key must never be sent to a host that is not Ollama's."""
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    seen = _hosted_client(monkeypatch, reply={
+        "message": {"content": "report"}, "prompt_eval_count": 10, "eval_count": 10})
+
+    r = build_adapter("ollama", model="gpt-oss:20b",
+                      host="http://127.0.0.1:11434").generate("s", "u", "v1")
+
+    assert seen["headers"] is None
+    assert r.cost_usd is None
+
+
+def test_a_rejected_key_or_spent_credit_stops_the_run(monkeypatch):
+    import ollama
+    from gnnids.llm.adapters import INFRASTRUCTURE_ERROR
+    for status in (401, 402, 429, 503):
+        _hosted_client(monkeypatch, error=ollama.ResponseError("nope", status))
+        r = build_adapter("ollama", model="gpt-oss:20b",
+                          host="https://ollama.com").generate("s", "u", "v1")
+        assert INFRASTRUCTURE_ERROR in r.extra, status
+
+    _hosted_client(monkeypatch, error=ollama.ResponseError("bad request", 400))
+    r = build_adapter("ollama", model="gpt-oss:20b",
+                      host="https://ollama.com").generate("s", "u", "v1")
+    assert INFRASTRUCTURE_ERROR not in r.extra

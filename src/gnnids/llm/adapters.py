@@ -47,11 +47,27 @@ GEMINI_PRICING = {
     "gemini-2.5-flash": (0.30, 2.50),
 }
 
+# Ollama's hosted service, USD per million tokens, standard (peak) rate, read
+# from ollama.com/pricing on 2026-10-12 (D44). Off-peak is half this for some
+# models and is NOT modelled: `cost_usd` for a hosted call is therefore the
+# list-price figure, an upper bound on what the account was charged. Thinking
+# tokens are billed as output and are included in the count the server returns.
+# A model run on a local Ollama server is not in this table and has no price.
+OLLAMA_CLOUD_PRICING = {
+    "gpt-oss:20b": (0.07, 0.30),
+    "gpt-oss:120b": (0.15, 0.60),
+    "gemma4:31b": (0.14, 0.40),
+    "nemotron-3-nano:30b": (0.06, 0.24),
+    "mistral-large-3:675b": (0.50, 1.50),
+    "deepseek-v4.1-flash": (0.30, 1.20),
+}
+
 # List price per provider, whatever this study's billing. `cost_usd` is what a
 # call actually cost; `reference_cost_usd` is what it costs at list price. They
 # are kept apart so a free-tier call is neither reported as costing $0 nor as
 # costing money it did not.
-LIST_PRICES = {"anthropic": ANTHROPIC_PRICING, "gemini": GEMINI_PRICING}
+LIST_PRICES = {"anthropic": ANTHROPIC_PRICING, "gemini": GEMINI_PRICING,
+               "ollama": OLLAMA_CLOUD_PRICING}
 
 
 def reference_cost(provider: str, model: str, n_in: int | None,
@@ -335,28 +351,50 @@ def _suggested_retry_delay(details: str) -> float | None:
 
 
 class OllamaAdapter:
-    """Self-hosted. The V5 arm that iHPC's decommissioning threatened.
+    """Open-weight models through Ollama: its hosted service, or a local server.
 
-    Served by Ollama inside a Google Colab GPU runtime and reached over
-    localhost from the same notebook (D35, [[Colab Self-Hosted Arm]]). A free
-    Colab GPU holds ~8-14B at 4-bit where the M4 held ~3B, so V5 is *cloud vs
-    mid-size open-weight*. `cost_usd` stays None on purpose -- a self-hosted
-    model has no per-token price, and recording 0.0 would let it win a cost
-    comparison it is not actually competing in.
+    **The study uses the hosted service (D44).** `host: https://ollama.com` plus
+    a key in `OLLAMA_API_KEY` sends each prompt to Ollama's cloud, which serves
+    a fixed catalogue of open-weight models. That is a third-party API: the
+    evidence leaves the machine, calls are billed per token, and the hardware
+    is not ours and not disclosed. With no host the adapter talks to a local
+    server instead, which is how D35 and D43 ran it; that path still works.
 
-    `num_ctx` is sent explicitly on every call: Ollama truncates a prompt longer
-    than its context window rather than raising, so leaving it to the server's
-    default would make an over-long prompt a silent defect.
+    `cost_usd` is the list-price cost for a hosted call and None for a local
+    one -- a model on our own hardware has no per-token price, and recording 0.0
+    would let it win a cost comparison it is not competing in.
+
+    `num_ctx`, temperature and seed are sent on every call. A local server
+    honours them. Whether the hosted service does is not documented, so the
+    study reports them as *requested*, never as applied.
     """
 
     provider = "ollama"
 
     def __init__(self, model: str = "llama3.1:8b", host: str | None = None,
                  temperature: float | None = None, seed: int | None = None,
-                 num_ctx: int | None = None) -> None:
+                 num_ctx: int | None = None,
+                 api_key_env: str = "OLLAMA_API_KEY") -> None:
         self.model = model
         self.host = host or os.environ.get("OLLAMA_HOST")
         self.temperature, self.seed, self.num_ctx = temperature, seed, num_ctx
+        self.api_key_env = api_key_env
+
+    @property
+    def hosted(self) -> bool:
+        """True when calls go to Ollama's cloud rather than a server we run."""
+        return bool(self.host) and "ollama.com" in self.host
+
+    def _client(self):
+        import ollama
+
+        if not self.host:
+            return ollama.Client()
+        key = os.environ.get(self.api_key_env) if self.hosted else None
+        if key:
+            return ollama.Client(host=self.host,
+                                 headers={"Authorization": f"Bearer {key}"})
+        return ollama.Client(host=self.host)
 
     def describe(self) -> dict:
         """The exact model build and server this run used, queried from Ollama.
@@ -366,14 +404,13 @@ class OllamaAdapter:
         an unreachable server records the error and the run itself will then
         fail loudly on its first call.
         """
-        import ollama
-
         out: dict = {"tag": self.model, "num_ctx": self.num_ctx,
                      "digest": None, "parameter_size": None,
                      "quantization_level": None, "family": None,
-                     "server_version": None}
+                     "server_version": None,
+                     "served_by": "ollama cloud" if self.hosted else "local ollama server"}
         try:
-            client = ollama.Client(host=self.host) if self.host else ollama.Client()
+            client = self._client()
             d = client.show(self.model).details
             if d is not None:
                 out.update(parameter_size=d.parameter_size,
@@ -388,11 +425,9 @@ class OllamaAdapter:
         return out
 
     def generate(self, system: str, user: str, prompt_version: str) -> LLMResponse:
-        import ollama
-
         t0 = time.perf_counter()
         try:
-            client = ollama.Client(host=self.host) if self.host else ollama
+            client = self._client()
             options = {}
             if self.temperature is not None:
                 options["temperature"] = self.temperature
@@ -409,9 +444,18 @@ class OllamaAdapter:
                 latency_seconds=round(time.perf_counter() - t0, 3),
                 input_tokens=r.get("prompt_eval_count"),
                 output_tokens=r.get("eval_count"),
-                cost_usd=None,
-                extra={"determinism": _determinism(self.temperature, self.seed),
-                       "timing": _ollama_timing(r)},
+                cost_usd=(_cost(self.model, OLLAMA_CLOUD_PRICING,
+                                r.get("prompt_eval_count"), r.get("eval_count"))
+                          if self.hosted else None),
+                extra={"determinism": _determinism(
+                           self.temperature, self.seed,
+                           "requested; the hosted service does not document "
+                           "whether sampling options are honoured"
+                           if self.hosted else None),
+                       "timing": _ollama_timing(r),
+                       # Most hosted models reason before answering. The
+                       # reasoning is billed as output and is not the report.
+                       "thinking_chars": len((r.get("message") or {}).get("thinking") or "")},
             )
         except Exception as e:                       # noqa: BLE001
             r = LLMResponse(
@@ -425,6 +469,11 @@ class OllamaAdapter:
             # model failing, so the run stops instead and resumes later.
             if isinstance(e, ConnectionError):
                 r.extra[INFRASTRUCTURE_ERROR] = "Ollama server unreachable"
+            # The hosted service: a missing or rejected key, exhausted credits,
+            # a rate limit or an outage. None of these is the model failing.
+            status = getattr(e, "status_code", None)
+            if status in (401, 402, 403, 429) or (status or 0) >= 500:
+                r.extra[INFRASTRUCTURE_ERROR] = f"Ollama service returned {status}"
             return r
 
 

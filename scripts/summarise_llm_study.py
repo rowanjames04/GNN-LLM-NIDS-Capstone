@@ -129,9 +129,9 @@ def main() -> None:
         print("\n  The roster is NOT uniform on determinism. Report what each model "
               "was given\n  rather than claiming one setting for all.")
     elif applied_seen:
-        print(f"\n  Every model was given the same controls ({applied_seen.pop()}). "
-              "That fixes the\n  request, not the output: quantised inference on a GPU "
-              "is not guaranteed bitwise\n  repeatable.")
+        print(f"\n  Every model was sent the same controls ({applied_seen.pop()}). "
+              "That fixes the\n  request, not the output, and a hosted service may "
+              "not honour them: see the note column.")
 
     _print_provenance(data)
 
@@ -170,9 +170,9 @@ def _print_provenance(data: list[dict]) -> None:
               f"{m.get('parameter_size') or '-':<7} {', '.join(sorted(gpus)):<22} "
               f"{','.join(c[:8] for c in sorted(commits)) or '-'}"
               + ("  DIRTY TREE" if dirty else ""))
-    print("\n  Latency is hardware-bound: Colab assigns the GPU per session. "
-          "Compare latency only\n  between models that ran on the same GPU, and "
-          "never against a model served elsewhere.")
+    print("\n  Latency includes the network and whatever hardware served the call, "
+          "which a hosted\n  service does not disclose. Report it as observed "
+          "response time, not model speed.")
 
 
 if __name__ == "__main__":
