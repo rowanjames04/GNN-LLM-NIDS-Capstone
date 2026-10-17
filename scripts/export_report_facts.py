@@ -478,6 +478,123 @@ def sec_process() -> list[str]:
             "(Decision Register, Defect Register), not in this file.", ""]
 
 
+ARCHIVE = "superseded/2026-10-10_duration_artefact"
+
+
+def _seed_stat(values: list) -> str:
+    """mean ± sd (n = k) over per-seed values, in the file's own convention."""
+    import statistics
+    v = [x for x in values if isinstance(x, (int, float))]
+    if not v:
+        return "n/a"
+    if len(v) == 1:
+        return f"{v[0]:.4f} (one seed)"
+    return f"{statistics.mean(v):.4f} ± {statistics.pstdev(v):.4f} (n = {len(v)})"
+
+
+def _gnn_variants(doc: dict | None) -> dict:
+    return (doc or {}).get("results", {})
+
+
+def sec_step_back() -> list[str]:
+    """D47 and D48: the data-quality findings, the duplicate-flow evaluation, and
+    what the duration artefact was worth to each model."""
+    out = ["## 2a. Data quality, duplicates, and the artefact comparison (D47, D48)", ""]
+    for ds in (PRIMARY, SECONDARY):
+        q = read(f"metrics/data_quality_{ds}.json")
+        if not q:
+            continue
+        w = q["validity_flags"].get("duration_wrapped", {})
+        fams = sorted(w.get("share_by_family", {}).items(), key=lambda kv: -kv[1])[:4]
+        dup = q.get("duplicates", {}).get("features_only", {})
+        lab = q.get("labels", {})
+        out += [f"### {ds}", "", source(f"metrics/data_quality_{ds}.json", q), "",
+                f"- Flow duration wrapped (32-bit counter overflow): {w.get('n', 0):,} rows, "
+                f"{w.get('share', 0):.2%}. Most affected: "
+                + ", ".join(f"{k} {v:.1%}" for k, v in fams) + ".",
+                "- In every row that is not wrapped the duration is exactly 0, so the three "
+                "duration columns carry no genuine timing. They and the four throughput "
+                "columns computed from them were removed from the model's inputs (D47).",
+                f"- Test flows identical to some training flow (all measured columns): "
+                f"{dup.get('test_rows_also_in_train_share', 0):.1%}.",
+                f"- Flows whose identical twin carries another label: "
+                f"{dup.get('rows_whose_identical_twin_has_another_label', 0):,}."]
+        for k, label in (("involves_external_address", "touching an address outside the testbed"),
+                         ("involves_192_168_1_1", "touching 192.168.1.1")):
+            v = lab.get(k) or {}
+            if v.get("share_of_rows"):
+                out.append(f"- Flows {label}: {v['share_of_rows']:.2%} of rows; attack rate "
+                           f"{v['attack_rate_when_true']} when true against "
+                           f"{v['attack_rate_when_false']} when false.")
+        pre = read("metrics/preprocess_NF-ToN-IoT-v2.json" if ds == PRIMARY
+                   else "metrics/preprocess.json") or {}
+        share = pre.get("share_identical_to_a_training_row")
+        if share:
+            out.append(f"- Test flows whose model input matches a training flow "
+                       f"(the D48 \"novel only\" subset excludes these): {share['test']:.1%}.")
+        out.append("")
+
+    # Novel only, beside the headline, for every model.
+    out += ["### Scores on novel test flows only (D48)", "",
+            "PR-AUC at 4% prevalence (floor 0.04). \"All\" is the headline; \"novel "
+            "only\" drops test flows whose model input matches a training flow.", "",
+            "| Dataset | Model | All test flows | Novel only |", "|---|---|---|---|"]
+    rows = 0
+    for ds in (PRIMARY, SECONDARY):
+        for name, v in _gnn_variants(read(f"metrics/gnn/gnn_{ds}.json")).items():
+            runs = v.get("runs", [])
+            nov = [(r.get("novel_only") or {}).get("at_4%", {}).get("pr_auc") for r in runs]
+            if any(x is not None for x in nov):
+                out.append(f"| {ds} | GNN {name} | {_seed_stat([r['at_4%']['pr_auc'] for r in runs])} "
+                           f"| {_seed_stat(nov)} |"); rows += 1
+        b = read(f"metrics/baselines/baselines_{ds}.json") or {}
+        for key, v in sorted(b.get("results", {}).items()):
+            runs = v.get("runs", [])
+            nov = [(r.get("novel_only") or {}).get("at_4%", {}).get("pr_auc") for r in runs]
+            if any(x is not None for x in nov):
+                out.append(f"| {ds} | {key} | {_seed_stat([r['at_4%']['pr_auc'] for r in runs])} "
+                           f"| {_seed_stat(nov)} |"); rows += 1
+    if not rows:
+        out += ["", "**NOT YET MEASURED.** No result carries the novel-only block yet."]
+    out.append("")
+
+    # With and without the artefact.
+    out += ["### What the duration artefact was worth (D47)", "",
+            f"\"With\" is the archived run (`results/{ARCHIVE}/`), which saw the seven "
+            "artefact columns; \"without\" is the current run. The rows are identical "
+            "and in the same order, so the feature list is the only difference on "
+            f"{PRIMARY}. On {SECONDARY} the earlier preprocessing also lacked the "
+            "outlier clip, so that comparison has two differences.", "",
+            "| Dataset | Model | PR-AUC with the artefact | PR-AUC without | Difference |",
+            "|---|---|---|---|---|"]
+    rows = 0
+    for ds in (PRIMARY, SECONDARY):
+        old = _gnn_variants(read(f"{ARCHIVE}/metrics/gnn/gnn_{ds}.json"))
+        new = _gnn_variants(read(f"metrics/gnn/gnn_{ds}.json"))
+        for name in old:
+            if name in new:
+                a = old[name]["aggregate"]["pr_auc"]["mean"]; b_ = new[name]["aggregate"]["pr_auc"]["mean"]
+                out.append(f"| {ds} | GNN {name} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
+        ob = (read(f"{ARCHIVE}/metrics/baselines/baselines_{ds}.json") or {}).get("results", {})
+        nb = (read(f"metrics/baselines/baselines_{ds}.json") or {}).get("results", {})
+        for key in sorted(ob):
+            if key in nb and ob[key].get("schema") == BASELINE_SCHEMA:
+                a = ob[key]["aggregate"]["pr_auc"]["mean"]; b_ = nb[key]["aggregate"]["pr_auc"]["mean"]
+                out.append(f"| {ds} | {key} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
+    oz = (read(f"{ARCHIVE}/metrics/zeroday/zeroday_{PRIMARY}.json") or {}).get("results", {})
+    nz = (read(f"metrics/zeroday/zeroday_{PRIMARY}.json") or {}).get("results", {})
+    if oz and nz:
+        out += ["", f"Leave-one-attack-out recall on {PRIMARY}, with and without the artefact:", "",
+                "| Held-out family | Recall with | Recall without | Difference |", "|---|---|---|---|"]
+        for fam in sorted(oz, key=lambda k: -oz[k]["test_positives"]):
+            if fam in nz:
+                a = oz[fam]["aggregate"]["recall"]["mean"]; b_ = nz[fam]["aggregate"]["recall"]["mean"]
+                out.append(f"| {fam} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
+    if not rows:
+        out += ["", "**NOT YET MEASURED.** The retrained results do not exist yet."]
+    return out + [""]
+
+
 def build() -> str:
     now = datetime.now(timezone.utc).isoformat()[:19]
     head = [
@@ -494,7 +611,7 @@ def build() -> str:
         "5. Every PR-AUC is at the stated prevalence. A random model scores the "
         "prevalence itself.", "",
     ]
-    body = (sec_datasets() + sec_baselines()
+    body = (sec_datasets() + sec_step_back() + sec_baselines()
             + sec_ablation(PRIMARY, "3", f"Topology ablation on {PRIMARY}")
             + sec_vs_xgboost()
             + sec_ablation(SECONDARY, "5", f"Topology ablation on {SECONDARY} "
