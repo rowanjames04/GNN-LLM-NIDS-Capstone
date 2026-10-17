@@ -45,6 +45,7 @@ import numpy as np  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RESULTS = REPO_ROOT / "results"
 PRIMARY, SECONDARY = "NF-ToN-IoT-v2", "NF-UNSW-NB15-v2"
+MAIN_PROMPT = "v3"     # D49; v1/v2 are the archived round 1
 BASELINE_SCHEMA = "dual-prevalence-v1"
 
 # Palette: three categorical slots that pass colour-blind separation for every
@@ -483,7 +484,8 @@ HOSTING = {"stub": "template, no model", "anthropic": "cloud", "gemini": "cloud"
 def fig_llm(smoke: bool, rows: list[dict] | None = None):
     if rows is None:
         rows = script("summarise_llm_study").rows()
-    rows = [r for r in rows if r["prompt"] == "v1" and r["groundedness"] is not None]
+    # The study's main prompt (D49: v3, over the facts layer).
+    rows = [r for r in rows if r["prompt"] == MAIN_PROMPT and r["groundedness"] is not None]
     models = [r for r in rows if r["provider"] != "stub"]
     if not models:
         raise Skip("no language-model runs yet -- only the template control exists")
@@ -526,7 +528,7 @@ def fig_llm(smoke: bool, rows: list[dict] | None = None):
                "template control, which invents nothing by construction. n is the "
                "number of reports scored. Groundedness measures whether a report "
                "invented anything, not whether its reasoning is correct.")
-    sources = sorted((RESULTS / "reports").glob("reports_*_v1.json"))
+    sources = sorted((RESULTS / "reports").glob(f"reports_*_{MAIN_PROMPT}.json"))
     return fig, caption, sources
 
 

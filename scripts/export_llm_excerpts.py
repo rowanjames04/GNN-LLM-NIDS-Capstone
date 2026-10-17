@@ -134,7 +134,8 @@ def render(runs: list[dict], packs: dict[str, dict], picks: list[tuple[str, str]
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--prompt-version", default="v1")
+    ap.add_argument("--prompt-version", default="v3",
+                    help="v3 is the study's main prompt since D49")
     ap.add_argument("-n", type=int, default=3, help="number of excerpts")
     ap.add_argument("--detection-id", nargs="+", default=None)
     ap.add_argument("--out", type=Path, default=None)
