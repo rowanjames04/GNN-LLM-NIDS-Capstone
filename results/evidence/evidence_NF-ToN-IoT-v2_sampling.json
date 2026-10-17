@@ -1,0 +1,1039 @@
+{
+  "generated_at": "2026-10-17T08:11:34.948971+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "checkpoint": "NF-ToN-IoT-v2_full_seed0.pt",
+  "threshold": 0.87139,
+  "n_selected": 200,
+  "per_family_requested": 21,
+  "false_positives_requested": 30,
+  "false_positives_taken": 30,
+  "available_by_true_family": {
+    "Benign": 277,
+    "backdoor": 3730,
+    "ddos": 23468,
+    "dos": 21967,
+    "injection": 23034,
+    "mitm": 115,
+    "password": 33265,
+    "scanning": 68876,
+    "xss": 41954
+  },
+  "taken_by_true_family": {
+    "Benign": 30,
+    "backdoor": 21,
+    "ddos": 21,
+    "dos": 21,
+    "injection": 21,
+    "mitm": 21,
+    "password": 23,
+    "scanning": 21,
+    "xss": 21
+  },
+  "shortfalls": {},
+  "neighbour_occlusion": {
+    "tested_per_detection_cap": 50,
+    "threshold": 0.01,
+    "by_detection": {
+      "b6b35583-fb71-41f4-bb52-5013e3f9b0ce": {
+        "neighbours_sharing_a_host": 5087,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "e6cb2dfa-dc8a-4e54-ae27-a381738b2c76": {
+        "neighbours_sharing_a_host": 3952,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "2957dca7-34fb-408a-9455-023ae74b9f7f": {
+        "neighbours_sharing_a_host": 1697,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "fd61c834-1f4e-461d-b917-b0c994b6958d": {
+        "neighbours_sharing_a_host": 6253,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "67ff74fd-be13-4e28-9825-3774c9401627": {
+        "neighbours_sharing_a_host": 5461,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "11c48ea3-d6cf-4ed3-ae34-210ec40a1218": {
+        "neighbours_sharing_a_host": 3045,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "63b15476-7a58-4f41-84a1-ee1311d6dfe4": {
+        "neighbours_sharing_a_host": 6432,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "947316c8-e38e-4029-a5f8-e29fc237d719": {
+        "neighbours_sharing_a_host": 5470,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "618a5f94-8146-426d-a27d-675b531402eb": {
+        "neighbours_sharing_a_host": 5433,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "5aa5f101-8fb4-4eb3-978c-5ba0a3d2de8b": {
+        "neighbours_sharing_a_host": 5433,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "83255dda-ed31-4fc5-bc64-8ada2890e8d1": {
+        "neighbours_sharing_a_host": 4567,
+        "neighbours_tested": 50,
+        "max_abs_influence": 7e-05
+      },
+      "93298a70-2647-4c6a-a016-dd2d5e798b79": {
+        "neighbours_sharing_a_host": 4618,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00013
+      },
+      "e8a7c20c-ebf5-4966-b40a-368245bbed04": {
+        "neighbours_sharing_a_host": 5321,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00014
+      },
+      "2ac89d28-2a8c-4527-acbf-03d46145ccac": {
+        "neighbours_sharing_a_host": 5321,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00019
+      },
+      "fe5666e3-62d4-4e62-aaeb-994189a2eddd": {
+        "neighbours_sharing_a_host": 4702,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00037
+      },
+      "b2159668-0a28-455b-b310-eb0870847a05": {
+        "neighbours_sharing_a_host": 5321,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00124
+      },
+      "0ebc8446-feb8-439e-b24c-9a4eabef9165": {
+        "neighbours_sharing_a_host": 4370,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "4641104c-77d6-46bd-9539-0cb73faafb3c": {
+        "neighbours_sharing_a_host": 3985,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "97973e8a-866b-4916-832f-35777a9cb5bc": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "790f34ba-d3a7-401d-be12-83e99de08d06": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "a7d6a0a1-8376-472b-b0b0-6e1bc40c0c0c": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "26c88845-3313-4f27-9ea1-8b4145f0ca14": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "94eaa235-a05b-4866-a8a7-c01bc59d4af0": {
+        "neighbours_sharing_a_host": 146,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00046
+      },
+      "f59314ed-5a6f-4af4-9ab2-2ab4945d57a3": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "e7a6f97e-2231-4e76-b252-9323036ebf68": {
+        "neighbours_sharing_a_host": 9628,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "2b14c269-17aa-42ef-8edd-73b2befc83b8": {
+        "neighbours_sharing_a_host": 6230,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "75d3b93d-8faf-40e8-b576-324914de1f0c": {
+        "neighbours_sharing_a_host": 3351,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "506b661e-0dd3-4126-88f5-a25267edee3d": {
+        "neighbours_sharing_a_host": 3370,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "850731fd-a2a0-457d-8f54-2c71946a4f0f": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "c4882a36-2ef5-4bb9-b75a-4ba923119946": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00025
+      },
+      "63d0bd03-af56-4fa5-8d68-d5c4ca01d677": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00016
+      },
+      "070db282-be5d-4b93-8cb3-04afaf3f3583": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00035
+      },
+      "2889b2b7-4f89-467b-a258-c9d48f4f5b7b": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00033
+      },
+      "2c343e4a-5283-45c3-83e3-2542b23c978e": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00033
+      },
+      "a9216b7d-c440-41e4-ba89-fc20da1505b1": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00039
+      },
+      "a52d8184-9015-4d1f-848b-f80dbb4caeee": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00026
+      },
+      "c6069fdb-e69e-41cf-bfa0-fcaabd216b71": {
+        "neighbours_sharing_a_host": 3478,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00032
+      },
+      "e61a950a-0567-4a16-94b0-6c77feabda5e": {
+        "neighbours_sharing_a_host": 3480,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00059
+      },
+      "6145ed3f-4ffa-435f-9365-4af97e19e971": {
+        "neighbours_sharing_a_host": 3480,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00198
+      },
+      "091599dd-fa56-42d4-bfff-04632abf58ae": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00036
+      },
+      "13dfe85a-18b3-4916-84c2-ef1a5e59bca0": {
+        "neighbours_sharing_a_host": 3478,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00031
+      },
+      "d95a1443-3459-4900-94e1-b510be83f1f2": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00025
+      },
+      "f1fadeec-b7bb-433a-95c6-fc3e262a6957": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00043
+      },
+      "e51062e2-69f7-4895-8c82-4902e152fda0": {
+        "neighbours_sharing_a_host": 3802,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00021
+      },
+      "aa638212-5059-436b-b559-2141793f6a02": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00036
+      },
+      "b28a76cd-e8cc-4660-9955-ddc1148c764e": {
+        "neighbours_sharing_a_host": 3535,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00021
+      },
+      "cb3b30f8-5e66-4e22-8ba4-ac88ab33f647": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00034
+      },
+      "f70b930b-12db-4627-8d80-98fb7d745769": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "ea4b9b94-8c60-4192-9063-3047a98cdc51": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "d93fdff7-c2fc-4327-9f73-c6b5c4bf4496": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "a85dafd3-1e62-4cca-86a8-57cbe8f5ac57": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "c2b83b09-4b4c-4b75-8594-20bf60755b26": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00036
+      },
+      "792f7abf-56e0-423c-a57c-be0e995c4958": {
+        "neighbours_sharing_a_host": 683,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "7ab36514-3d83-4279-8236-d02fd907bdc3": {
+        "neighbours_sharing_a_host": 9893,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00032
+      },
+      "91cd5bda-66ed-4e63-b80a-8b038db9ffb8": {
+        "neighbours_sharing_a_host": 1742,
+        "neighbours_tested": 50,
+        "max_abs_influence": 6e-05
+      },
+      "867783a6-c146-4592-bef3-4561c507672c": {
+        "neighbours_sharing_a_host": 1742,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "d02536ab-d976-4213-a9c5-390ad63d7e3d": {
+        "neighbours_sharing_a_host": 1742,
+        "neighbours_tested": 50,
+        "max_abs_influence": 6e-05
+      },
+      "2b28086a-b5e8-4719-80a3-03435b2b2330": {
+        "neighbours_sharing_a_host": 3415,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "00a91f79-44b9-4455-a223-2098b411c9cc": {
+        "neighbours_sharing_a_host": 7094,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "71fa72c1-fbb1-45b9-a002-71f9688b8952": {
+        "neighbours_sharing_a_host": 8646,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00048
+      },
+      "3466eee7-e246-4212-a25c-58c91ecf7d6b": {
+        "neighbours_sharing_a_host": 8646,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00112
+      },
+      "d44f651d-5943-4d22-b251-0e8adcfe0783": {
+        "neighbours_sharing_a_host": 7077,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "136371ec-c9fa-4540-b2e9-86fbf0826cf2": {
+        "neighbours_sharing_a_host": 7094,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "f667b373-db7b-473b-bf9f-aca1ed9d5903": {
+        "neighbours_sharing_a_host": 5841,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "5b0cb8aa-18eb-4e23-8d1e-1022d4fa5a3d": {
+        "neighbours_sharing_a_host": 7447,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "febeb58a-1b73-46e4-a000-ff62f142eafa": {
+        "neighbours_sharing_a_host": 6448,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "93e64c57-0ed2-41b9-9867-87e1db5be886": {
+        "neighbours_sharing_a_host": 8554,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "27c7541c-3b64-422e-aeba-8211af98e3de": {
+        "neighbours_sharing_a_host": 5966,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00044
+      },
+      "936adc6a-2cb6-4e4a-a78d-a476c23d41b4": {
+        "neighbours_sharing_a_host": 4523,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "0e49bcfe-bc2e-4f00-ad35-0627af682d3a": {
+        "neighbours_sharing_a_host": 4495,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "52abb59d-20b3-4660-9499-998ae8a6da67": {
+        "neighbours_sharing_a_host": 5238,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "0fcad9c0-046d-4ba2-9703-2eed074b7af6": {
+        "neighbours_sharing_a_host": 4941,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "cc8a4642-ce17-43d8-a0df-d2fda0768c5d": {
+        "neighbours_sharing_a_host": 5780,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "c96740e4-01e5-4f00-95f1-5fdb552a0c30": {
+        "neighbours_sharing_a_host": 6600,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00104
+      },
+      "7b2c1779-9dc8-4d98-a4f3-3aa76824c662": {
+        "neighbours_sharing_a_host": 6600,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "fa3b809d-c91d-424d-83eb-aa5cf18d65a4": {
+        "neighbours_sharing_a_host": 6600,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00017
+      },
+      "9d363409-6c30-41e7-8545-c9d6cefc7353": {
+        "neighbours_sharing_a_host": 7671,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00021
+      },
+      "099148e9-6e30-45c0-a408-45eec8339c11": {
+        "neighbours_sharing_a_host": 6600,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00037
+      },
+      "82820ee0-9de2-47f6-90b7-e46c676f9571": {
+        "neighbours_sharing_a_host": 7671,
+        "neighbours_tested": 50,
+        "max_abs_influence": 7e-05
+      },
+      "685919f8-1368-4fb4-9fd0-303755b81aa4": {
+        "neighbours_sharing_a_host": 6600,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "c99ac181-3d0b-437e-9961-6249cbe9da10": {
+        "neighbours_sharing_a_host": 6768,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "9f46920b-d642-44f7-b325-5f119cbcd7a7": {
+        "neighbours_sharing_a_host": 6768,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "47bebcbd-3279-480f-a664-5f1ecec6a13d": {
+        "neighbours_sharing_a_host": 8559,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "af68429e-5278-42c1-b443-bac6c435f8d4": {
+        "neighbours_sharing_a_host": 6703,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "08833db8-7c36-4ee7-bef9-0973b608e52d": {
+        "neighbours_sharing_a_host": 6768,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "c70575f2-3df0-417a-83e2-019a9b89f846": {
+        "neighbours_sharing_a_host": 6768,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "d6d2c075-8cfb-4ebc-b1aa-13b308ed048c": {
+        "neighbours_sharing_a_host": 6768,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "9fd87543-041c-493e-9506-5c8486a25d5a": {
+        "neighbours_sharing_a_host": 8559,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "d7678f50-0ab1-4e82-b648-fcf1cf1ac7d2": {
+        "neighbours_sharing_a_host": 6703,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "a156ed18-eda6-41dc-bc5d-9576fcf6f719": {
+        "neighbours_sharing_a_host": 6703,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "14bf98ec-d5ce-4af4-b87e-081ac4f68501": {
+        "neighbours_sharing_a_host": 5377,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "4b2730a4-fe91-420a-b427-abbed079a9f2": {
+        "neighbours_sharing_a_host": 5517,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "72e94565-a9a2-4f51-9543-3cf41c88a3cd": {
+        "neighbours_sharing_a_host": 6067,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "1b539963-0d21-477a-a899-3359ca64ea55": {
+        "neighbours_sharing_a_host": 6503,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "7a1d2e7a-ac2c-4aa2-a8aa-4d06188a0538": {
+        "neighbours_sharing_a_host": 5660,
+        "neighbours_tested": 50,
+        "max_abs_influence": 6e-05
+      },
+      "5b2f9ace-6c2f-43c1-b6c8-5625ff785c6a": {
+        "neighbours_sharing_a_host": 6067,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "d66c081f-5451-4ba2-9540-64574918a6f9": {
+        "neighbours_sharing_a_host": 8596,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "ef2d6d23-62a3-4f66-9f88-54965fdd9330": {
+        "neighbours_sharing_a_host": 8596,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "c65a5334-3fb8-41bc-819c-63bf87683d97": {
+        "neighbours_sharing_a_host": 6067,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "98d9f865-ad2c-4734-8466-3ad49421500b": {
+        "neighbours_sharing_a_host": 7800,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "1178beec-2c37-43fe-9d51-24fa436f53c2": {
+        "neighbours_sharing_a_host": 7690,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "cb303d2f-7ad5-4bef-96a3-39164ffda40f": {
+        "neighbours_sharing_a_host": 4368,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "cad7a359-3957-4118-a0b4-1b480d6e58b5": {
+        "neighbours_sharing_a_host": 4368,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "275960fc-9304-4fb5-9851-0ba52c8d6bd5": {
+        "neighbours_sharing_a_host": 7690,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "4c72978e-c3e1-437d-be23-5930b6a454f4": {
+        "neighbours_sharing_a_host": 6842,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "72d00313-d9b4-431e-a6bd-2939b5abefb3": {
+        "neighbours_sharing_a_host": 8379,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "7533055b-d190-45b3-874a-d2ee427e7f3c": {
+        "neighbours_sharing_a_host": 7690,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "8cee2e89-2b4b-403b-8cc3-8bd83d347bcc": {
+        "neighbours_sharing_a_host": 7690,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "e25506bf-8dc5-41a9-b52b-547f1e7030a3": {
+        "neighbours_sharing_a_host": 8379,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "f99c0897-75dd-4019-bd06-95ec6d0b7171": {
+        "neighbours_sharing_a_host": 8379,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "040e6dfe-7a15-49dd-8d34-2dcfdf11ee02": {
+        "neighbours_sharing_a_host": 7690,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "f19599fb-e7c7-4c98-8ef8-5fdfc223d9cf": {
+        "neighbours_sharing_a_host": 8022,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "4aac1bfd-c4f8-49cc-bcb2-2ffa0400ed45": {
+        "neighbours_sharing_a_host": 8022,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "f3f2e997-675b-424a-9819-1b3b9f985073": {
+        "neighbours_sharing_a_host": 7611,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "bc933c51-911d-423a-9ff2-d6f5ddf9c911": {
+        "neighbours_sharing_a_host": 7611,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "6e078964-3d00-4645-98d8-e37533fd259d": {
+        "neighbours_sharing_a_host": 7611,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "13ce8ea1-d639-44d0-8f5c-b2b388e7be5f": {
+        "neighbours_sharing_a_host": 7611,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "010e5b69-0ec1-42e9-ad3e-73fba626036d": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "f175d5db-1ee2-489a-9608-77224aa4e59f": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "e6044ddb-c66f-4428-bf49-f4c43a3b2912": {
+        "neighbours_sharing_a_host": 6138,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "39853e41-ea01-4300-aa7b-8b5f72f7e656": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "e74fbbe8-1a52-4412-a729-bbcb41b1b29e": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "9a66d507-e75e-4ac1-8184-1bdb532762bf": {
+        "neighbours_sharing_a_host": 4951,
+        "neighbours_tested": 50,
+        "max_abs_influence": 5e-05
+      },
+      "d846fb30-d655-466d-ae1a-8fd6bf182d16": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "3416fe04-e82a-4a56-8756-18b8c8878b66": {
+        "neighbours_sharing_a_host": 6342,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "ee025a7d-2bc4-4830-a491-185aa4e32d17": {
+        "neighbours_sharing_a_host": 6138,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "89708b9e-61ef-4fde-948a-61e5eba81e1c": {
+        "neighbours_sharing_a_host": 8395,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "ff78ab2f-9999-4ca6-93a5-df19860faadb": {
+        "neighbours_sharing_a_host": 8436,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "af528f52-299c-415f-9256-568784fd2097": {
+        "neighbours_sharing_a_host": 8395,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "2a457f65-672e-4949-9502-6194d83322be": {
+        "neighbours_sharing_a_host": 8395,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "a9ad2d55-8fdc-4239-8e23-49c1d5362c99": {
+        "neighbours_sharing_a_host": 1644,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00011
+      },
+      "239862d6-0257-40fc-ba69-178b9527bc48": {
+        "neighbours_sharing_a_host": 1590,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00059
+      },
+      "194a48e9-49cf-4b54-bcd7-cb2e8cdf3043": {
+        "neighbours_sharing_a_host": 1590,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00073
+      },
+      "9678a180-7312-42c6-adaf-aa9e0ee1997e": {
+        "neighbours_sharing_a_host": 8450,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00011
+      },
+      "ca1a5eca-f2e2-4b84-b572-f6385b3f2bc4": {
+        "neighbours_sharing_a_host": 8396,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "52c4ab90-abda-403b-b3c7-4f31a1a58b85": {
+        "neighbours_sharing_a_host": 8436,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "e613e08a-d7c1-41b0-8c44-98bc34a40beb": {
+        "neighbours_sharing_a_host": 8395,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "7c751526-79cb-4a02-b1c3-68fb2d43bd91": {
+        "neighbours_sharing_a_host": 5094,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "40119f5f-c73d-4d7c-8566-627b5fea8f57": {
+        "neighbours_sharing_a_host": 4307,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "8bcb17b9-a81e-4480-adee-87a3326608df": {
+        "neighbours_sharing_a_host": 6265,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "ab758845-ba2f-4e79-ad08-fc5a837c84a9": {
+        "neighbours_sharing_a_host": 6134,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "1264ef45-5398-4612-8dfc-a817c29e7cc5": {
+        "neighbours_sharing_a_host": 6265,
+        "neighbours_tested": 50,
+        "max_abs_influence": 4e-05
+      },
+      "41c297db-2d07-4e5a-939e-0a910bdeebf8": {
+        "neighbours_sharing_a_host": 7098,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00013
+      },
+      "1aab634b-6f98-41c0-8d1f-d1f3a9cd92f8": {
+        "neighbours_sharing_a_host": 3479,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "9335e990-27a2-4ba7-9dbf-aa3af2aa27b3": {
+        "neighbours_sharing_a_host": 1962,
+        "neighbours_tested": 50,
+        "max_abs_influence": 6e-05
+      },
+      "408b7d60-27c0-44bc-aa98-f89b120df2a2": {
+        "neighbours_sharing_a_host": 4758,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "9765665a-a41f-4b44-bd5a-b8273bc1cc3a": {
+        "neighbours_sharing_a_host": 8348,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "00d7a388-2451-4d3a-bb61-2d7c458c3af9": {
+        "neighbours_sharing_a_host": 7803,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "66e35781-262a-46e8-a2e6-92e4c9938e55": {
+        "neighbours_sharing_a_host": 5146,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "d967ff65-5e99-4cdf-86bd-eb49842d41f3": {
+        "neighbours_sharing_a_host": 7803,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "66ba7f9d-4648-4848-aa84-79cc5ba2f662": {
+        "neighbours_sharing_a_host": 859,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "75bdc23c-1f16-4269-807f-be4569806df3": {
+        "neighbours_sharing_a_host": 859,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "9c96688a-3c64-4a00-ab6c-35b85ccca048": {
+        "neighbours_sharing_a_host": 859,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "26eb36a0-5cd7-4fce-9c42-f609ea9ac118": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 7e-05
+      },
+      "77e95681-2286-44cb-b27a-f6e5becfc07b": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "e056b39c-7490-448c-918b-4b0dc113f42d": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "9e788b3b-568f-4115-a5b3-b53451fc6c05": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "cba1588b-8558-4551-b5b7-20a3fe6ea57a": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "9c3c3222-e26c-483f-91ba-4f68ca2755a4": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 3e-05
+      },
+      "a8b53c4b-5fd2-4004-aed1-0dcf0fdf4391": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "0017524c-49cf-4f51-bd9e-214b6ff9d43a": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "3d09e516-a884-479d-b4c8-2be6b67969e8": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "dd0f8350-7153-43a1-b121-bed6767fe261": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "0e77c930-ef09-458d-88d0-c176f5d12cdb": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "a0eb7ad9-8897-483e-9009-a3ea954f9b18": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "f4da4b5b-ca81-4c7b-a42b-8b5b841c23fa": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "6f7c674e-9027-4af1-9e1c-1b8a319943c1": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "08641eb7-7a1a-49bd-8e14-375879c26c90": {
+        "neighbours_sharing_a_host": 3619,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "ce2443ee-c632-454a-9fb3-6e86e88058ba": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "564cf7cd-86f2-4409-9f43-a02b5867314c": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "be192be9-b7c0-4d4a-bb6b-7fbc3a162878": {
+        "neighbours_sharing_a_host": 3620,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "44d3f760-907b-4e18-ba70-b89c44338b4f": {
+        "neighbours_sharing_a_host": 6597,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "40d32ef7-8414-4590-8245-296567d8d77c": {
+        "neighbours_sharing_a_host": 6597,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "267c7b56-5f58-4810-923e-7a0320a26827": {
+        "neighbours_sharing_a_host": 5747,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "aa27ddcc-f8b0-4fd8-93a6-86c99df02a33": {
+        "neighbours_sharing_a_host": 5344,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "9a6a3b9c-390d-426c-89d3-468b67da9200": {
+        "neighbours_sharing_a_host": 6597,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "f95398b8-c151-486a-8218-6a3481a0a27c": {
+        "neighbours_sharing_a_host": 6650,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "f8303d4c-220d-4dd6-a07a-0873802503f8": {
+        "neighbours_sharing_a_host": 4867,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "a9883c22-d829-4552-a888-b1e1c07ec849": {
+        "neighbours_sharing_a_host": 5747,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "b5f667c8-d947-4d1d-81e0-5f9ca3970dcd": {
+        "neighbours_sharing_a_host": 5011,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "0c48fd67-3b46-43e6-a78a-bdb5875dd988": {
+        "neighbours_sharing_a_host": 6650,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "6c26b765-1817-490e-968e-d1bf5020b09e": {
+        "neighbours_sharing_a_host": 6478,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "5da62fb5-1462-4599-9210-6392df73f1c2": {
+        "neighbours_sharing_a_host": 3814,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "27e44f82-3d4d-42e1-bc60-a54d631d1d34": {
+        "neighbours_sharing_a_host": 4042,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "411aff91-3d4e-4d52-bd7c-0468673bc3dd": {
+        "neighbours_sharing_a_host": 3101,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "39229894-9efe-4f6d-9332-720b350eefa0": {
+        "neighbours_sharing_a_host": 2426,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "6627d9a7-f475-443f-9208-4cd53e62a005": {
+        "neighbours_sharing_a_host": 3101,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "7ae6fc59-ca22-4993-b6c3-eb98014834e9": {
+        "neighbours_sharing_a_host": 2381,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "b18d8e1b-15a7-4434-9a39-41acb5371b81": {
+        "neighbours_sharing_a_host": 4186,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "39fdf775-79a4-4c07-8e2b-c4987ddb0ce8": {
+        "neighbours_sharing_a_host": 4869,
+        "neighbours_tested": 50,
+        "max_abs_influence": 1e-05
+      },
+      "5c55f8c5-0462-450a-bc06-8a115e72ab40": {
+        "neighbours_sharing_a_host": 4257,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0001
+      },
+      "2e0f330f-f2d1-4909-a566-a850e269ce07": {
+        "neighbours_sharing_a_host": 1278,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "2419f28e-b377-4841-a5c6-a6c606545c51": {
+        "neighbours_sharing_a_host": 4257,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00031
+      },
+      "13c3367d-9af8-4378-9e07-e7541bcbc717": {
+        "neighbours_sharing_a_host": 4257,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0002
+      },
+      "a2d42016-5117-483f-8048-48f9a0632eef": {
+        "neighbours_sharing_a_host": 4257,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.00014
+      },
+      "1c690004-1a6d-48f2-b245-bf8ed087ee66": {
+        "neighbours_sharing_a_host": 1278,
+        "neighbours_tested": 50,
+        "max_abs_influence": 2e-05
+      },
+      "3982928b-9ec1-45b9-aef5-7af7f476bbad": {
+        "neighbours_sharing_a_host": 5588,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "d6431245-cf17-4526-9a16-182be6e1d951": {
+        "neighbours_sharing_a_host": 5588,
+        "neighbours_tested": 50,
+        "max_abs_influence": 0.0
+      },
+      "ba8b3fc7-9380-4f91-b404-7887a0bb4f6c": {
+        "neighbours_sharing_a_host": 4968,
+        "neighbours_tested": 50,
+        "max_abs_influence": 8e-05
+      },
+      "8d29c6d7-d348-4833-aa1e-cda81db74871": {
+        "neighbours_sharing_a_host": 4257,
+        "neighbours_tested": 50,
+        "max_abs_influence": 6e-05
+      }
+    }
+  }
+}

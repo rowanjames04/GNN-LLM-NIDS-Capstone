@@ -1,0 +1,140 @@
+{
+  "generated_at": "2026-10-17T08:38:48.804676+00:00",
+  "protocol": "cross-dataset transfer, no retraining (D18, Phase 9)",
+  "smoke": false,
+  "source_dataset": "NF-UNSW-NB15-v2",
+  "target_dataset": "NF-ToN-IoT-v2",
+  "checkpoint": "NF-UNSW-NB15-v2_full_seed2.pt",
+  "pipeline": "frozen from source; refitting on target would be test-set access",
+  "thresholds": {
+    "source": 0.68802,
+    "recalibrated_on_target": 0.56116
+  },
+  "target_rows": 2000000,
+  "target_hosts": 6051,
+  "target_native_prevalence": 0.63995,
+  "out_of_vocabulary": {
+    "PROTOCOL": {
+      "oov_rate": 0.0013,
+      "distinct_in_target": 5,
+      "distinct_in_source_vocab": 2,
+      "shared": 2
+    },
+    "L7_PROTO": {
+      "oov_rate": 0.14464,
+      "distinct_in_target": 154,
+      "distinct_in_source_vocab": 6,
+      "shared": 6
+    },
+    "TCP_FLAGS": {
+      "oov_rate": 0.54465,
+      "distinct_in_target": 30,
+      "distinct_in_source_vocab": 7,
+      "shared": 7
+    },
+    "CLIENT_TCP_FLAGS": {
+      "oov_rate": 0.5432,
+      "distinct_in_target": 30,
+      "distinct_in_source_vocab": 7,
+      "shared": 7
+    },
+    "SERVER_TCP_FLAGS": {
+      "oov_rate": 0.15809,
+      "distinct_in_target": 28,
+      "distinct_in_source_vocab": 9,
+      "shared": 9
+    },
+    "_worst_oov_rate": 0.54465
+  },
+  "reported_at_prevalence": 0.04,
+  "results": {
+    "source_threshold": {
+      "native": {
+        "n": 2000000,
+        "n_positive": 1279903,
+        "prevalence": 0.639952,
+        "threshold": 0.688023,
+        "pr_auc": 0.73731,
+        "roc_auc": 0.60555,
+        "precision": 0.86688,
+        "recall": 0.24972,
+        "f1": 0.38774,
+        "fpr_at_95_recall": 0.951277,
+        "fpr_at_99_recall": 0.992257,
+        "false_positives": 49081,
+        "true_positives": 319611,
+        "alerts_per_true_positive": 1.154,
+        "prevalence_adjustment": "none (native)"
+      },
+      "at_4%": {
+        "n": 750101,
+        "n_positive": 30004,
+        "prevalence": 0.04,
+        "threshold": 0.688023,
+        "pr_auc": 0.07493,
+        "roc_auc": 0.60522,
+        "precision": 0.1322,
+        "recall": 0.2492,
+        "f1": 0.17275,
+        "fpr_at_95_recall": 0.950284,
+        "fpr_at_99_recall": 0.992198,
+        "false_positives": 49081,
+        "true_positives": 7477,
+        "alerts_per_true_positive": 7.564,
+        "prevalence_adjustment": {
+          "target": 0.04,
+          "achieved": 0.04,
+          "native": 0.63995,
+          "n_before": 2000000,
+          "n_after": 750101,
+          "note": "scores subsampled after inference; the graph was never altered"
+        }
+      }
+    },
+    "recalibrated_threshold": {
+      "native": {
+        "n": 2000000,
+        "n_positive": 1279903,
+        "prevalence": 0.639952,
+        "threshold": 0.56116,
+        "pr_auc": 0.73731,
+        "roc_auc": 0.60555,
+        "precision": 0.86264,
+        "recall": 0.35711,
+        "f1": 0.50512,
+        "fpr_at_95_recall": 0.951277,
+        "fpr_at_99_recall": 0.992257,
+        "false_positives": 72778,
+        "true_positives": 457070,
+        "alerts_per_true_positive": 1.159,
+        "prevalence_adjustment": "none (native)"
+      },
+      "at_4%": {
+        "n": 750101,
+        "n_positive": 30004,
+        "prevalence": 0.04,
+        "threshold": 0.56116,
+        "pr_auc": 0.07493,
+        "roc_auc": 0.60522,
+        "precision": 0.12864,
+        "recall": 0.35809,
+        "f1": 0.18928,
+        "fpr_at_95_recall": 0.950284,
+        "fpr_at_99_recall": 0.992198,
+        "false_positives": 72778,
+        "true_positives": 10744,
+        "alerts_per_true_positive": 7.774,
+        "prevalence_adjustment": {
+          "target": 0.04,
+          "achieved": 0.04,
+          "native": 0.63995,
+          "n_before": 2000000,
+          "n_after": 750101,
+          "note": "scores subsampled after inference; the graph was never altered"
+        }
+      }
+    }
+  },
+  "source_data_version": "d6640047992456eb",
+  "target_data_version": "7549011bda90aa19"
+}

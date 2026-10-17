@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T10:10:14.334592+00:00",
+  "generated_at": "2026-10-17T13:22:40.149411+00:00",
   "smoke": false,
   "figures": {
     "ablation": {
@@ -9,7 +9,7 @@
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T04:53:38.489966+00:00"
+          "generated_at": "2026-10-17T08:06:29.025439+00:00"
         }
       ]
     },
@@ -20,11 +20,11 @@
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T04:53:38.489966+00:00"
+          "generated_at": "2026-10-17T08:06:29.025439+00:00"
         },
         {
           "file": "results/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T10:10:12.887183+00:00"
+          "generated_at": "2026-10-17T06:41:02.686305+00:00"
         }
       ]
     },
@@ -35,11 +35,11 @@
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T04:53:38.489966+00:00"
+          "generated_at": "2026-10-17T08:06:29.025439+00:00"
         },
         {
           "file": "results/metrics/gnn/gnn_NF-UNSW-NB15-v2.json",
-          "generated_at": "2026-08-31T04:54:19.992514+00:00"
+          "generated_at": "2026-10-17T08:37:00.942595+00:00"
         }
       ]
     },
@@ -50,7 +50,7 @@
       "sources": [
         {
           "file": "results/metrics/zeroday/zeroday_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T09:31:41.847677+00:00"
+          "generated_at": "2026-10-17T13:22:38.696495+00:00"
         }
       ]
     },
@@ -61,43 +61,51 @@
       "sources": [
         {
           "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2__NF-ToN-IoT-v2_full_seed0.json",
-          "generated_at": "2026-10-10T04:54:38.019870+00:00"
+          "generated_at": "2026-10-17T08:38:00.635680+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed0.json",
-          "generated_at": "2026-10-10T04:53:53.361425+00:00"
+          "generated_at": "2026-10-17T08:37:15.666038+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed1.json",
-          "generated_at": "2026-10-10T04:54:07.634330+00:00"
+          "generated_at": "2026-10-17T08:37:30.066123+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2__NF-ToN-IoT-v2_full_seed2.json",
-          "generated_at": "2026-10-10T04:54:21.900681+00:00"
+          "generated_at": "2026-10-17T08:37:44.355842+00:00"
         },
         {
-          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-31T05:02:54.546935+00:00"
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2__NF-UNSW-NB15-v2_full_seed0.json",
+          "generated_at": "2026-10-17T08:38:16.744970+00:00"
         },
         {
-          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-UNSW-NB15-v2.json",
-          "generated_at": "2026-08-31T05:03:25.313100+00:00"
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2__NF-UNSW-NB15-v2_full_seed1.json",
+          "generated_at": "2026-10-17T08:38:32.800462+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2__NF-UNSW-NB15-v2_full_seed2.json",
+          "generated_at": "2026-10-17T08:38:48.804676+00:00"
+        },
+        {
+          "file": "results/metrics/transfer/transfer_NF-UNSW-NB15-v2_to_NF-UNSW-NB15-v2__NF-UNSW-NB15-v2_full_seed0.json",
+          "generated_at": "2026-10-17T08:39:02.558518+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_xgboost_NF-ToN-IoT-v2_to_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-31T05:14:50.705294+00:00"
+          "generated_at": "2026-10-17T08:42:33.731110+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_xgboost_NF-ToN-IoT-v2_to_NF-UNSW-NB15-v2.json",
-          "generated_at": "2026-08-31T05:06:58.808363+00:00"
+          "generated_at": "2026-10-17T08:40:01.550164+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_xgboost_NF-UNSW-NB15-v2_to_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-08-31T05:07:56.222601+00:00"
+          "generated_at": "2026-10-17T08:40:56.012357+00:00"
         },
         {
           "file": "results/metrics/transfer/transfer_xgboost_NF-UNSW-NB15-v2_to_NF-UNSW-NB15-v2.json",
-          "generated_at": "2026-08-31T05:08:19.003522+00:00"
+          "generated_at": "2026-10-17T08:43:46.973641+00:00"
         }
       ]
     },
@@ -108,7 +116,7 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-10T10:10:13.597018+00:00"
+          "generated_at": "2026-10-17T13:22:39.337205+00:00"
         }
       ]
     },
@@ -119,24 +127,55 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-10T10:10:13.597018+00:00"
+          "generated_at": "2026-10-17T13:22:39.337205+00:00"
         }
       ]
     },
     "confusion": {
       "status": "drawn",
       "file": "results_08_attack_family_confusion.png",
-      "caption": "The attack-family head on the NF-ToN-IoT-v2 test split, seed 0: each row shows how flows of one true family were named. Cells below 0.05 are left unlabelled. Macro-F1 0.846; on true-positive detections the named family is correct for 98.0%.",
+      "caption": "The attack-family head on the NF-ToN-IoT-v2 test split, seed 0: each row shows how flows of one true family were named. Cells below 0.05 are left unlabelled. Macro-F1 0.885; on true-positive detections the named family is correct for 97.7%.",
       "sources": [
         {
           "file": "results/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "generated_at": "2026-10-10T04:53:38.489966+00:00"
+          "generated_at": "2026-10-17T08:06:29.025439+00:00"
         }
       ]
     },
     "llm": {
-      "status": "skipped",
-      "reason": "no language-model runs yet -- only the template control exists"
+      "status": "drawn",
+      "file": "results_09_llm_groundedness.png",
+      "caption": "Groundedness of each language model's reports on identical evidence packs and an identical prompt. Blue: all reports. Orange: the false-positive arm, where the detector was wrong. The line is the template control, which invents nothing by construction. n is the number of reports scored. Groundedness measures whether a report invented anything, not whether its reasoning is correct.",
+      "sources": [
+        {
+          "file": "results/reports/reports_ollama_gemma4-31b_v3.json",
+          "generated_at": "2026-10-17T12:35:03.176501+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_gpt-oss-120b_v3.json",
+          "generated_at": "2026-10-17T12:33:43.996758+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_gpt-oss-20b_v3.json",
+          "generated_at": "2026-10-17T13:14:29.945409+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_nemotron-3-nano-30b_v3.json",
+          "generated_at": "2026-10-17T12:38:37.442188+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_nemotron-3-super_v3.json",
+          "generated_at": "2026-10-17T12:59:09.781982+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_nemotron-3-ultra_v3.json",
+          "generated_at": "2026-10-17T13:13:01.281577+00:00"
+        },
+        {
+          "file": "results/reports/reports_stub_template-v1_v3.json",
+          "generated_at": "2026-10-17T08:12:16.727647+00:00"
+        }
+      ]
     }
   }
 }

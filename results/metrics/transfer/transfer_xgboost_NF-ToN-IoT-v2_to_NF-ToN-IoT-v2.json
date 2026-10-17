@@ -1,0 +1,329 @@
+{
+  "generated_at": "2026-10-17T08:42:33.731110+00:00",
+  "protocol": "cross-dataset transfer, no retraining (D18/D32), xgboost arm",
+  "model": "xgboost::flow",
+  "smoke": false,
+  "source_dataset": "NF-ToN-IoT-v2",
+  "target_dataset": "NF-ToN-IoT-v2",
+  "pipeline": "frozen from source; identical protocol to transfer_eval.py",
+  "reported_at_prevalence": 0.04,
+  "target_rows": 2000000,
+  "target_native_prevalence": 0.63995,
+  "out_of_vocabulary": {
+    "PROTOCOL": {
+      "oov_rate": 0.00025,
+      "distinct_in_target": 5,
+      "distinct_in_source_vocab": 3,
+      "shared": 3
+    },
+    "L7_PROTO": {
+      "oov_rate": 0.02115,
+      "distinct_in_target": 154,
+      "distinct_in_source_vocab": 16,
+      "shared": 16
+    },
+    "TCP_FLAGS": {
+      "oov_rate": 0.00205,
+      "distinct_in_target": 30,
+      "distinct_in_source_vocab": 15,
+      "shared": 15
+    },
+    "CLIENT_TCP_FLAGS": {
+      "oov_rate": 0.00198,
+      "distinct_in_target": 30,
+      "distinct_in_source_vocab": 14,
+      "shared": 14
+    },
+    "SERVER_TCP_FLAGS": {
+      "oov_rate": 0.00112,
+      "distinct_in_target": 28,
+      "distinct_in_source_vocab": 12,
+      "shared": 12
+    },
+    "_worst_oov_rate": 0.02115
+  },
+  "n_seeds": 3,
+  "runs": [
+    {
+      "seed": 0,
+      "source_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.936046,
+          "pr_auc": 0.9951,
+          "roc_auc": 0.99142,
+          "precision": 0.99802,
+          "recall": 0.78192,
+          "f1": 0.87685,
+          "fpr_at_95_recall": 0.044644,
+          "fpr_at_99_recall": 0.131599,
+          "false_positives": 1983,
+          "true_positives": 1000785,
+          "alerts_per_true_positive": 1.002,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.936046,
+          "pr_auc": 0.90855,
+          "roc_auc": 0.99125,
+          "precision": 0.92214,
+          "recall": 0.7828,
+          "f1": 0.84678,
+          "fpr_at_95_recall": 0.048075,
+          "fpr_at_99_recall": 0.134608,
+          "false_positives": 1983,
+          "true_positives": 23487,
+          "alerts_per_true_positive": 1.084,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "recalibrated_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.923357,
+          "pr_auc": 0.9951,
+          "roc_auc": 0.99142,
+          "precision": 0.9978,
+          "recall": 0.79166,
+          "f1": 0.88285,
+          "fpr_at_95_recall": 0.044644,
+          "fpr_at_99_recall": 0.131599,
+          "false_positives": 2238,
+          "true_positives": 1013245,
+          "alerts_per_true_positive": 1.002,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.923357,
+          "pr_auc": 0.90855,
+          "roc_auc": 0.99125,
+          "precision": 0.91397,
+          "recall": 0.79243,
+          "f1": 0.84887,
+          "fpr_at_95_recall": 0.048075,
+          "fpr_at_99_recall": 0.134608,
+          "false_positives": 2238,
+          "true_positives": 23776,
+          "alerts_per_true_positive": 1.094,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "thresholds": {
+        "source": 0.93605,
+        "recalibrated_on_target": 0.92336
+      }
+    },
+    {
+      "seed": 1,
+      "source_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.938677,
+          "pr_auc": 0.99618,
+          "roc_auc": 0.99331,
+          "precision": 0.99737,
+          "recall": 0.78784,
+          "f1": 0.88031,
+          "fpr_at_95_recall": 0.034393,
+          "fpr_at_99_recall": 0.123174,
+          "false_positives": 2661,
+          "true_positives": 1008361,
+          "alerts_per_true_positive": 1.003,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.938677,
+          "pr_auc": 0.92009,
+          "roc_auc": 0.99318,
+          "precision": 0.89888,
+          "recall": 0.78839,
+          "f1": 0.84002,
+          "fpr_at_95_recall": 0.037663,
+          "fpr_at_99_recall": 0.134626,
+          "false_positives": 2661,
+          "true_positives": 23655,
+          "alerts_per_true_positive": 1.112,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "recalibrated_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.669127,
+          "pr_auc": 0.99618,
+          "roc_auc": 0.99331,
+          "precision": 0.99578,
+          "recall": 0.86736,
+          "f1": 0.92714,
+          "fpr_at_95_recall": 0.034393,
+          "fpr_at_99_recall": 0.123174,
+          "false_positives": 4709,
+          "true_positives": 1110131,
+          "alerts_per_true_positive": 1.004,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.669127,
+          "pr_auc": 0.92009,
+          "roc_auc": 0.99318,
+          "precision": 0.84674,
+          "recall": 0.86708,
+          "f1": 0.85679,
+          "fpr_at_95_recall": 0.037663,
+          "fpr_at_99_recall": 0.134626,
+          "false_positives": 4709,
+          "true_positives": 26016,
+          "alerts_per_true_positive": 1.181,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "thresholds": {
+        "source": 0.93868,
+        "recalibrated_on_target": 0.66913
+      }
+    },
+    {
+      "seed": 2,
+      "source_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.937153,
+          "pr_auc": 0.99641,
+          "roc_auc": 0.99378,
+          "precision": 0.99724,
+          "recall": 0.80165,
+          "f1": 0.88881,
+          "fpr_at_95_recall": 0.034152,
+          "fpr_at_99_recall": 0.121927,
+          "false_positives": 2844,
+          "true_positives": 1026040,
+          "alerts_per_true_positive": 1.003,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.937153,
+          "pr_auc": 0.92138,
+          "roc_auc": 0.9936,
+          "precision": 0.89432,
+          "recall": 0.80216,
+          "f1": 0.84574,
+          "fpr_at_95_recall": 0.035947,
+          "fpr_at_99_recall": 0.13265,
+          "false_positives": 2844,
+          "true_positives": 24068,
+          "alerts_per_true_positive": 1.118,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "recalibrated_threshold": {
+        "native": {
+          "n": 2000000,
+          "n_positive": 1279903,
+          "prevalence": 0.639952,
+          "threshold": 0.786793,
+          "pr_auc": 0.99641,
+          "roc_auc": 0.99378,
+          "precision": 0.99607,
+          "recall": 0.8434,
+          "f1": 0.9134,
+          "fpr_at_95_recall": 0.034152,
+          "fpr_at_99_recall": 0.121927,
+          "false_positives": 4264,
+          "true_positives": 1079473,
+          "alerts_per_true_positive": 1.004,
+          "prevalence_adjustment": "none (native)"
+        },
+        "at_4%": {
+          "n": 750101,
+          "n_positive": 30004,
+          "prevalence": 0.04,
+          "threshold": 0.786793,
+          "pr_auc": 0.92138,
+          "roc_auc": 0.9936,
+          "precision": 0.85581,
+          "recall": 0.84352,
+          "f1": 0.84962,
+          "fpr_at_95_recall": 0.035947,
+          "fpr_at_99_recall": 0.13265,
+          "false_positives": 4264,
+          "true_positives": 25309,
+          "alerts_per_true_positive": 1.168,
+          "prevalence_adjustment": {
+            "target": 0.04,
+            "achieved": 0.04,
+            "native": 0.63995,
+            "n_before": 2000000,
+            "n_after": 750101,
+            "note": "scores subsampled after inference; the graph was never altered"
+          }
+        }
+      },
+      "thresholds": {
+        "source": 0.93715,
+        "recalibrated_on_target": 0.78679
+      }
+    }
+  ],
+  "source_data_version": "7549011bda90aa19",
+  "target_data_version": "7549011bda90aa19"
+}
