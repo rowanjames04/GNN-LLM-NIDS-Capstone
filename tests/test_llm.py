@@ -715,3 +715,12 @@ def test_a_short_rate_limit_is_waited_out_not_treated_as_the_end(monkeypatch):
     assert r.ok and r.text == "report"
     assert slept == [20, 60]
     assert INFRASTRUCTURE_ERROR not in r.extra
+
+
+def test_numbers_inside_a_feature_name_are_supplied_by_the_pack():
+    """C31: found in the first 40 hosted reports, 2026-10-17."""
+    from gnnids.llm.groundedness import score_report
+
+    pack = {"attribution": {"top_features": [{"feature": "NUM_PKTS_512_TO_1024_BYTES"}]}}
+    s = score_report(pack, "one packet in the 512-1024 byte range, and 777 more")
+    assert s["per_class"]["numbers"]["ungrounded"] == ["777"]

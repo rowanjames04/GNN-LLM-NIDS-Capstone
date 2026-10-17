@@ -86,6 +86,13 @@ def _evidence_entities(pack: dict) -> dict[str, set[str]]:
     """
     blob = json.dumps(pack)
     found = extract_entities(blob)
+    # Numbers inside feature names count as supplied: a pack that lists
+    # NUM_PKTS_512_TO_1024_BYTES has told the model "512" and "1024", and a
+    # report that writes "the 512-1024 byte range" invented neither. The
+    # pattern alone cannot see them, because a digit beside a letter or an
+    # underscore is part of a word (C31).
+    for kind, values in extract_entities(blob.replace("_", " ")).items():
+        found[kind] |= values
     # Rounded forms count as grounded: a score of 0.96004 restated as 0.96 is
     # the report doing its job.
     rounded = set()
