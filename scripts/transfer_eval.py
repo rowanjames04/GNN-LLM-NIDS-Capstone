@@ -47,6 +47,7 @@ from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
 from gnnids.training.loop import infer, pick_device  # noqa: E402
 from gnnids.data.version import check_checkpoint  # noqa: E402
+from gnnids.data.version import version_for_preprocess_config  # noqa: E402
 
 
 def main() -> None:
@@ -165,6 +166,10 @@ def main() -> None:
     stem = ckpt_path.stem
     name = (f"{'smoke_' if args.smoke else ''}transfer_{src_ds['name']}"
             f"_to_{tgt_ds['name']}__{stem}.json")
+    # Which preprocessed data the source side came from (C32).
+    out["source_data_version"] = version_for_preprocess_config(args.source_preprocess or cfg["source"]["preprocess_config"])
+    out["target_data_version"] = version_for_preprocess_config(
+        args.target_preprocess or cfg["target"]["preprocess_config"])
     (out_dir / name).write_text(json.dumps(out, indent=2))
 
     print("=" * 76)

@@ -94,6 +94,17 @@ class SnapshotDataset(torch.utils.data.Dataset):
             window_index=i,
         )
 
+    def row_ids(self) -> np.ndarray:
+        """The source row of every edge, in the order inference returns them.
+
+        Windows are taken in order and a snapshot keeps its rows in order, so
+        concatenating each window's rows gives the row behind each score. Used
+        to evaluate on a subset of test rows after the fact.
+        """
+        parts = [np.arange(lo, hi) if self.row_index is None else self.row_index[lo:hi]
+                 for lo, hi in self.windows]
+        return np.concatenate(parts) if parts else np.zeros(0, dtype=np.int64)
+
     @property
     def n_edges(self) -> int:
         return sum(hi - lo for lo, hi in self.windows)

@@ -204,6 +204,37 @@ def same_rows_as_before(df, out_dir: Path) -> bool | None:
     return True
 
 
+def write_duplicate_mask(feats: dict, splits: dict, out_dir: Path) -> dict:
+    """Which val/test rows have a model input identical to some training row (D48).
+
+    Measured 2026-10-17: about 21% of NF-ToN-IoT-v2 test flows and 22% of
+    NF-UNSW-NB15-v2 test flows have an identical feature vector in training
+    (scripts/audit_data_quality.py). Removing them would change the benchmark;
+    instead every evaluation also reports its metrics on the rows that are not
+    duplicates, so the reader can see how much of a score is recall of
+    memorised flows. The comparison is on the transformed inputs the model
+    actually receives, so two flows that differ only in a dropped column count
+    as the same.
+    """
+    import pandas as pd
+
+    rows = pd.DataFrame(np.hstack([feats["continuous"].astype(np.float32).view(np.int32),
+                                   feats["categorical"].astype(np.int32)]))
+    h = pd.util.hash_pandas_object(rows, index=False).to_numpy()
+    tr = splits["train"]
+    seen = set(h[tr.start:tr.stop].tolist())
+    mask = np.zeros(len(h), dtype=bool)
+    out = {}
+    for name in ("val", "test"):
+        s = splits[name]
+        m = np.fromiter((x in seen for x in h[s.start:s.stop]), dtype=bool, count=len(s))
+        mask[s.start:s.stop] = m
+        out[name] = round(float(m.mean()), 4)
+    np.save(out_dir / "duplicate_of_train.npy", mask)
+    print(f"  rows identical to a training row: val {out['val']:.1%}, test {out['test']:.1%}")
+    return out
+
+
 def write_data_version(out_dir: Path, cfg: dict, schema, n_rows: int) -> str:
     """A short hash naming this exact preprocessed dataset (C32).
 
@@ -382,6 +413,7 @@ def main() -> None:
     # would silently misalign.
     df[META_COLUMNS].to_parquet(out_dir / "meta.parquet", index=False)
     write_raw_values(df, schema, out_dir)
+    dup = write_duplicate_mask(feats, splits, out_dir)
     version = write_data_version(out_dir, cfg, schema, len(df))
     print(f"data version {version} (stamped into every run that uses this data)")
 
@@ -399,6 +431,7 @@ def main() -> None:
         },
         "rows_purged": int(purged),
         "rows_identical_to_previous_preprocessing": rows_same,
+        "share_identical_to_a_training_row": dup,
         "categorical_cardinalities": dict(
             zip(pipeline.categorical_names_, pipeline.cardinalities())),
         "gate_checks": checks,

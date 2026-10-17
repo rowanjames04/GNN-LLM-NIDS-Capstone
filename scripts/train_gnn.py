@@ -346,7 +346,7 @@ def main() -> None:
     y, ymc = inputs.y, inputs.y_multiclass
     splits_raw, families = inputs.splits, inputs.families
 
-    datasets = {"families": families}
+    datasets = {"families": families, "duplicate_of_train": inputs.duplicate_of_train}
     for name, s in splits_raw.items():
         datasets[name] = SnapshotDataset(
             src, dst, edge_feats, y, ymc,

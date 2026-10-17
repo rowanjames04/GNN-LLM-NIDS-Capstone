@@ -33,6 +33,9 @@ class GraphInputs:
     splits: dict               # name -> {"start", "stop"}
     families: dict             # family name -> index
     dataset_name: str
+    # True for val/test rows whose model input equals a training row's (D48);
+    # None for data preprocessed before 2026-10-17.
+    duplicate_of_train: np.ndarray | None = None
 
     @property
     def edge_dim(self) -> int:
@@ -111,6 +114,8 @@ def load_graph_inputs(processed_dir: Path, dataset_name: str,
         y=df.Label.to_numpy().astype(np.int64),
         y_multiclass=df.Attack.map(families).to_numpy().astype(np.int64),
         splits=splits, families=families, dataset_name=dataset_name,
+        duplicate_of_train=(np.load(proc / "duplicate_of_train.npy")
+                            if (proc / "duplicate_of_train.npy").exists() else None),
     )
     del df, codes
     return out

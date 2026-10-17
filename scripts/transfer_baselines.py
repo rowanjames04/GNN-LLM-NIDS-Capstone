@@ -50,6 +50,7 @@ from gnnids.eval.metrics import choose_threshold  # noqa: E402
 from gnnids.eval.prevalence import report_both, subsample_to_prevalence  # noqa: E402
 from gnnids.eval.transfer import transfer_inputs  # noqa: E402
 from gnnids.graph.inputs import one_hot  # noqa: E402
+from gnnids.data.version import version_for_preprocess_config  # noqa: E402
 
 assert "torch" not in sys.modules, (
     "torch was imported into an xgboost process -- both bundle OpenMP and this "
@@ -192,6 +193,10 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     name = (f"{'smoke_' if args.smoke else ''}transfer_xgboost_{src_ds['name']}"
             f"_to_{tgt_ds['name']}.json")
+    # Which preprocessed data the source side came from (C32).
+    out["source_data_version"] = version_for_preprocess_config(args.source_preprocess or cfg["source"]["preprocess_config"])
+    out["target_data_version"] = version_for_preprocess_config(
+        args.target_preprocess or cfg["target"]["preprocess_config"])
     (out_dir / name).write_text(json.dumps(out, indent=2))
 
     prs = [r["source_threshold"][key]["pr_auc"] for r in runs]

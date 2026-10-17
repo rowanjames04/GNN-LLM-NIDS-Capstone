@@ -195,6 +195,8 @@ def main() -> None:
     tr = slice(splits["train"]["start"], splits["train"]["stop"])
     va = slice(splits["val"]["start"], splits["val"]["stop"])
     te = slice(splits["test"]["start"], splits["test"]["stop"])
+    dup_path = proc / "duplicate_of_train.npy"
+    dup = np.load(dup_path) if dup_path.exists() else None
 
     print("Building feature blocks ...")
     onehot = one_hot(cat, pipeline_meta["cardinalities"])
@@ -303,6 +305,15 @@ def main() -> None:
                 # Both prevalences, from one set of predictions (D23).
                 run = report_both(y[te], test_scores, thr, target_prev,
                                   ymc[te], families, prev_seed)
+                # Same metrics on test flows with no identical training flow
+                # (D48), exactly as train_gnn.py reports them.
+                if dup is not None:
+                    novel = ~dup[te]
+                    run["novel_only"] = {
+                        "n_test_rows": int(novel.sum()),
+                        "share_of_test": round(float(novel.mean()), 4),
+                        **report_both(y[te][novel], test_scores[novel], thr, target_prev,
+                                      ymc[te][novel], families, prev_seed)}
                 from sklearn.metrics import average_precision_score
                 # At the target prevalence, matching train_gnn.py's model
                 # selection criterion. The native figure would sit against a

@@ -55,7 +55,8 @@ from gnnids.data.version import version_for_preprocess_config  # noqa: E402
 
 def build_holdout_datasets(inputs, plan, window, max_windows=None) -> dict:
     """Datasets for one held-out family, filtered inside each split."""
-    datasets = {"families": inputs.families}
+    datasets = {"families": inputs.families,
+                "duplicate_of_train": inputs.duplicate_of_train}
     for name, s in inputs.splits.items():
         datasets[name] = SnapshotDataset(
             inputs.src, inputs.dst, inputs.edge_features,

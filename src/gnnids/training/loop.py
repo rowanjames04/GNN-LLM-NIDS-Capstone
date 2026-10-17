@@ -173,6 +173,16 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
 
     out = report_both(y, scores, threshold, target_prev, ymc, datasets["families"],
                       cfg["output"]["seed"])
+    # The same metrics on test flows whose model input matches no training
+    # flow (D48). About a fifth of test flows have an identical twin in
+    # training on both datasets, and a model can score those by memory.
+    dup = datasets.get("duplicate_of_train")
+    if dup is not None:
+        novel = ~np.asarray(dup)[datasets["test"].row_ids()]
+        out["novel_only"] = {
+            "n_test_rows": int(novel.sum()), "share_of_test": round(float(novel.mean()), 4),
+            **report_both(y[novel], scores[novel], threshold, target_prev,
+                          ymc[novel], datasets["families"], cfg["output"]["seed"])}
     # Recorded in the result, not implied by its position in a list: a resumed
     # or extended campaign merges runs out of order.
     out["seed"] = seed
