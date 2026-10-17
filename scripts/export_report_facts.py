@@ -403,12 +403,29 @@ def sec_llm() -> list[str]:
             f"{f(r['attr_coverage'])} | {f(r['attr_cites_none'])} | "
             f"{f(r['latency_p50'], 2)} / {f(r['latency_p95'], 2)} | "
             f"{money(r['cost'])} | {money(r['reference_cost'])} |")
+    out += ["", "### Direction of reasons, and borderline detections (D49)", "",
+            "| Model | Prompt | Uncertainty conveyed (ambiguous category) | Reports with a "
+            "checkable reason | Direction faithful | Direction errors | Borderline "
+            "detections | Borderline conveyed |",
+            "|---|---|---|---|---|---|---|---|"]
+    for r in sorted(rows, key=lambda x: (x["prompt"] or "", x["model"] or "")):
+        out.append(
+            f"| {r['provider']}/{r['model']} | {r['prompt']} | {f(r['uncertainty_rate'])} | "
+            f"{r.get('direction_checked')} | {f(r.get('direction_faithful'))} | "
+            f"{r.get('direction_errors')} | {r.get('borderline_n')} | "
+            f"{f(r.get('borderline_conveyed'))} |")
     out += ["", "- The stub is a template with no language model: the control arm.",
+            "- The direction check reads a reason's direction from clause-level "
+            "wording and skips any clause it cannot read, so its error count is a "
+            "lower bound.",
+            "- \"Borderline\" is decided by the facts layer by fixed rules: margin over "
+            "the threshold below a tenth of the room above it, category confidence "
+            "below 0.6, or a second category at 0.05 or more.",
             "- Groundedness measures \"invented nothing\", not \"reasoned correctly\".",
             "- The class and feature checks are lexical: they match names and "
             "phrases, are blind to negation, and are generous about what counts as "
             "citing a feature.",
-            "- Latency is comparable within a hosting arm only.",
+            "- Latency is response time from a hosted service; it is not model speed.",
             "- A cost of \"unknown\" is not zero.", ""]
     for r in real:
         sess = r.get("sessions") or []

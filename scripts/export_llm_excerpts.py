@@ -31,7 +31,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from gnnids.llm.prompts import render_facts  # noqa: E402
+from gnnids.llm.prompts import build_prompt  # noqa: E402
 
 REPORTS = REPO_ROOT / "results" / "reports"
 
@@ -107,7 +107,7 @@ def render(runs: list[dict], packs: dict[str, dict], picks: list[tuple[str, str]
             out += [f"True label: **{pack['flow'].get('true_label')}** · "
                     f"detector's category: **{pack['detection']['predicted_class']}** "
                     f"(confidence {pack['detection']['class_confidence']})", "",
-                    "**Evidence given to every model:**", "", render_facts(pack), ""]
+                    "**Evidence given to every model:**", "", build_prompt(pack, version)[1], ""]
         for run in runs:
             row = next((r for r in run["reports"] if r["detection_id"] == det), None)
             out += [f"### {run['provider']} / {run['model']}", ""]

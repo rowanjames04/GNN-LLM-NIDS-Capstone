@@ -37,7 +37,7 @@ import numpy as np
 # Bumped only when a field changes meaning. Phase 7's prompts and the
 # groundedness checker both key off this, so a silent change would invalidate a
 # comparison across models rather than breaking anything visibly.
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "2.0"   # 2.0 (2026-10-17, D49): every measured value; data_quality
 
 # Terms that must never reach the LLM. The check is on the serialised pack, so
 # it catches them wherever they appear -- including inside a feature name that
@@ -58,6 +58,7 @@ def build_pack(
     provenance: dict,
     causal_path=None,
     detection_id: str | None = None,
+    data_quality: dict | None = None,
 ) -> dict:
     """Assemble one pack. Field order follows [[Evidence Pack Schema]]."""
     return {
@@ -72,6 +73,10 @@ def build_pack(
         # is a data condition the prompt already handles rather than a schema
         # migration late in the project.
         "causal_path": causal_path,
+        # D49: what is NOT known about this flow, stated, so the language model
+        # is never left to notice an absence or to fill it.
+        "data_quality": data_quality or {"withheld_columns": [], "failed_checks": [],
+                                         "notes": []},
         "guidance": guidance,
         "provenance": provenance,
     }

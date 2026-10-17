@@ -61,7 +61,7 @@ def pack_for_detection(
     *, edge, batch, model, ip_lookup, families_inv, guidance,
     attributions, alpha, scores, class_probs, threshold, ckpt, provenance_extra,
     feature_names, raw_cols, min_neighbour_importance, neighbours_tested,
-    raw_window, raw_names,
+    raw_window, raw_names, artefact_columns=(),
 ) -> tuple[dict, dict]:
     """One detection -> one pack, plus diagnostics that stay out of the pack.
 
@@ -82,12 +82,20 @@ def pack_for_detection(
     # alignment is verified when it is written (preprocess.py).
     measured = {name: _measured(raw_window[edge, j])
                 for j, name in enumerate(raw_names)}
+    # Every measured value except the exporter artefacts (D47, D49): the facts
+    # layer decodes the protocol, flags and ports itself, so it needs them all.
+    # Until 2026-10-17 this took the first 14 model features, which left out
+    # packets out, the protocol and the TCP flags, and the models filled in
+    # the gaps.
     flow = {
         "src_ip": ip_lookup(src_local),
         "dst_ip": ip_lookup(dst_local),
-        **{name: measured[name] for name in feature_names[:14] if name in measured},
+        **{name: v for name, v in measured.items() if name not in artefact_columns},
         **raw_cols,
     }
+    data_quality = data_quality_notes(
+        {name: np.asarray([raw_window[edge, j]], dtype=np.float64)
+         for j, name in enumerate(raw_names)}, artefact_columns)
 
     probs = {families_inv[i]: round(float(p), 5) for i, p in enumerate(class_probs)}
     predicted = max(probs, key=probs.get)
@@ -151,14 +159,17 @@ def pack_for_detection(
         # And stated with its denominator. The note used to say "no single
         # neighbouring flow" after testing five of what could be thousands.
         tested = diagnostics["neighbours_tested"]
-        scope = (f"None of the {tested} neighbouring flows tested "
-                 f"(of {n_touching} sharing a host with this one)"
+        scope = (f"None of the {tested:,} nearby flows tested "
+                 f"(of {n_touching:,} sharing a host with this one)"
                  if tested < n_touching else
-                 f"None of the {tested} flows sharing a host with this one")
+                 f"None of the {tested:,} flows sharing a host with this one")
+        # Worded without model vocabulary (D49): the facts layer passes this
+        # sentence to the LLM unchanged.
         attribution["neighbour_note"] = (
             f"{scope} changed this score by more than "
-            f"{min_neighbour_importance}. The topological contribution here is "
-            f"diffuse across the neighbourhood rather than traceable to one flow."
+            f"{min_neighbour_importance} when removed. The influence of the "
+            f"surrounding activity is spread across many flows; no single "
+            f"nearby flow explains the score."
             if tested else
             "No other flow shares a host with this one in this period.")
 
@@ -176,10 +187,46 @@ def pack_for_detection(
     fam_guidance = guidance.get(predicted, guidance.get("Benign", {}))
     return build_pack(
         flow=flow, detection=detection, attribution=attribution,
-        context=context,
+        context=context, data_quality=data_quality,
         guidance={"attack_family": predicted, **fam_guidance},
         provenance={"checkpoint": ckpt_name(ckpt), **provenance_extra},
     ), diagnostics
+
+
+# What a reader should be told when a check in gnnids.data.validity fails for
+# this flow. Worded here, once, so every model is given the same sentence.
+VALIDITY_NOTES = {
+    "size_buckets_not_packet_total": "The counts of packets by size do not add up "
+        "to the flow's packet total, so the size breakdown for this flow is unreliable.",
+    "in_bytes_below_20_per_packet": "The bytes recorded from source to destination "
+        "are fewer than an IP header needs for that many packets, so that byte count "
+        "is unreliable.",
+    "out_bytes_below_20_per_packet": "The bytes recorded from destination to source "
+        "are fewer than an IP header needs for that many packets, so that byte count "
+        "is unreliable.",
+    "in_bytes_without_packets": "Bytes were recorded from source to destination with "
+        "no packets, so that direction's counts are unreliable.",
+    "out_bytes_without_packets": "Bytes were recorded from destination to source with "
+        "no packets, so that direction's counts are unreliable.",
+    "longest_below_shortest": "The recorded longest packet is shorter than the "
+        "shortest, so the packet-size figures are unreliable.",
+}
+TIMING_NOTE = ("How long the flow lasted, and its transfer rates, are not known: in "
+               "this dataset the recorded duration is either zero or a counter "
+               "overflow, so it is not a measurement, and the detector does not use it.")
+
+
+def data_quality_notes(values: dict, artefact_columns) -> dict:
+    """The pack's "what is not known" section (D49): the artefact columns that
+    are withheld, and any physical-validity check this flow fails."""
+    from gnnids.data.validity import validity_flags
+
+    failed = sorted(k for k, m in validity_flags(values).items() if bool(m[0]))
+    notes = [TIMING_NOTE] if any(c.startswith(("FLOW_DURATION", "DURATION_"))
+                                 for c in artefact_columns) else []
+    notes += [VALIDITY_NOTES[k] for k in failed if k in VALIDITY_NOTES]
+    return {"withheld_columns": list(artefact_columns), "failed_checks": failed,
+            "notes": notes}
 
 
 def _measured(v) -> float | int:
@@ -192,7 +239,7 @@ def _measured(v) -> float | int:
     return int(v) if v == int(v) and abs(v) < 1e15 else round(v, 4)
 
 
-def load_raw_values(proc: Path) -> tuple[np.ndarray, list[str]]:
+def load_raw_values(proc: Path) -> tuple[np.ndarray, list[str], list[str]]:
     """The measured values, memory-mapped. Required, not optional: without them
     the only source for a pack's numbers is the lossy inversion this replaced."""
     path, side = proc / "raw_values.npy", proc / "raw_values.json"
@@ -202,7 +249,9 @@ def load_raw_values(proc: Path) -> tuple[np.ndarray, list[str]]:
             f"and those are not recoverable from the model's inputs. Create it "
             f"with:\n  python scripts/preprocess.py --config <preprocess config> "
             f"[--max-rows N] --raw-only")
-    return np.load(path, mmap_mode="r"), json.loads(side.read_text())["columns"]
+    meta = json.loads(side.read_text())
+    return (np.load(path, mmap_mode="r"), meta["columns"],
+            meta.get("dropped", {}).get("artefacts", []))
 
 
 def ckpt_name(ckpt: dict) -> str:
@@ -253,7 +302,7 @@ def main() -> None:
     import pandas as pd
     meta = pd.read_parquet(proc / "meta.parquet",
                            columns=["IPV4_SRC_ADDR", "IPV4_DST_ADDR"])
-    raw, raw_names = load_raw_values(proc)
+    raw, raw_names, artefacts = load_raw_values(proc)
 
     s = inputs.splits["test"]
     ds = SnapshotDataset(inputs.src, inputs.dst, inputs.edge_features,
@@ -346,7 +395,7 @@ def main() -> None:
                 min_neighbour_importance=cfg["min_neighbour_importance"],
                 neighbours_tested=neighbours_tested,
                 raw_window=np.asarray(raw[rows]), raw_names=raw_names,
-                raw_cols={"true_label": c.true_family},
+                raw_cols={"true_label": c.true_family}, artefact_columns=artefacts,
             )
             diagnostics[pack["detection_id"]] = diag
             validate_pack(pack)

@@ -51,6 +51,12 @@ def rows() -> list[dict]:
             "reference_cost": s.get("reference_cost_usd",
                                     0.0 if d.get("provider") == "stub" else None),
             "uncertainty_rate": s.get("uncertainty_conveyed_rate"),
+            # D49: the two errors the round-1 audit found most often.
+            "direction_faithful": s.get("direction_faithful_rate"),
+            "direction_checked": s.get("direction_checked_reports"),
+            "direction_errors": s.get("direction_errors_total"),
+            "borderline_n": s.get("borderline_detections"),
+            "borderline_conveyed": s.get("borderline_conveyed_rate"),
             "class_faithful": s.get("classification_faithful_rate"),
             "class_substituted": s.get("classification_substituted_rate"),
             "attr_coverage": s.get("attribution_coverage_mean"),
@@ -98,6 +104,16 @@ def main() -> None:
         print(f"  {name:<30} {r['n_false_positive']:>9} "
               f"{fmt(r['groundedness_on_fp']):>17} {fmt(r['uncertainty_rate']):>22} "
               f"{r['n_failed']:>7}")
+
+    # D49: did each reason keep its direction, and was a borderline detection
+    # reported as borderline? Lexical; the direction check is a lower bound.
+    print(f"\n  {'model':<30} {'prompt':<7} {'dir. checked':>12} {'dir. faithful':>14} "
+          f"{'dir. errors':>12} {'borderline':>11} {'conveyed':>9}")
+    for r in sorted(data, key=lambda x: (x["model"] or "", x["prompt"] or "")):
+        name = f"{r['provider']}/{r['model']}"
+        print(f"  {name:<30} {r['prompt'] or '-':<7} {str(r['direction_checked']):>12} "
+              f"{fmt(r['direction_faithful']):>14} {str(r['direction_errors']):>12} "
+              f"{str(r['borderline_n']):>11} {fmt(r['borderline_conveyed']):>9}")
 
     # Did the report relay the detector's conclusions? Lexical checks -- see
     # src/gnnids/llm/fidelity.py for what they cannot see.

@@ -85,6 +85,14 @@ def _evidence_entities(pack: dict) -> dict[str, set[str]]:
     happened not to surface that field.
     """
     blob = json.dumps(pack)
+    # The rendered facts are evidence too (D49): a margin or an average the
+    # facts layer computed was supplied to the model, so stating it is not an
+    # invention. Old packs that the layer cannot render keep the JSON alone.
+    try:
+        from .facts import render
+        blob += "\n" + render(pack)
+    except (KeyError, TypeError, ValueError):
+        pass
     found = extract_entities(blob)
     # Numbers inside feature names count as supplied: a pack that lists
     # NUM_PKTS_512_TO_1024_BYTES has told the model "512" and "1024", and a
@@ -164,6 +172,28 @@ def check_uncertainty_conveyed(pack: dict, report: str,
         "hedges_found": sorted({h.strip() for h in hedges if h in lower}),
         "uncertainty_conveyed": any(h in lower for h in hedges),
     }
+
+
+def check_borderline_conveyed(pack: dict, report: str) -> dict | None:
+    """When the facts layer calls a detection borderline, does the report?
+
+    The false-positive arm's question (D49). In round 1, 24 of 30 false
+    positives were confident detections, so the class-distribution check above
+    could not fire on them; the facts layer now also states a narrow margin over
+    the threshold in words, and this asks whether that reached the report.
+    None for a detection the facts layer calls clear.
+    """
+    from .facts import borderline
+
+    if not borderline(pack):
+        return None
+    words = ("borderline", "narrow", "just above", "only just", "barely", "marginal",
+             "close to the threshold", "near the threshold", "slightly above",
+             "uncertain", "low confidence", "not certain", "unclear", "may be",
+             "might be", "possibly", "could be")
+    lower = report.lower()
+    found = sorted({w for w in words if w in lower})
+    return {"words_found": found, "borderline_conveyed": bool(found)}
 
 
 def check_no_jargon(report: str) -> dict:

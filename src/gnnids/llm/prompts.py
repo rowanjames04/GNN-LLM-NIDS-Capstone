@@ -75,11 +75,73 @@ USER_V2 = """Evidence for detection {detection_id}:
 Write the incident note."""
 
 
+# ---------------------------------------------------------------------------
+# v3 and v4 -- the facts layer (D49, 2026-10-17).
+#
+# Same contrast as v1/v2 (prescriptive against permissive), but the user turn
+# is now `facts.render(pack)`: finished sentences in labelled sections, with
+# every number computed, every code decoded and every gap stated. The prompts
+# add the rule that makes that worth doing: no arithmetic. v1 and v2 are kept,
+# with their original renderer, so the archived round-1 reports still score
+# against exactly the text their models saw.
+
+SYSTEM_V3 = """You are a security analyst writing an incident note for a colleague.
+
+You will be given the complete findings for one network detection, already worked \
+out and written in plain sentences. Your job is to turn them into a clear, short \
+note. Write these sections:
+
+## What happened
+## Why it was flagged
+## What to do next
+
+Rules, in order of importance:
+
+1. Use ONLY the findings provided. Do not add context, threat-actor names, or \
+technical detail that is not in them. If something is not in the findings, it is \
+not known.
+2. Do not calculate anything. Every number you write must appear in the findings \
+exactly as written. Do not convert units, total, average, round differently or \
+compare numbers yourself; the findings already state every comparison that matters.
+3. Only the items under "WHY THE DETECTOR FLAGGED IT" are reasons for the score. \
+Keep the direction each one is given (pushed the score up, or down). The \
+"BACKGROUND CONTEXT" items describe the hosts; you may mention them, but never \
+as reasons for the score.
+4. Convey the confidence the findings state, in their words. If the findings call \
+the detection borderline or the category uncertain, the note must say so.
+5. Where the findings say something is not recorded or not known, say it is not \
+known. Never estimate it.
+6. Write for a competent colleague who does not work on machine learning. Do not \
+describe how the detector works internally.
+7. Be brief. Under 250 words."""
+
+SYSTEM_V4 = """You are a security analyst. You will be given the complete findings for one network detection, already worked out in plain sentences, and nothing else.
+
+Write a short incident note for a colleague who is technically competent but does not work on machine learning.
+
+There are two hard constraints: **every technical detail you state must come from the findings**, and **you must not calculate anything** -- every number you write must appear in the findings exactly as written. If something is not in the findings, it is not known.
+
+Beyond that, use your judgement about what matters and how to say it."""
+
+USER_V3 = """Findings for detection {detection_id}:
+
+{facts}
+
+Write the incident note."""
+
+
+def _render_facts_v3(pack: dict) -> str:
+    from .facts import render
+    return render(pack)
+
+
 PROMPTS = {
-    "v1": {"system": SYSTEM_V1, "user": USER_V1},
-    "v2": {"system": SYSTEM_V2, "user": USER_V2},
+    "v1": {"system": SYSTEM_V1, "user": USER_V1, "render": "render_facts"},
+    "v2": {"system": SYSTEM_V2, "user": USER_V2, "render": "render_facts"},
+    "v3": {"system": SYSTEM_V3, "user": USER_V3, "render": "facts"},
+    "v4": {"system": SYSTEM_V4, "user": USER_V3, "render": "facts"},
 }
-DEFAULT_VERSION = "v1"
+DEFAULT_VERSION = "v3"
 
 # What separates each version, recorded so the ablation can be described
 # without re-reading the templates.
@@ -88,6 +150,9 @@ PROMPT_NOTES = {
           "explicit word limit, explicit uncertainty and lower-bound instructions",
     "v2": "permissive: states the goal and the single grounding constraint, "
           "leaves structure and length to the model",
+    "v3": "v1's prescriptive rules over the facts layer (D49), plus no arithmetic, "
+          "reasons vs context, and stated confidence in the findings' own words",
+    "v4": "v2's permissive framing over the facts layer (D49), plus no arithmetic",
 }
 
 
@@ -180,5 +245,5 @@ def build_prompt(pack: dict, version: str = DEFAULT_VERSION) -> tuple[str, str]:
     if version not in PROMPTS:
         raise KeyError(f"unknown prompt version {version!r}; have {sorted(PROMPTS)}")
     t = PROMPTS[version]
-    return t["system"], t["user"].format(
-        detection_id=pack["detection_id"], facts=render_facts(pack))
+    facts = _render_facts_v3(pack) if t["render"] == "facts" else render_facts(pack)
+    return t["system"], t["user"].format(detection_id=pack["detection_id"], facts=facts)

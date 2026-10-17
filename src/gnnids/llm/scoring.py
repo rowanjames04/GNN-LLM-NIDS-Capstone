@@ -14,10 +14,12 @@ from __future__ import annotations
 
 import numpy as np
 
-from .fidelity import check_attribution_fidelity, check_classification_fidelity
-from .groundedness import check_no_jargon, check_uncertainty_conveyed, score_report
+from .fidelity import (check_attribution_fidelity, check_classification_fidelity,
+                       check_direction_fidelity)
+from .groundedness import (check_borderline_conveyed, check_no_jargon,
+                           check_uncertainty_conveyed, score_report)
 
-SCORING_VERSION = "2026-10-03"      # bumped when a score's meaning changes
+SCORING_VERSION = "2026-10-17"      # bumped when a score's meaning changes
 
 
 def score_all(pack: dict, text: str, ok: bool = True) -> dict:
@@ -25,14 +27,21 @@ def score_all(pack: dict, text: str, ok: bool = True) -> dict:
     failure is never averaged in as a zero."""
     if not ok:
         return {"scores": {}, "jargon": {}, "uncertainty": None,
-                "classification": None, "attribution": None}
+                "classification": None, "attribution": None,
+                "direction": None, "borderline": None}
     return {
         "scores": score_report(pack, text),
         "jargon": check_no_jargon(text),
         "uncertainty": check_uncertainty_conveyed(pack, text),
         "classification": check_classification_fidelity(pack, text),
         "attribution": check_attribution_fidelity(pack, text),
+        "direction": check_direction_fidelity(pack, text),
+        "borderline": check_borderline_conveyed(pack, text),
     }
+
+
+def _rate_of(flags: list) -> float | None:
+    return round(sum(bool(f) for f in flags) / len(flags), 4) if flags else None
 
 
 def _percentile(values: list[float], q: float) -> float | None:
@@ -104,5 +113,19 @@ def summarise(rows: list[dict]) -> dict:
         "uncertainty_conveyed_rate": (
             round(sum(u["uncertainty_conveyed"] for u in unc) / len(unc), 4)
             if unc else None),
+        # D49. Direction: share of reports with at least one checkable sentence
+        # in which every reason kept the direction the evidence gave it.
+        "direction_checked_reports": sum(
+            1 for r in ok if (r.get("direction") or {}).get("n_checked")),
+        "direction_faithful_rate": _rate_of(
+            [r["direction"]["direction_faithful"] for r in ok
+             if (r.get("direction") or {}).get("n_checked")]),
+        "direction_errors_total": sum(
+            (r.get("direction") or {}).get("n_errors", 0) for r in ok),
+        # Borderline detections reported as borderline (the false-positive
+        # arm's question, with the margin now stated in words).
+        "borderline_detections": sum(1 for r in ok if r.get("borderline")),
+        "borderline_conveyed_rate": _rate_of(
+            [r["borderline"]["borderline_conveyed"] for r in ok if r.get("borderline")]),
         "scoring_version": SCORING_VERSION,
     }

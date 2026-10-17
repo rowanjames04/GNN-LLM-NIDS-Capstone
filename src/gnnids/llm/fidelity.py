@@ -183,3 +183,71 @@ def check_attribution_fidelity(pack: dict, report: str, top_k: int = 5) -> dict 
         "coverage": round(len(cited) / len(columns), 4),
         "cites_none": not cited,
     }
+
+
+# --- D49: the two errors the round-1 audit found most often -----------------
+
+_UP = ("raised", "raise", "increased", "increase", "pushed up", "pushed the score up",
+       "contributed", "contributing", "drove", "driving", "supported", "supports",
+       "supporting",
+       "indicative of", "added to", "elevated", "boosted")
+_DOWN = ("lowered", "lower the", "lowering", "reduced", "reducing", "decreased",
+         "decreasing", "pushed down", "pushed the score down", "counted against",
+         "weighed against", "worked against", "argued against", "mitigat", "offset")
+
+
+def _sentences(text: str) -> list[str]:
+    import re
+    return [s.strip().lower() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if s.strip()]
+
+
+_CLAUSE_BREAK = re.compile(r";|\bwhile\b|\bwhereas\b|\bbut\b|\bhowever\b|\bin contrast\b"
+                           r"|\bon the other hand\b|\bconversely\b")
+
+
+def check_direction_fidelity(pack: dict, report: str) -> dict | None:
+    """Does the report keep the direction of each reason it mentions?
+
+    The audit's commonest quiet error was a feature that lowered the score
+    reported as one that raised it, usually inside a list ("contributing factors
+    included A, B and C"). So the report is split into clauses at contrast words
+    (while, but, whereas, however, a semicolon); in a clause whose direction
+    words are all of one kind, every attributed feature it names is taken to
+    have that direction. A clause with both kinds, or none, is skipped rather
+    than guessed at. Lexical and blind to negation, so it finds a lower bound
+    on direction errors, never more errors than there are. None when the pack
+    has no attributed features.
+    """
+    from .facts import mentioned_columns, reasons
+
+    rs = reasons(pack)
+    if not rs:
+        return None
+    by_col = {}
+    for r in rs:
+        by_col.setdefault(r.column.removesuffix("_bucket"), r)
+    checked, errors = [], []
+    for sent in _sentences(report):
+        for clause in _CLAUSE_BREAK.split(sent):
+            up = any(w in clause for w in _UP)
+            down = any(w in clause for w in _DOWN)
+            if up == down:
+                continue
+            said = "raised" if up else "lowered"
+            cols = mentioned_columns(clause)
+            if "TCP_WINDOW" in cols:
+                # A bare "TCP window" is read only when exactly one of the two
+                # window features was attributed; otherwise it is ambiguous.
+                wins = [c for c in ("TCP_WIN_MAX_IN", "TCP_WIN_MAX_OUT") if c in by_col]
+                cols = (cols - {"TCP_WINDOW"}) | (set(wins) if len(wins) == 1 else set())
+            for col in sorted(cols):
+                r = by_col.get(col)
+                if r is None:
+                    continue
+                checked.append(col)
+                if said != r.direction:
+                    errors.append({"feature": col, "evidence": r.direction,
+                                   "report": said, "clause": clause.strip()[:160]})
+    return {"n_checked": len(checked), "n_errors": len(errors),
+            "direction_faithful": not errors if checked else None,
+            "errors": errors}

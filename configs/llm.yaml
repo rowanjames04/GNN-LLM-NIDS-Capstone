@@ -11,7 +11,7 @@ provider: stub
 # prompt-sensitivity ablation). Every generated report records the version that
 # produced it; editing a prompt without bumping the version silently invalidates
 # every comparison made before the edit.
-prompt_version: v1
+prompt_version: v3   # D49: the facts layer. v1/v2 kept for the archived round 1
 
 packs: results/evidence/evidence_NF-ToN-IoT-v2.json
 n_reports: 200          # the stratified sample size in the study design

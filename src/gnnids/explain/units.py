@@ -100,7 +100,17 @@ def feature_names(pipeline_meta: dict) -> list[str]:
     for col, card in zip(pipeline_meta["categorical_names"],
                          pipeline_meta["cardinalities"]):
         inverse = {int(slot): value for value, slot in vocab.get(col, {}).items()}
+        # Port buckets and presence indicators have no vocabulary: their slots
+        # are the values themselves. Until 2026-10-17 slot 0 was named "other"
+        # in every block, so a well-known destination port reached the LLM as
+        # "L4_DST_PORT_bucket=other" in 157 of 200 packs (C34).
+        if col.endswith("_bucket"):
+            fixed = {0: "well_known", 1: "registered", 2: "ephemeral"}
+        elif col.endswith("_present"):
+            fixed = {0: "absent", 1: "present"}
+        else:
+            fixed = {}
         for slot in range(card):
-            label = inverse.get(slot, "other" if slot == 0 else str(slot))
+            label = fixed.get(slot) or inverse.get(slot, "other" if slot == 0 else str(slot))
             names.append(f"{col}={label}")
     return names
