@@ -191,6 +191,21 @@ def decode_value(column: str, value) -> str:
     return f"{num(value)} {unit}" if unit else num(value)
 
 
+def times_phrase(times, what: str) -> str:
+    """"4.7 times as many distinct addresses as a typical host here", or "about
+    as many" when the ratio is close to one."""
+    t = float(times)
+    if 0.9 <= t <= 1.1:
+        return f"about as many {what} as a typical host here"
+    if t < 1:
+        return f"{num(times)} times as many {what} as a typical host here (fewer than typical)"
+    return f"{num(times)} times as many {what} as a typical host here"
+
+
+def plural(n, word: str, many: str | None = None) -> str:
+    return word if n == 1 else (many or word + "s")
+
+
 def band(value: float, bands) -> str:
     for upper, word in bands:
         if value < upper:
@@ -322,8 +337,12 @@ def reasons(pack: dict, top_k: int = 5) -> list[Reason]:
             sentence = f"{direction.capitalize()} the score: {what}."
         else:
             value = val if val is not None else flow.get(col, f.get("value"))
-            sentence = (f"{direction.capitalize()} the score: {label}, "
-                        f"{decode_value(col, value)}.")
+            said = decode_value(col, value)
+            proto = flow.get("PROTOCOL")
+            if (col.endswith("TCP_FLAGS") and proto is not None
+                    and int(float(proto)) != 6 and said == "no TCP flags"):
+                said = "none, as this is not a TCP flow"
+            sentence = f"{direction.capitalize()} the score: {label}, {said}."
         out.append(Reason(col.removesuffix("_present"), sentence, direction, _alias(col)))
     return out
 
@@ -428,23 +447,25 @@ def sections(pack: dict) -> list[Section]:
     if src:
         times = src.get("baseline_deviation", {}).get("times_typical")
         s.lines.append(
-            f"The source host started {num(src['flow_count'])} flows in this period, "
-            f"to {num(src['distinct_dst_ips'])} distinct "
-            f"address{'es' if src['distinct_dst_ips'] != 1 else ''} on "
-            f"{num(src['distinct_dst_ports'])} distinct ports"
-            + (f": {num(times)} times as many distinct addresses as a typical host "
-               f"here." if times else "."))
+            f"The source host started {num(src['flow_count'])} "
+            f"{plural(src['flow_count'], 'flow')} in this period, to "
+            f"{num(src['distinct_dst_ips'])} distinct "
+            f"{plural(src['distinct_dst_ips'], 'address', 'addresses')} on "
+            f"{num(src['distinct_dst_ports'])} distinct "
+            f"{plural(src['distinct_dst_ports'], 'port')}"
+            + (f": {times_phrase(times, 'distinct addresses')}." if times else "."))
     if dst:
         times = dst.get("baseline_deviation", {}).get("times_typical")
         # The destination's counts are inbound (B15): flows it received and the
         # distinct hosts they came from.
         s.lines.append(
-            f"The destination host received {num(dst['flow_count'])} flows in this "
-            f"period, from {num(dst['distinct_dst_ips'])} distinct "
-            f"address{'es' if dst['distinct_dst_ips'] != 1 else ''}, on "
-            f"{num(dst['distinct_dst_ports'])} distinct ports of its own"
-            + (f": {num(times)} times as many distinct sources as a typical host "
-               f"here." if times else "."))
+            f"The destination host received {num(dst['flow_count'])} "
+            f"{plural(dst['flow_count'], 'flow')} in this period, from "
+            f"{num(dst['distinct_dst_ips'])} distinct "
+            f"{plural(dst['distinct_dst_ips'], 'address', 'addresses')}, on "
+            f"{num(dst['distinct_dst_ports'])} distinct "
+            f"{plural(dst['distinct_dst_ports'], 'port')} of its own"
+            + (f": {times_phrase(times, 'distinct sources')}." if times else "."))
     if c.get("window_flow_count"):
         s.lines.append(f"The period covers {num(c['window_flow_count'])} flows among "
                        f"{num(c.get('window_host_count'))} hosts.")
