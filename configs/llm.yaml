@@ -21,6 +21,12 @@ n_reports: 200          # the stratified sample size in the study design
 # for every model. 40 packs is about 4 per attack family and 6 false positives.
 round_size: 40
 
+# D50: models run concurrently within a round, at most this many at once. The
+# Pro plan allows 3 concurrent requests and each model's run is sequential, so 3
+# models at a time is 3 requests. Rounds stay balanced: the next round starts
+# only when every model has finished this one.
+parallel: 3
+
 # The roster for the fully crossed study: every enabled entry sees every pack,
 # through the same prompt. Disable rather than delete, so the record shows what
 # was considered.
@@ -32,10 +38,9 @@ round_size: 40
 # the Decision Register: the evidence packs are sent to a third-party API and
 # the serving hardware is not disclosed.
 #
-# D45 (2026-10-12): the roster is the six models the account's FREE usage
-# credits cover. No subscription and no purchased credit, so nothing is charged
-# and the entries are `free_tier`. If credit is ever added to the account,
-# change them to `paid` so the spend gate applies.
+# D45 (2026-10-12): the first six models ran on FREE usage credits. D50
+# (2026-10-18): the account is on the Pro plan, so all hosted entries are
+# `paid` and need --confirm-spend.
 #
 # `billing` decides what the spend gate guards, and `--only` selects arms by it:
 #   paid         real money per call; refused without --confirm-spend
@@ -54,20 +59,30 @@ roster:
   - {provider: anthropic, model: claude-haiku-4-5, billing: paid, enabled: false}
   - {provider: openai, model: gpt-4o, billing: paid, enabled: false}        # D36
   - {provider: gemini, model: gemini-3.8-flash, billing: free_tier, enabled: false}
-  # D45: the six models free credits cover. Three developers, 21B to 550B, and
-  # two same-family ladders: gpt-oss 20b/120b and nemotron-3 nano/super/ultra.
-  # Names, sizes and quantisation are as ollama.com/api/show returned them on
-  # 2026-10-12 with this account's key; `nemotron-3-super` and
-  # `nemotron-3-ultra` take NO size tag (`nemotron-3-super:120b` is a 404).
-  # Each run records size, quantisation and digest again -- quote the digest.
-  - {provider: ollama, model: "gpt-oss:20b", billing: free_tier, enabled: true}          # OpenAI, 21B, MXFP4
-  - {provider: ollama, model: "gpt-oss:120b", billing: free_tier, enabled: true}         # OpenAI, 117B, MXFP4
-  - {provider: ollama, model: "gemma4:31b", billing: free_tier, enabled: true}           # Google, 33B, BF16
-  - {provider: ollama, model: "nemotron-3-nano:30b", billing: free_tier, enabled: true}  # NVIDIA, 32B, FP8
-  - {provider: ollama, model: "nemotron-3-super", billing: free_tier, enabled: true}     # NVIDIA, 120B, NVFP4
-  - {provider: ollama, model: "nemotron-3-ultra", billing: free_tier, enabled: true}     # NVIDIA, 550B, quantisation not reported
-  # D44's other two picks. Not covered by free credits; enabling needs purchased
-  # credit or a subscription, and `billing: paid`.
+  # D45: the first six (free credits), 2026-10-12. D50 (2026-10-18): Rowan took
+  # the Pro plan, so every hosted call now draws on the plan's usage credit and
+  # every hosted entry is `paid` -- the spend gate applies to all of them.
+  # Names, sizes and quantisation are as ollama.com/api/show returned them with
+  # this account's key; each run records them again with the digest.
+  - {provider: ollama, model: "gpt-oss:20b", billing: paid, enabled: true}          # OpenAI, 21B, MXFP4
+  - {provider: ollama, model: "gpt-oss:120b", billing: paid, enabled: true}         # OpenAI, 117B, MXFP4
+  - {provider: ollama, model: "gemma4:31b", billing: paid, enabled: true}           # Google, 33B, BF16
+  - {provider: ollama, model: "nemotron-3-nano:30b", billing: paid, enabled: true}  # NVIDIA, 32B, FP8
+  - {provider: ollama, model: "nemotron-3-super", billing: paid, enabled: true}     # NVIDIA, 120B, NVFP4
+  - {provider: ollama, model: "nemotron-3-ultra", billing: paid, enabled: true}     # NVIDIA, 550B, quantisation not reported
+  # D50: three large models from developers not yet in the roster, to test
+  # whether "the models are indistinguishable as translators" holds at the
+  # frontier. glm-5.3 replaces kimi-k3 (Rowan, 2026-10-18; kimi-k3 is ~3x the
+  # cost). No official Qwen model is in the hosted catalogue (qwen3.5:397b was
+  # retired 2026-09-25); community re-uploads are excluded (unknown provenance,
+  # possible baked-in system prompts).
+  - {provider: ollama, model: "deepseek-v4-pro:0813", billing: paid, enabled: true}  # DeepSeek, 1.65T, FP8
+  - {provider: ollama, model: "glm-5.3", billing: paid, enabled: true}               # Zhipu, 753B, FP8
+  - {provider: ollama, model: "mistral-large-4", billing: paid, enabled: true}       # Mistral, 1.05T
+  # Considered for a tenth slot; enabling one is this edit.
+  - {provider: ollama, model: "minimax-m3", billing: paid, enabled: false}           # MiniMax
+  - {provider: ollama, model: "kimi-k2.6", billing: paid, enabled: false}            # Moonshot, 1.04T, INT4
+  - {provider: ollama, model: "kimi-k3", billing: paid, enabled: false}              # Moonshot, 2.8T -- replaced by glm-5.3
   - {provider: ollama, model: "mistral-large-3:675b", billing: paid, enabled: false}     # Mistral, 675B, FP8
   - {provider: ollama, model: "deepseek-v4.1-flash", billing: paid, enabled: false}      # DeepSeek, 763B, FP8
   # D43's roster, for a local or Colab Ollama server. Not in the hosted

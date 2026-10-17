@@ -274,3 +274,30 @@ def test_a_sweep_can_write_outside_the_repo(tmp_path):
     assert r.returncode == 0, r.stderr
     assert (tmp_path / "study_manifest.json").exists()
     assert (tmp_path / "reports_stub_template-v1_v1.json").exists()
+
+
+# --- D50: models run concurrently within a round -----------------------------
+
+def test_a_round_runs_at_most_parallel_models_at_once(tmp_path):
+    import threading
+    import time
+
+    run_round = _load("run_llm_study").run_round
+
+    live, peak, lock = [0], [0], threading.Lock()
+
+    def runner(label, cmd):
+        with lock:
+            live[0] += 1
+            peak[0] = max(peak[0], live[0])
+        time.sleep(0.05)
+        with lock:
+            live[0] -= 1
+        return 75 if label == "m3" else 0
+
+    jobs = [({"provider": "ollama", "model": f"m{i}"}, f"m{i}", ["x"]) for i in range(7)]
+    done = list(run_round(jobs, 3, tmp_path, runner=runner))
+
+    assert peak[0] == 3                                   # never more than 3 at once
+    assert sorted(label for _, label, _ in done) == sorted(f"m{i}" for i in range(7))
+    assert dict((label, rc) for _, label, rc in done)["m3"] == 75

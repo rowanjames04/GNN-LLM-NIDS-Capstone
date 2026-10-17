@@ -63,6 +63,13 @@ OLLAMA_CLOUD_PRICING = {
     "nemotron-3-ultra": (0.10, 3.00),
     "mistral-large-3:675b": (0.50, 1.50),
     "deepseek-v4.1-flash": (0.30, 1.20),
+    # Added 2026-10-18 (D50), same page, standard rate.
+    "deepseek-v4-pro:0813": (1.32, 3.96),
+    "glm-5.3": (1.40, 4.40),
+    "mistral-large-4": (0.68, 2.09),
+    "minimax-m3": (0.60, 2.40),
+    "kimi-k2.6": (0.95, 4.00),
+    "kimi-k3": (3.00, 15.00),
 }
 
 # List price per provider, whatever this study's billing. `cost_usd` is what a

@@ -72,6 +72,35 @@ def select(roster: list[dict], only: list[str] | None) -> list[dict]:
     return [e for e in enabled if billing(e) in only or e["provider"] in only]
 
 
+def run_round(jobs: list, parallel: int, log_dir: Path, runner=None):
+    """Run one round's (entry, label, cmd) jobs, at most `parallel` at a time.
+
+    Yields (entry, label, exit code) in completion order. With parallel > 1
+    each child's output goes to its own log file, so concurrent runs cannot
+    interleave on the terminal; with 1 it inherits the terminal as before.
+    `runner` is replaced in tests.
+    """
+    import concurrent.futures as cf
+
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    def default_runner(label, cmd):
+        if parallel == 1:
+            return subprocess.run(cmd).returncode
+        slug = label.replace("/", "_").replace(":", "-").replace(" ", "").strip("[]")
+        with (log_dir / f"{slug}.log").open("a") as log:
+            log.write(f"\n--- {datetime.now(timezone.utc).isoformat()} {' '.join(cmd)}\n")
+            log.flush()
+            return subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT).returncode
+
+    run = runner or default_runner
+    with cf.ThreadPoolExecutor(max_workers=parallel) as pool:
+        futures = {pool.submit(run, label, cmd): (entry, label) for entry, label, cmd in jobs}
+        for fut in cf.as_completed(futures):
+            entry, label = futures[fut]
+            yield entry, label, fut.result()
+
+
 def estimate(entry: dict, packs: list, version: str) -> tuple[float | None, str]:
     """Projected spend for one roster entry over the whole pack set.
 
@@ -112,6 +141,9 @@ def main() -> None:
     ap.add_argument("--only", nargs="+", default=None, metavar="CLASS_OR_PROVIDER",
                     help="run only these billing classes (paid, free_tier, "
                          "self_hosted) or providers (e.g. gemini)")
+    ap.add_argument("--parallel", type=int, default=None,
+                    help="models run at once within a round (default: parallel in "
+                         "the config, else 1). Each model's own calls stay sequential.")
     ap.add_argument("--round-size", type=int, default=None,
                     help="packs per round (default: round_size in the config, "
                          "or everything in one round)")
@@ -184,10 +216,14 @@ def main() -> None:
     targets = list(range(size, len(packs), size)) + [len(packs)]
     status: dict[tuple, dict] = {}
     stopped = False
+    parallel = max(1, args.parallel or cfg.get("parallel") or 1)
+    run_logs = REPO_ROOT / "results" / "logs" / "llm_runs"
     for v in versions:
         for rnd, target in enumerate(targets, 1):
             print(f"\n########## prompt {v} -- round {rnd} of {len(targets)}: "
-                  f"packs 1-{target} ##########")
+                  f"packs 1-{target}  ({parallel} model(s) at a time) ##########",
+                  flush=True)
+            jobs = []
             for entry in roster:
                 cmd = [sys.executable, str(REPO_ROOT / "scripts" / "generate_reports.py"),
                        "--provider", entry["provider"], "--prompt-version", v,
@@ -198,8 +234,8 @@ def main() -> None:
                 if args.smoke:
                     cmd += ["--smoke"]
                 label = f"{entry['provider']}/{entry.get('model', 'default')} [{v}]"
-                print(f"\n===== {label} -- to {target} packs =====")
-                rc = subprocess.run(cmd).returncode
+                jobs.append((entry, label, cmd))
+            for entry, label, rc in run_round(jobs, parallel, run_logs):
                 # 75 is generate_reports.py's "stopped, resumable" (a quota or a
                 # dead server): not a failure of the model, and not finished.
                 state = {0: "complete", 75: "stopped_resumable"}.get(rc, "failed")
@@ -212,16 +248,16 @@ def main() -> None:
                     rec["packs_completed"] = target
                 rec["status"] = state
                 rec["ok"] = rc == 0 and target == len(packs)
+                print(f"===== {label} -- to {target} packs: {state}"
+                      + ("" if rc in (0, 75) else f" (exit {rc})"), flush=True)
                 if state == "stopped_resumable":
-                    # One account serves the whole roster, so the next model
-                    # would stop the same way. Ending here keeps the rounds even.
-                    print(f"  {label} STOPPED in round {rnd} -- resumable. Ending "
-                          f"the sweep here; re-run the same command to continue.")
+                    # One account serves the whole roster, so the rest would
+                    # stop the same way. The round in flight finishes; no new
+                    # round starts, which keeps the rounds even.
                     stopped = True
-                    break
-                if rc != 0:
-                    print(f"  {label} FAILED (exit {rc}) -- continuing with the rest")
             if stopped:
+                print("  STOPPED -- resumable. Ending the sweep after this round's "
+                      "runs; re-run the same command to continue.", flush=True)
                 break
         if stopped:
             break
