@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-17T13:22:40 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-17T15:21:56 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -77,9 +77,9 @@ PR-AUC at 4% prevalence (floor 0.04). "All" is the headline; "novel only" drops 
 
 | Dataset | Model | All test flows | Novel only |
 |---|---|---|---|
-| NF-ToN-IoT-v2 | GNN channel1_only | 0.9561 ± 0.0064 (n = 3) | 0.9341 ± 0.0102 (n = 3) |
+| NF-ToN-IoT-v2 | GNN channel1_only | 0.9518 ± 0.0140 (n = 10) | 0.9294 ± 0.0172 (n = 10) |
 | NF-ToN-IoT-v2 | GNN channel2_only | 0.9694 ± 0.0062 (n = 3) | 0.9665 ± 0.0088 (n = 3) |
-| NF-ToN-IoT-v2 | GNN full | 0.9882 ± 0.0016 (n = 3) | 0.9831 ± 0.0018 (n = 3) |
+| NF-ToN-IoT-v2 | GNN full | 0.9883 ± 0.0031 (n = 10) | 0.9833 ± 0.0052 (n = 10) |
 | NF-ToN-IoT-v2 | logreg::flow | 0.9579 ± 0.0039 (n = 3) | 0.9372 ± 0.0062 (n = 3) |
 | NF-ToN-IoT-v2 | logreg::flow+host | 0.9824 ± 0.0026 (n = 3) | 0.9748 ± 0.0044 (n = 3) |
 | NF-ToN-IoT-v2 | mlp::flow | 0.9696 ± 0.0017 (n = 3) | 0.9554 ± 0.0027 (n = 3) |
@@ -106,9 +106,9 @@ PR-AUC at 4% prevalence (floor 0.04). "All" is the headline; "novel only" drops 
 
 | Dataset | Model | PR-AUC with the artefact | PR-AUC without | Difference |
 |---|---|---|---|---|
-| NF-ToN-IoT-v2 | GNN channel1_only | 0.9804 | 0.9561 | -0.0243 |
+| NF-ToN-IoT-v2 | GNN channel1_only | 0.9804 | 0.9518 | -0.0286 |
 | NF-ToN-IoT-v2 | GNN channel2_only | 0.9729 | 0.9694 | -0.0036 |
-| NF-ToN-IoT-v2 | GNN full | 0.9922 | 0.9882 | -0.0040 |
+| NF-ToN-IoT-v2 | GNN full | 0.9922 | 0.9883 | -0.0039 |
 | NF-ToN-IoT-v2 | logreg::flow | 0.9748 | 0.9579 | -0.0169 |
 | NF-ToN-IoT-v2 | logreg::flow+host | 0.9833 | 0.9824 | -0.0009 |
 | NF-ToN-IoT-v2 | mlp::flow | 0.9832 | 0.9696 | -0.0136 |
@@ -177,31 +177,31 @@ Reported at 4% prevalence (PR-AUC of a random model: 0.04).
 
 ## 3. Topology ablation on NF-ToN-IoT-v2
 
-*Source: `results/metrics/gnn/gnn_NF-ToN-IoT-v2.json`, generated 2026-10-17T08:06:29 UTC.*
+*Source: `results/metrics/gnn/gnn_NF-ToN-IoT-v2.json`, generated 2026-10-17T15:21:54 UTC.*
 
 Reported at 4% prevalence (PR-AUC of a random model: 0.04).
 Training: fixed budget of 40 epochs, best-validation checkpoint kept.
 
 | Variant | PR-AUC | F1 | FPR at 95% recall | PR-AUC per seed | Best epoch per seed |
 |---|---|---|---|---|---|
-| flow features only (channel 1) | 0.9561 ± 0.0064 (n = 3) | 0.8376 ± 0.0014 (n = 3) | 0.01211 ± 0.00259 (n = 3) | 0.9509, 0.9651, 0.9522 | 16, 32, 19 |
+| flow features only (channel 1) | 0.9518 ± 0.0140 (n = 10) | 0.8404 ± 0.0146 (n = 10) | 0.01271 ± 0.00208 (n = 10) | 0.9509, 0.9651, 0.9522, 0.9587, 0.9519, 0.9485, 0.9625, 0.9129, 0.9620, 0.9532 | 16, 32, 19, 22, 22, 15, 31, 10, 36, 19 |
 | neighbourhood only (channel 2) | 0.9694 ± 0.0062 (n = 3) | 0.9159 ± 0.0155 (n = 3) | 0.00447 ± 0.00055 (n = 3) | 0.9611, 0.9758, 0.9712 | 19, 32, 29 |
-| both channels (full model) | 0.9882 ± 0.0016 (n = 3) | 0.9432 ± 0.0020 (n = 3) | 0.00263 ± 0.00027 (n = 3) | 0.9881, 0.9902, 0.9864 | 38, 32, 12 |
+| both channels (full model) | 0.9883 ± 0.0031 (n = 10) | 0.9383 ± 0.0067 (n = 10) | 0.00278 ± 0.00051 (n = 10) | 0.9881, 0.9902, 0.9864, 0.9906, 0.9889, 0.9898, 0.9868, 0.9914, 0.9803, 0.9909 | 38, 32, 12, 38, 36, 39, 14, 40, 20, 40 |
 
-- **Topology gain** (full minus flow-features-only, PR-AUC): **+0.0322**
-- Seed ranges: full 0.9864–0.9902; flow-features-only 0.9509–0.9651. **They do not overlap.**
-- False-positive rate at 95% recall: 0.01211 → 0.00263 (-78%)
-- Seeds per variant: 3. With so few, say whether the ranges overlap; do not use the word "significant".
+- **Topology gain** (full minus flow-features-only, PR-AUC): **+0.0365**
+- Seed ranges: full 0.9803–0.9914; flow-features-only 0.9129–0.9651. **They do not overlap.**
+- False-positive rate at 95% recall: 0.01271 → 0.00278 (-78%)
+- Seeds per variant: 10. With so few, say whether the ranges overlap; do not use the word "significant".
 - Mean share of the decision assigned to the neighbourhood channel (full model, seed 0, whole test split): 0.6181
 
 ### Attack-family head (full model)
 
 Scored on the whole test split at native prevalence.
 
-- Macro-F1 over families: 0.8615 ± 0.0172 (n = 3)
-- Accuracy over all flows: 0.9784 ± 0.0015 (n = 3)
-- Correct family among true attacks: 0.9706 ± 0.0015 (n = 3)
-- **Correct family on true-positive detections** (the flows that become evidence packs): 0.9765 ± 0.0007 (n = 3)
+- Macro-F1 over families: 0.8650 ± 0.0220 (n = 10)
+- Accuracy over all flows: 0.9777 ± 0.0014 (n = 10)
+- Correct family among true attacks: 0.9692 ± 0.0019 (n = 10)
+- **Correct family on true-positive detections** (the flows that become evidence packs): 0.9746 ± 0.0022 (n = 10)
 
 ## 4. The graph model against XGBoost
 
@@ -209,12 +209,12 @@ Same dataset, same prevalence, same reporting path.
 
 | Model | PR-AUC (ranking) | F1 (operating point) |
 |---|---|---|
-| graph model (full) | 0.9882 ± 0.0016 (n = 3) | 0.9432 ± 0.0020 (n = 3) |
+| graph model (full) | 0.9883 ± 0.0031 (n = 10) | 0.9383 ± 0.0067 (n = 10) |
 | xgboost::flow | 0.9743 ± 0.0004 (n = 3) | 0.8936 ± 0.0006 (n = 3) |
 | xgboost::flow+host | 0.9793 ± 0.0012 (n = 3) | 0.9463 ± 0.0018 (n = 3) |
 
-- Against the best XGBoost by PR-AUC (xgboost::flow+host): PR-AUC **+0.0089**
-- Against the best XGBoost by F1 (xgboost::flow+host): F1 **-0.0031**
+- Against the best XGBoost by PR-AUC (xgboost::flow+host): PR-AUC **+0.0090**
+- Against the best XGBoost by F1 (xgboost::flow+host): F1 **-0.0080**
 - **Both halves must be stated together.** The graph model ranks better and operates worse.
 
 ## 5. Topology ablation on NF-UNSW-NB15-v2 (the saturated dataset)
@@ -290,7 +290,7 @@ PR-AUC of a random model at this prevalence: 0.04.
 
 ## 8. Explainability (over the evidence packs)
 
-*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-17T13:22:39 UTC.*
+*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-17T15:21:55 UTC.*
 
 200 evidence packs: 170 true attacks and 30 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
 
@@ -356,6 +356,12 @@ Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdo
 | ollama/nemotron-3-super | v3 | 200 | 0 | 0.9997 | 0 | 1.0000 (n = 30) | 0.9850 | 0.0000 | 0.6610 | 0.0000 | 28.67 / 57.56 | unknown | 0.1588 |
 | ollama/nemotron-3-ultra | v3 | 200 | 0 | 0.9996 | 0 | 0.9986 (n = 30) | 1.0000 | 0.0000 | 0.6610 | 0.0000 | 13.63 / 27.61 | unknown | 0.6576 |
 | stub/template-v1 | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| ollama/gemma4:31b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.9875 | 0.0000 | 0.3725 | 0.0250 | 1.94 / 4.28 | unknown | 0.0229 |
+| ollama/gpt-oss:120b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.8750 | 0.0000 | 0.6194 | 0.0000 | 4.09 / 5.65 | unknown | 0.0658 |
+| ollama/gpt-oss:20b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.9625 | 0.0000 | 0.5550 | 0.0000 | 29.01 / 70.98 | unknown | 0.0950 |
+| ollama/nemotron-3-nano:30b | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 1.0000 | 0.0000 | 0.6763 | 0.0000 | 13.08 / 19.50 | unknown | 0.0549 |
+| ollama/nemotron-3-super | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.9750 | 0.0000 | 0.6700 | 0.0000 | 44.33 / 81.60 | unknown | 0.0495 |
+| ollama/nemotron-3-ultra | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.8250 | 0.0000 | 0.6475 | 0.0000 | 11.72 / 17.83 | unknown | 0.1662 |
 | stub/template-v1 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
 
 ### Direction of reasons, and borderline detections (D49)
@@ -371,6 +377,12 @@ Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdo
 | ollama/nemotron-3-super | v3 | 1.0000 | 191 | 0.9686 | 6 | 24 | 1.0000 |
 | ollama/nemotron-3-ultra | v3 | 1.0000 | 133 | 0.9699 | 5 | 24 | 1.0000 |
 | stub/template-v1 | v3 | 1.0000 | 0 | n/a | 0 | 24 | 1.0000 |
+| ollama/gemma4:31b | v4 | 0.8750 | 17 | 1.0000 | 0 | 14 | 1.0000 |
+| ollama/gpt-oss:120b | v4 | 0.8750 | 54 | 0.9074 | 8 | 14 | 1.0000 |
+| ollama/gpt-oss:20b | v4 | 1.0000 | 51 | 0.9412 | 3 | 14 | 1.0000 |
+| ollama/nemotron-3-nano:30b | v4 | 1.0000 | 35 | 0.9143 | 3 | 11 | 1.0000 |
+| ollama/nemotron-3-super | v4 | 1.0000 | 36 | 0.9167 | 3 | 11 | 1.0000 |
+| ollama/nemotron-3-ultra | v4 | 0.7143 | 17 | 0.9412 | 1 | 11 | 1.0000 |
 | stub/template-v1 | v4 | 1.0000 | 0 | n/a | 0 | 24 | 1.0000 |
 
 - The stub is a template with no language model: the control arm.
@@ -382,11 +394,17 @@ Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdo
 - A cost of "unknown" is not zero.
 
 - gemma4:31b: digest `221b330d11a8`, 32682372656, BF16, GPU none, 5 session(s)
+- gemma4:31b: digest `221b330d11a8`, 32682372656, BF16, GPU none, 2 session(s)
 - gpt-oss:120b: digest `d98fe6ba01e6`, 116829156672, MXFP4, GPU none, 5 session(s)
+- gpt-oss:120b: digest `d98fe6ba01e6`, 116829156672, MXFP4, GPU none, 2 session(s)
 - gpt-oss:20b: digest `05afbac4bad6`, 20914757184, MXFP4, GPU none, 6 session(s)
+- gpt-oss:20b: digest `05afbac4bad6`, 20914757184, MXFP4, GPU none, 2 session(s)
 - nemotron-3-nano:30b: digest `a4b4f1851393`, 32000000000, FP8, GPU none, 5 session(s)
+- nemotron-3-nano:30b: digest `a4b4f1851393`, 32000000000, FP8, GPU none, 1 session(s)
 - nemotron-3-super: digest `da11955bb451`, 120000000000, NVFP4, GPU none, 5 session(s)
+- nemotron-3-super: digest `da11955bb451`, 120000000000, NVFP4, GPU none, 1 session(s)
 - nemotron-3-ultra: digest `4eecabff7a75`, 550000000000, , GPU none, 5 session(s)
+- nemotron-3-ultra: digest `4eecabff7a75`, 550000000000, , GPU none, 1 session(s)
 
 ## 10. Replay (the demonstration harness)
 
@@ -402,7 +420,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 
 ## 11. Figures
 
-- **`results/figures/results_01_topology_ablation.png`** — Topology ablation on NF-ToN-IoT-v2. Each dot is one seed (n = 3 per variant); the tick is the mean. The variants share architecture, optimiser, depth and width, so the gap between the first and third is the contribution of message passing. Trained with fixed training budget.
+- **`results/figures/results_01_topology_ablation.png`** — Topology ablation on NF-ToN-IoT-v2. Each dot is one seed (n = 10 per variant); the tick is the mean. The variants share architecture, optimiser, depth and width, so the gap between the first and third is the contribution of message passing. Trained with fixed training budget.
 - **`results/figures/results_02_gnn_vs_xgboost.png`** — The graph model against XGBoost on NF-ToN-IoT-v2, both reported at 4% prevalence. Left: ranking quality. Right: the operating point reached at the validation-chosen threshold. Each dot is one seed; the tick is the mean. The two panels have separate scales and must be read together: the graph model ranks better and operates worse. Graph model trained with fixed training budget.
 - **`results/figures/results_03_topology_gain_by_dataset.png`** — Gain in PR-AUC from message passing (full model minus the flow-features-only variant, matched by seed) on each dataset. Each dot is one seed; the tick is the mean; the line marks no gain. The gain is separated from zero on NF-ToN-IoT-v2 and not on NF-UNSW-NB15-v2, where a linear model already scores above 0.99.
 - **`results/figures/results_04_zero_day_recall.png`** — Leave-one-attack-out on NF-ToN-IoT-v2: recall on each attack family when that family was removed entirely from training and validation. Each dot is one seed; the tick is the mean. Families are ordered by the number of held-out flows in the test split, shown in brackets. Hollow dots mark families with fewer than 20,000 test flows, whose recall is correspondingly uncertain. Not measurable on this dataset: ransomware.
