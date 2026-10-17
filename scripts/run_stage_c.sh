@@ -210,6 +210,12 @@ step_transfer_trees() {
     --source-preprocess "$TON_PRE" --target-preprocess "$UNSW_PRE" --seeds 3
   run transfer_trees "$PY" -u scripts/transfer_baselines.py \
     --source-preprocess "$UNSW_PRE" --target-preprocess "$TON_PRE" --seeds 3
+  # The tree's own in-dataset controls, through the same code path: without
+  # them a tree collapse could be a pipeline fault (added 2026-10-17).
+  for pre in "$TON_PRE" "$UNSW_PRE"; do
+    run transfer_trees "$PY" -u scripts/transfer_baselines.py \
+      --source-preprocess "$pre" --target-preprocess "$pre" --seeds 3
+  done
 }
 
 step_evidence() { gate $TON_OK evidence "the NF-ToN-IoT-v2 GNN" || return 0
@@ -230,7 +236,9 @@ step_zeroday() {
 step_report() {
   run report "$PY" scripts/summarise_transfer.py
   run report "$PY" scripts/summarise_llm_study.py
-  for s in export_llm_excerpts summarise_evidence make_figures export_report_facts; do
+  run report "$PY" scripts/export_llm_excerpts.py --prompt-version v3
+  run report "$PY" scripts/export_llm_excerpts.py --prompt-version v4
+  for s in summarise_evidence make_figures export_report_facts; do
     [[ -f "scripts/$s.py" ]] && run report "$PY" "scripts/$s.py"
   done
 }
