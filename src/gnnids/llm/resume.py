@@ -90,7 +90,8 @@ class ReportLog:
             retried = len(failed)
         return rows, retried
 
-    def seed_from_finished(self, finished: Path, pack_ids: list[str]) -> str | None:
+    def seed_from_finished(self, finished: Path, pack_ids: list[str],
+                           force: bool = False) -> str | None:
         """Carry a finished file's reports into a new log, so a run can be
         extended to more packs (D46) and a re-run of a finished model costs
         nothing.
@@ -110,7 +111,7 @@ class ReportLog:
                 f"{finished.name} was written by a different run than this one "
                 f"({self.identity}). Move it aside or pass --fresh.")
         rows = {r["detection_id"]: r for r in data.get("reports", [])}
-        if set(pack_ids) <= set(rows):
+        if set(pack_ids) <= set(rows) and not force:
             return "complete"
         unknown = set(rows) - set(pack_ids)
         if unknown:

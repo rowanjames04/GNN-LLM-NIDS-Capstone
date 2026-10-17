@@ -613,7 +613,7 @@ def _hosted_client(monkeypatch, reply=None, error=None):
     seen = {}
 
     class FakeClient:
-        def __init__(self, host=None, headers=None):
+        def __init__(self, host=None, headers=None, **kw):
             seen.update(host=host, headers=headers)
 
         def chat(self, model, messages, options=None):
@@ -696,7 +696,7 @@ def test_a_short_rate_limit_is_waited_out_not_treated_as_the_end(monkeypatch):
     slept, calls = [], []
 
     class FakeClient:
-        def __init__(self, host=None, headers=None):
+        def __init__(self, host=None, headers=None, **kw):
             pass
 
         def chat(self, model, messages, options=None):

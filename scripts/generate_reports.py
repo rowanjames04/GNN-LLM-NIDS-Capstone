@@ -118,6 +118,11 @@ def main() -> None:
         # already covers these packs, otherwise carry its reports forward.
         carried = None if args.fresh else log.seed_from_finished(
             out_dir / name, [p["detection_id"] for p in packs])
+        if carried == "complete" and args.retry_failed:
+            # Retrying failures needs the finished rows in a log to drop them
+            # from, so the file is carried forward rather than skipped.
+            carried = log.seed_from_finished(out_dir / name, [p["detection_id"] for p in packs],
+                                             force=True)
         if carried == "complete":
             print(f"\n  already complete: {name} holds all {len(packs)} "
                   f"reports asked for. Nothing called. (--fresh to redo.)\n")

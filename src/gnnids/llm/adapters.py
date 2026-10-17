@@ -391,16 +391,22 @@ class OllamaAdapter:
         """True when calls go to Ollama's cloud rather than a server we run."""
         return bool(self.host) and "ollama.com" in self.host
 
+    # Seconds before a hosted call is abandoned. A call on 2026-10-17 hung for
+    # 18 minutes and was then reset; without a timeout one stuck connection
+    # holds the whole sweep.
+    TIMEOUT_SECONDS = 300
+
     def _client(self):
         import ollama
 
         if not self.host:
             return ollama.Client()
         key = os.environ.get(self.api_key_env) if self.hosted else None
+        kw = {"timeout": self.TIMEOUT_SECONDS} if self.hosted else {}
         if key:
             return ollama.Client(host=self.host,
-                                 headers={"Authorization": f"Bearer {key}"})
-        return ollama.Client(host=self.host)
+                                 headers={"Authorization": f"Bearer {key}"}, **kw)
+        return ollama.Client(host=self.host, **kw)
 
     def describe(self) -> dict:
         """The exact model build and server this run used, queried from Ollama.
@@ -451,8 +457,13 @@ class OllamaAdapter:
                         {"role": "user", "content": user}], options=options or None)
                     break
                 except Exception as e:               # noqa: BLE001
-                    if (getattr(e, "status_code", None) != 429
-                            or attempt == len(self.RATE_LIMIT_WAITS)):
+                    # A dropped or timed-out connection (httpx's transport
+                    # errors) is retried like a rate limit: it is the network,
+                    # not the model, and one reset must not be recorded as the
+                    # model failing a report.
+                    transient = (getattr(e, "status_code", None) == 429
+                                 or _is_transport_error(e))
+                    if not transient or attempt == len(self.RATE_LIMIT_WAITS):
                         raise
                     self.sleep(self.RATE_LIMIT_WAITS[attempt])
             return LLMResponse(
@@ -482,7 +493,7 @@ class OllamaAdapter:
             # server is gone -- in Colab, usually a restarted runtime. Every
             # remaining pack would fail in milliseconds and be recorded as the
             # model failing, so the run stops instead and resumes later.
-            if isinstance(e, ConnectionError):
+            if isinstance(e, ConnectionError) or _is_transport_error(e):
                 r.extra[INFRASTRUCTURE_ERROR] = "Ollama server unreachable"
             # The hosted service: a missing or rejected key, exhausted credits,
             # a rate limit or an outage. None of these is the model failing.
@@ -511,6 +522,13 @@ def _ollama_timing(r) -> dict:
         "load_seconds": seconds("load_duration"),
         "total_seconds": seconds("total_duration"),
     }
+
+
+def _is_transport_error(e: Exception) -> bool:
+    """httpx's network-level failures (reset, timeout, refused), without
+    importing httpx where it is not installed."""
+    return any(c.__name__ in ("TransportError", "NetworkError", "TimeoutException")
+               and c.__module__.startswith("httpx") for c in type(e).__mro__)
 
 
 def _ollama_server_version(host: str | None) -> str | None:
