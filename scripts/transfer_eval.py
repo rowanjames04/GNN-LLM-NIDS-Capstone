@@ -46,6 +46,7 @@ from gnnids.eval.transfer import transfer_inputs  # noqa: E402
 from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
 from gnnids.training.loop import infer, pick_device  # noqa: E402
+from gnnids.data.version import check_checkpoint  # noqa: E402
 
 
 def main() -> None:
@@ -102,6 +103,8 @@ def main() -> None:
 
     device = pick_device(gnn_cfg["train"]["device"])
     ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    check_checkpoint(ckpt, args.source_preprocess or cfg["source"]["preprocess_config"],
+                     "transfer_eval")
     if ckpt["edge_dim"] != inputs["edge_features"].shape[1]:
         raise SystemExit(
             f"checkpoint expects {ckpt['edge_dim']} features, the frozen "

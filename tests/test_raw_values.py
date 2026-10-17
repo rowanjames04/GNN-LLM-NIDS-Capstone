@@ -32,7 +32,11 @@ def _load(name):
 
 
 pre = _load("preprocess")
-SCHEMA = SimpleNamespace(continuous=["L4_DST_PORT", "IN_BYTES", "FLOW_DURATION_MILLISECONDS"])
+SCHEMA = SimpleNamespace(
+    continuous=["L4_DST_PORT", "IN_BYTES"],
+    identity=["IPV4_SRC_ADDR", "IPV4_DST_ADDR"],
+    dropped={"shortcuts": [], "uninformative": [],
+             "artefacts": ["FLOW_DURATION_MILLISECONDS"]})
 
 
 def _frame(n=6):
@@ -54,8 +58,13 @@ def test_raw_values_keep_the_measurement_exactly(tmp_path):
     raw = np.load(tmp_path / "raw_values.npy", mmap_mode="r")
     side = json.loads((tmp_path / "raw_values.json").read_text())
 
-    assert side["columns"] == SCHEMA.continuous and side["n_rows"] == 6
-    assert raw[0, 0] == 80 and raw[3, 2] == 4294966        # not 77.1452, not rounded
+    # Every measured column is kept, the dropped artefact included (D47), so
+    # the audit and the evidence can still see it; only model_continuous feeds
+    # the model.
+    assert side["columns"] == ["L4_DST_PORT", "PROTOCOL", "IN_BYTES",
+                               "FLOW_DURATION_MILLISECONDS"]
+    assert side["model_continuous"] == SCHEMA.continuous and side["n_rows"] == 6
+    assert raw[0, 0] == 80 and raw[3, 3] == 4294966        # not 77.1452, not rounded
     assert raw.dtype == np.float64
 
 
@@ -101,4 +110,5 @@ def test_a_measured_value_is_an_integer_where_it_is_one():
 
     assert ev._measured(80.0) == 80 and isinstance(ev._measured(80.0), int)
     assert ev._measured(95.44221) == 95.4422
-    assert ev._measured(float("nan")) == 0.0
+    # Not measured is not zero: a non-finite value is stated as unknown.
+    assert ev._measured(float("nan")) is None

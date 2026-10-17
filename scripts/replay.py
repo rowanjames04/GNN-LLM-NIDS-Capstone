@@ -36,6 +36,7 @@ from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
 from gnnids.training.loop import pick_device  # noqa: E402
 from gnnids.ui.replay import ReplayEngine  # noqa: E402
+from gnnids.data.version import check_checkpoint  # noqa: E402
 
 
 def build_engine(cfg, gnn_cfg, pre_cfg, ds_cfg, ckpt_path: Path, window: int,
@@ -44,6 +45,7 @@ def build_engine(cfg, gnn_cfg, pre_cfg, ds_cfg, ckpt_path: Path, window: int,
     inputs = load_graph_inputs(REPO_ROOT / pre_cfg["output"]["dir"], ds_cfg["name"])
     device = pick_device(gnn_cfg["train"]["device"])
     ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    check_checkpoint(ckpt, gnn_cfg["preprocess_config"], "replay")
     model = DualChannelGNN(edge_dim=ckpt["edge_dim"], n_classes=ckpt["n_classes"],
                            **ckpt["model_cfg"], **ckpt["ablation"])
     model.load_state_dict(ckpt["state_dict"])

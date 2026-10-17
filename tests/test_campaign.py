@@ -86,3 +86,58 @@ def test_a_torn_or_missing_file_is_absent_not_an_error(tmp_path):
 
     assert read_if_matching(torn, "abc") is None
     assert read_if_matching(tmp_path / "nope.json", "abc") is None
+
+
+# --- C32 / C33: the data is part of what a run is -----------------------------
+
+def _proc(tmp_path, mean):
+    d = tmp_path / "proc"
+    d.mkdir(exist_ok=True)
+    (d / "pipeline.json").write_text(json.dumps({"mean": {"IN_BYTES": mean},
+                                                 "cardinalities": [2], "continuous_names": ["IN_BYTES"]}))
+    (d / "splits.json").write_text(json.dumps({"train": {"start": 0, "stop": 4}}))
+    return d
+
+
+def test_a_change_to_the_preprocessed_data_changes_the_fingerprint(tmp_path):
+    from gnnids.data.version import data_version
+
+    v1 = data_version(_proc(tmp_path, 1.0))
+    v2 = data_version(_proc(tmp_path, 2.0))
+    assert v1 != v2
+    assert fingerprint(CFG, data_version=v1) != fingerprint(CFG, data_version=v2)
+    assert fingerprint(CFG, data_version=v1) == fingerprint(CFG, data_version=v1)
+
+
+def test_a_checkpoint_from_other_data_is_refused(tmp_path, monkeypatch):
+    import pytest
+
+    from gnnids.data import version
+
+    monkeypatch.setattr(version, "version_for_preprocess_config", lambda p: "new")
+    version.check_checkpoint({"data_version": "new"}, "x.yaml", "test")   # accepted
+    for stale in ({"data_version": "old"}, {}):
+        with pytest.raises(SystemExit, match="Retrain"):
+            version.check_checkpoint(stale, "x.yaml", "test")
+
+
+def test_the_edge_feature_cache_is_rebuilt_when_the_data_changes(tmp_path):
+    import numpy as np
+    import pandas as pd
+
+    from gnnids.graph.inputs import load_graph_inputs
+
+    d = _proc(tmp_path, 1.0)
+    (d / "attack_families.json").write_text(json.dumps({"Benign": 0, "dos": 1}))
+    pd.DataFrame({"IPV4_SRC_ADDR": ["a", "b", "a", "c"], "IPV4_DST_ADDR": ["b", "c", "c", "a"],
+                  "Label": [0, 1, 0, 1], "Attack": ["Benign", "dos", "Benign", "dos"]}
+                 ).to_parquet(d / "meta.parquet")
+    np.savez(d / "features.npz", continuous=np.ones((4, 1), np.float32),
+             categorical=np.zeros((4, 1), np.int64))
+    assert float(load_graph_inputs(d, "t", verbose=False).edge_features[0, 0]) == 1.0
+
+    # New preprocessing: different statistics, different features.
+    _proc(tmp_path, 2.0)
+    np.savez(d / "features.npz", continuous=np.full((4, 1), 7, np.float32),
+             categorical=np.zeros((4, 1), np.int64))
+    assert float(load_graph_inputs(d, "t", verbose=False).edge_features[0, 0]) == 7.0

@@ -128,7 +128,12 @@ def write_raw_values(df, schema, out_dir: Path) -> None:
     reaches 1e219 (A4), and memory-mapped because 5.9M x 31 is 1.5 GB and a
     pack needs a few hundred rows of it.
     """
-    names = list(schema.continuous)
+    # Every measured column, not only the model's inputs (D47): the dropped
+    # artefact columns and the categorical codes are kept so the data-quality
+    # audit can re-check them and the facts layer can state them, or state that
+    # they are unreliable, without going back to the source file.
+    not_measured = set(schema.identity) | {LABEL_BINARY, LABEL_MULTICLASS}
+    names = [c for c in df.columns if c not in not_measured]
     raw = np.lib.format.open_memmap(
         out_dir / "raw_values.npy", mode="w+", dtype=np.float64,
         shape=(len(df), len(names)))
@@ -138,8 +143,12 @@ def write_raw_values(df, schema, out_dir: Path) -> None:
     del raw
     (out_dir / "raw_values.json").write_text(json.dumps(
         {"columns": names, "n_rows": int(len(df)), "dtype": "float64",
-         "note": "raw measured values, row-aligned with edge_features.npy and "
-                 "meta.parquet"}, indent=2))
+         "model_continuous": list(schema.continuous),
+         "dropped": schema.dropped,
+         "note": "raw measured values for every source column except addresses "
+                 "and labels, row-aligned with edge_features.npy and "
+                 "meta.parquet. Columns in `dropped` are not model inputs."},
+        indent=2))
 
 
 def write_raw_only(df, schema, out_dir: Path) -> None:
@@ -172,12 +181,57 @@ def write_raw_only(df, schema, out_dir: Path) -> None:
     print(f"  raw_values.npy written -> {out_dir}\n")
 
 
+def same_rows_as_before(df, out_dir: Path) -> bool | None:
+    """Are these exactly the rows, in the same order, as the last run's?
+
+    None when there is no earlier run. Checked on every column of meta.parquet,
+    because a change to the feature list must not quietly change the sample.
+    """
+    import pandas as pd
+
+    meta_path = out_dir / "meta.parquet"
+    if not meta_path.exists():
+        return None
+    meta = pd.read_parquet(meta_path)
+    if len(meta) != len(df):
+        print(f"  rows: {len(df):,} now, {len(meta):,} before")
+        return False
+    for col in meta.columns:
+        if col in df.columns and not np.array_equal(meta[col].to_numpy(), df[col].to_numpy()):
+            print(f"  rows: column {col} differs from the previous run")
+            return False
+    print(f"  rows: identical to the previous run ({len(df):,} rows, same order)")
+    return True
+
+
+def write_data_version(out_dir: Path, cfg: dict, schema, n_rows: int) -> str:
+    """A short hash naming this exact preprocessed dataset (C32).
+
+    Built from the fitted pipeline and the splits, which change whenever the
+    feature list, a transform statistic, the row set or the split does. Every
+    training run, checkpoint and metrics file records it, so a result can be
+    traced to the data it came from and a stale one can be refused.
+    """
+    from gnnids.data.version import data_version
+
+    v = data_version(out_dir)
+    (out_dir / "data_version.json").write_text(json.dumps({
+        "data_version": v, "n_rows": n_rows,
+        "model_continuous": list(schema.continuous), "dropped": schema.dropped,
+        "generated_at": datetime.now(timezone.utc).isoformat()}, indent=2))
+    return v
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--config", type=Path, default=REPO_ROOT / "configs" / "preprocess.yaml")
     ap.add_argument("--no-sweep", action="store_true")
     ap.add_argument("--max-rows", type=int, default=None,
-                    help="cap rows by reading whole parquet row groups (see loader)")
+                    help="cap rows by reading whole parquet row groups (see loader); "
+                         "defaults to max_rows in the config")
+    ap.add_argument("--allow-new-rows", action="store_true",
+                    help="write even if the rows differ from the existing "
+                         "meta.parquet (breaks comparison with earlier results)")
     ap.add_argument("--raw-only", action="store_true",
                     help="write raw_values.npy for an EXISTING preprocessed "
                          "dataset, after verifying row-for-row alignment with its "
@@ -189,8 +243,12 @@ def main() -> None:
     stem = Path(ds_cfg["source"]["filename"]).stem
     path = REPO_ROOT / ds_cfg["paths"]["interim"] / f"{stem}.parquet"
 
+    # The cap is part of the experiment, so it lives in the config: run without
+    # it and NF-ToN-IoT-v2 loads 16.9M rows, different splits and different
+    # zero-day gates (it was a command-line flag until 2026-10-17).
+    max_rows = args.max_rows if args.max_rows is not None else cfg.get("max_rows")
     print(f"Loading {path.name} ...")
-    df, load_info = load_capped(path, args.max_rows)
+    df, load_info = load_capped(path, max_rows)
     if load_info["capped"]:
         print(f"  capped: {load_info['rows_loaded']:,} of "
               f"{load_info['source_rows']:,} flows "
@@ -202,6 +260,7 @@ def main() -> None:
     print("Feature schema")
     print(f"  dropped (shortcuts):    {schema.dropped['shortcuts']}")
     print(f"  dropped (uninformative):{schema.dropped['uninformative']}")
+    print(f"  dropped (artefacts):    {schema.dropped['artefacts']}")
     print(f"  continuous:  {len(schema.continuous)}  "
           f"({len(schema.log_transform)} log-transformed)")
     print(f"  categorical: {len(schema.categorical)} + "
@@ -298,6 +357,17 @@ def main() -> None:
     # ---- 6. persist -------------------------------------------------------
     out_dir = REPO_ROOT / cfg["output"]["dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    rows_same = same_rows_as_before(df, out_dir)
+    if rows_same is False and not args.allow_new_rows:
+        raise SystemExit(
+            "The rows differ from the existing meta.parquet, so results built on "
+            "this data could not be compared with earlier ones. Check the row "
+            "cap and seed, or pass --allow-new-rows deliberately.")
+    # The graph cache is built from features.npz on first use and was never
+    # invalidated, so a re-run of preprocessing left every model reading the
+    # old features (C33). It is rebuilt from the new features on next load.
+    for stale in ("edge_features.npy", "edge_features.json"):
+        (out_dir / stale).unlink(missing_ok=True)
     pipeline.save(out_dir / "pipeline.json")
     np.savez_compressed(
         out_dir / "features.npz",
@@ -312,6 +382,8 @@ def main() -> None:
     # would silently misalign.
     df[META_COLUMNS].to_parquet(out_dir / "meta.parquet", index=False)
     write_raw_values(df, schema, out_dir)
+    version = write_data_version(out_dir, cfg, schema, len(df))
+    print(f"data version {version} (stamped into every run that uses this data)")
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -326,6 +398,7 @@ def main() -> None:
             for k, v in splits.items()
         },
         "rows_purged": int(purged),
+        "rows_identical_to_previous_preprocessing": rows_same,
         "categorical_cardinalities": dict(
             zip(pipeline.categorical_names_, pipeline.cardinalities())),
         "gate_checks": checks,

@@ -43,6 +43,7 @@ from gnnids.training.campaign import (  # noqa: E402
     checkpoint_name, fingerprint, read_if_matching, stem,
 )
 from gnnids.training.loop import pick_device, train_one  # noqa: E402
+from gnnids.data.version import version_for_preprocess_config  # noqa: E402
 
 ORDER = ("channel1_only", "channel2_only", "full")
 MULTICLASS_SCALARS = ("accuracy", "macro_f1", "attack_family_accuracy")
@@ -163,10 +164,11 @@ def _run_seeds_in_subprocesses(args) -> int:
     target_prev = cfg["eval"]["target_prevalence"]
     summarise(merged, f"at_{target_prev:.0%}")
 
-    comparators = load_comparators(ds_cfg["name"], target_prev)
+    comparators = load_comparators(ds_cfg["name"], target_prev, cfg["preprocess_config"])
     out_path.write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": ds_cfg["name"], "tag": tag, "fingerprint": fp, "config": cfg,
+        "data_version": version_for_preprocess_config(cfg["preprocess_config"]),
         "seeds_failed": failed,
         "phase3_comparators": comparators,
         "results": merged,
@@ -186,13 +188,17 @@ def _run_seeds_in_subprocesses(args) -> int:
     if failed:
         print(f"\n  WARNING: seeds {failed} failed and are excluded.")
     print(f"\nwritten -> {out_path.relative_to(REPO_ROOT)}\n")
-    return 0
+    # Non-zero when any seed failed, so a campaign runner stops instead of
+    # building transfer and evidence on whatever checkpoint that seed left
+    # behind from an earlier run (pre-mortem, 2026-10-17).
+    return 1 if failed else 0
 
 
 BASELINE_SCHEMA = "dual-prevalence-v1"
 
 
-def load_comparators(dataset_name: str, target_prevalence: float) -> dict:
+def load_comparators(dataset_name: str, target_prevalence: float,
+                     preprocess_config: str | None = None) -> dict:
     """Phase 3 baselines, read from disk rather than hardcoded (C17).
 
     Until 2026-08-25 this file carried `baseline_to_beat = 0.9552 / 0.8963` as a
@@ -217,6 +223,11 @@ def load_comparators(dataset_name: str, target_prevalence: float) -> dict:
             stale.append(key)
             continue
         if payload.get("reported_at_prevalence") != target_prevalence:
+            stale.append(key)
+            continue
+        # A baseline fitted on other data is not a comparator (C32).
+        if preprocess_config is not None and payload.get("data_version") != \
+                version_for_preprocess_config(preprocess_config):
             stale.append(key)
             continue
         agg = payload["aggregate"]
@@ -349,7 +360,8 @@ def main() -> None:
     edge_dim = edge_feats.shape[1]
     n_classes = len(families)
     print(f"\ndevice: {device}   edge features: {edge_dim}   classes: {n_classes}")
-    _c = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"])
+    _c = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"],
+                             cfg["preprocess_config"])
     _best = max(_c["entries"].items(), key=lambda kv: kv[1]["pr_auc"], default=None)
     if _best:
         print(f"target: beat {_best[0]} PR-AUC {_best[1]['pr_auc']:.4f} / "
@@ -405,10 +417,12 @@ def main() -> None:
                 else f"partial_{run_name}_seed{args.single_seed}.json"
                 if args.single_seed is not None
                 else f"gnn_{run_name}.json")
-    comparators = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"])
+    comparators = load_comparators(ds_cfg["name"], cfg["eval"]["target_prevalence"],
+                             cfg["preprocess_config"])
     (out_dir / out_name).write_text(json.dumps({
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset": ds_cfg["name"], "tag": tag, "fingerprint": fp, "config": cfg,
+        "data_version": version_for_preprocess_config(cfg["preprocess_config"]),
         "edge_dim": edge_dim, "window_size": window,
         "phase3_comparators": comparators,
         "results": results,

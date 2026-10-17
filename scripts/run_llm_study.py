@@ -246,6 +246,13 @@ def main() -> None:
     if stopped:
         print("\n  Stopped early. Every model that ran has the same packs up to the "
               "last finished\n  round; the same command resumes from there.")
+    # The exit status says what happened, so a campaign runner cannot record a
+    # failed sweep as a passed step (pre-mortem, 2026-10-17): 75 = stopped and
+    # resumable, 1 = some run failed, 0 = everything asked for is complete.
+    if stopped:
+        raise SystemExit(75)
+    if any(r["status"] == "failed" for r in runs):
+        raise SystemExit(1)
     # The Colab notebook writes to Google Drive, outside the repo, where an
     # unconditional relative_to() would crash after the sweep had finished.
     out = out_dir / name

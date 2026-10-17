@@ -28,14 +28,25 @@ from pathlib import Path
 _NOT_IDENTITY = ("n_seeds", "device")
 
 
-def fingerprint(gnn_cfg: dict, extra: dict | None = None) -> str:
+def fingerprint(gnn_cfg: dict, extra: dict | None = None,
+                data_version: str | None = None) -> str:
     """A short hash of everything that determines a run's result.
 
     Two runs with the same fingerprint and seed are the same experiment. The
     seed count and the device are excluded -- asking for ten seeds instead of
     three does not change what seed 0 is.
+
+    **The data is part of the identity** (C32). Until 2026-10-17 only the
+    config was hashed, so re-running preprocessing with a different feature
+    list left the fingerprint unchanged and finished runs on the old data would
+    have been reused as if they were new. The version is resolved here from the
+    config's preprocess_config, so no caller can forget it.
     """
+    from gnnids.data.version import version_for_preprocess_config
+
     ident = {
+        "data_version": data_version or version_for_preprocess_config(
+            gnn_cfg["preprocess_config"]),
         "model": gnn_cfg["model"],
         "train": {k: v for k, v in gnn_cfg["train"].items() if k not in _NOT_IDENTITY},
         "eval": gnn_cfg["eval"],

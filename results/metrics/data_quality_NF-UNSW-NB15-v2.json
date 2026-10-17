@@ -1,0 +1,699 @@
+{
+  "dataset": "NF-UNSW-NB15-v2",
+  "n_rows": 2390275,
+  "wrap_signatures": {
+    "OUT_BYTES": {
+      "ge_2pow31": 0,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 1,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "FLOW_DURATION_MILLISECONDS": {
+      "ge_2pow31": 0,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 144204,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "SRC_TO_DST_SECOND_BYTES": {
+      "ge_2pow31": 114,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 2,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "DST_TO_SRC_SECOND_BYTES": {
+      "ge_2pow31": 925,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 1,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "SRC_TO_DST_AVG_THROUGHPUT": {
+      "ge_2pow31": 378,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 22969,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "DST_TO_SRC_AVG_THROUGHPUT": {
+      "ge_2pow31": 6415,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 214,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "DNS_TTL_ANSWER": {
+      "ge_2pow31": 14,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 0,
+      "negative": 0,
+      "non_finite": 0
+    }
+  },
+  "validity_flags": {
+    "duration_wrapped": {
+      "n": 144204,
+      "share": 0.06033,
+      "share_by_family": {
+        "Analysis": 0.0505,
+        "Backdoor": 0.0599,
+        "Benign": 0.0585,
+        "DoS": 0.1196,
+        "Exploits": 0.1624,
+        "Fuzzers": 0.1019,
+        "Generic": 0.0417,
+        "Reconnaissance": 0.0705,
+        "Shellcode": 0.0371,
+        "Worms": 0.1707
+      },
+      "share_by_split": {
+        "train": 0.0588,
+        "val": 0.0653,
+        "test": 0.0626
+      }
+    },
+    "duration_in_exceeds_flow": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "duration_out_exceeds_flow": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "size_buckets_not_packet_total": {
+      "n": 475066,
+      "share": 0.19875,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0097,
+        "Benign": 0.2029,
+        "DoS": 0.0544,
+        "Exploits": 0.2112,
+        "Fuzzers": 0.1024,
+        "Generic": 0.0038,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.2002,
+        "val": 0.1923,
+        "test": 0.1959
+      }
+    },
+    "in_bytes_without_packets": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "in_bytes_below_20_per_packet": {
+      "n": 44092,
+      "share": 0.01845,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0032,
+        "Benign": 0.0185,
+        "DoS": 0.0095,
+        "Exploits": 0.0322,
+        "Fuzzers": 0.0276,
+        "Generic": 0.0007,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0185,
+        "val": 0.018,
+        "test": 0.0184
+      }
+    },
+    "in_retransmitted_exceeds_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "in_retransmitted_bytes_exceed_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_bytes_without_packets": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_bytes_below_20_per_packet": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_retransmitted_exceeds_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_retransmitted_bytes_exceed_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "longest_below_shortest": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "ip_packet_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "l4_src_port_out_of_range": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "l4_dst_port_out_of_range": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "tcp_win_max_in_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "tcp_win_max_out_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "src_to_dst_second_bytes_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "dst_to_src_second_bytes_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "src_to_dst_avg_throughput_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "dst_to_src_avg_throughput_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    }
+  },
+  "per_family_top_auc": {
+    "Analysis": {
+      "OUT_PKTS": 0.9295,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.9274,
+      "DST_TO_SRC_SECOND_BYTES": 0.9254,
+      "OUT_BYTES": 0.9226,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.9211,
+      "L4_DST_PORT": 0.9115,
+      "L4_SRC_PORT": 0.877,
+      "IN_PKTS": 0.8392
+    },
+    "Backdoor": {
+      "DST_TO_SRC_SECOND_BYTES": 0.9534,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.9514,
+      "OUT_BYTES": 0.9511,
+      "OUT_PKTS": 0.9465,
+      "L4_SRC_PORT": 0.9241,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.9197,
+      "L4_DST_PORT": 0.902,
+      "RETRANSMITTED_OUT_BYTES": 0.8406
+    },
+    "Benign": {
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.7937,
+      "OUT_BYTES": 0.7819,
+      "DST_TO_SRC_SECOND_BYTES": 0.7816,
+      "OUT_PKTS": 0.7787,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.7656,
+      "RETRANSMITTED_OUT_PKTS": 0.7477,
+      "RETRANSMITTED_OUT_BYTES": 0.7437,
+      "IN_PKTS": 0.7094
+    },
+    "DoS": {
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.7834,
+      "DST_TO_SRC_SECOND_BYTES": 0.7693,
+      "OUT_PKTS": 0.7671,
+      "OUT_BYTES": 0.7661,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.7657,
+      "RETRANSMITTED_OUT_PKTS": 0.7318,
+      "L4_DST_PORT": 0.7254,
+      "RETRANSMITTED_OUT_BYTES": 0.7211
+    },
+    "Exploits": {
+      "SHORTEST_FLOW_PKT": 0.9073,
+      "TCP_WIN_MAX_OUT": 0.7612,
+      "L4_DST_PORT": 0.6324,
+      "ICMP_TYPE": 0.6281,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.6259,
+      "OUT_PKTS": 0.6237,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.6226,
+      "OUT_BYTES": 0.6083
+    },
+    "Fuzzers": {
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.8314,
+      "OUT_BYTES": 0.8238,
+      "DST_TO_SRC_SECOND_BYTES": 0.8233,
+      "RETRANSMITTED_OUT_BYTES": 0.8056,
+      "RETRANSMITTED_OUT_PKTS": 0.8048,
+      "OUT_PKTS": 0.7938,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.7563,
+      "SHORTEST_FLOW_PKT": 0.7364
+    },
+    "Generic": {
+      "NUM_PKTS_UP_TO_128_BYTES": 0.9152,
+      "OUT_PKTS": 0.9078,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.8992,
+      "DST_TO_SRC_SECOND_BYTES": 0.8969,
+      "OUT_BYTES": 0.8954,
+      "SRC_TO_DST_SECOND_BYTES": 0.8638,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.8545,
+      "IN_BYTES": 0.8445
+    },
+    "Reconnaissance": {
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.8788,
+      "DST_TO_SRC_SECOND_BYTES": 0.8742,
+      "OUT_BYTES": 0.8654,
+      "RETRANSMITTED_OUT_PKTS": 0.8585,
+      "RETRANSMITTED_OUT_BYTES": 0.8583,
+      "OUT_PKTS": 0.8442,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8167,
+      "LONGEST_FLOW_PKT": 0.801
+    },
+    "Shellcode": {
+      "DST_TO_SRC_SECOND_BYTES": 0.897,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.8926,
+      "OUT_BYTES": 0.8877,
+      "RETRANSMITTED_OUT_BYTES": 0.8578,
+      "RETRANSMITTED_OUT_PKTS": 0.8578,
+      "OUT_PKTS": 0.856,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8338,
+      "L4_DST_PORT": 0.8163
+    },
+    "Worms": {
+      "SHORTEST_FLOW_PKT": 0.8147,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.7317,
+      "RETRANSMITTED_IN_PKTS": 0.7248,
+      "RETRANSMITTED_OUT_PKTS": 0.7147,
+      "RETRANSMITTED_OUT_BYTES": 0.7146,
+      "NUM_PKTS_256_TO_512_BYTES": 0.714,
+      "DST_TO_SRC_SECOND_BYTES": 0.7136,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.706
+    }
+  },
+  "per_family_shortcuts": [
+    {
+      "family": "Backdoor",
+      "feature": "DST_TO_SRC_SECOND_BYTES",
+      "abs_auc": 0.9534
+    },
+    {
+      "family": "Backdoor",
+      "feature": "DST_TO_SRC_AVG_THROUGHPUT",
+      "abs_auc": 0.9514
+    },
+    {
+      "family": "Backdoor",
+      "feature": "OUT_BYTES",
+      "abs_auc": 0.9511
+    }
+  ],
+  "duplicates": {
+    "with_hosts": {
+      "duplicate_rows_total": 34553,
+      "test_rows_also_in_train": 14,
+      "test_rows_also_in_train_share": 0.0,
+      "test_rows_also_in_train_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0015,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "rows_whose_identical_twin_has_another_label": 14488,
+      "contradictory_by_family": {
+        "Analysis": 1932,
+        "Backdoor": 1834,
+        "DoS": 2235,
+        "Exploits": 2351,
+        "Fuzzers": 2186,
+        "Generic": 1997,
+        "Reconnaissance": 1943,
+        "Worms": 10
+      }
+    },
+    "features_only": {
+      "duplicate_rows_total": 410944,
+      "test_rows_also_in_train": 104474,
+      "test_rows_also_in_train_share": 0.2232,
+      "test_rows_also_in_train_by_family": {
+        "Analysis": 0.8055,
+        "Backdoor": 0.7082,
+        "Benign": 0.2199,
+        "DoS": 0.3577,
+        "Exploits": 0.0699,
+        "Fuzzers": 0.107,
+        "Generic": 0.7693,
+        "Reconnaissance": 0.1839,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      },
+      "rows_whose_identical_twin_has_another_label": 14531,
+      "contradictory_by_family": {
+        "Analysis": 1932,
+        "Backdoor": 1834,
+        "Benign": 14,
+        "DoS": 2236,
+        "Exploits": 2355,
+        "Fuzzers": 2186,
+        "Generic": 2019,
+        "Reconnaissance": 1945,
+        "Worms": 10
+      }
+    }
+  },
+  "generated_at": "2026-10-17T05:53:46.366918+00:00",
+  "shortcut_threshold": 0.95
+}

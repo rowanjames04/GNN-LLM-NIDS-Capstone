@@ -44,6 +44,7 @@ from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
 from gnnids.models.dual_channel import DualChannelGNN  # noqa: E402
 from gnnids.training.loop import pick_device, release  # noqa: E402
+from gnnids.data.version import check_checkpoint  # noqa: E402
 
 
 def load_model(ckpt_path: Path, device) -> tuple[torch.nn.Module, dict]:
@@ -185,7 +186,9 @@ def _measured(v) -> float | int:
     """A measured value as JSON: an integer where it is one, else 4 decimals."""
     v = float(v)
     if not np.isfinite(v):
-        return 0.0
+        # Unknown, not zero. Until 2026-10-17 this returned 0.0, so a value the
+        # exporter failed to record reached the LLM as a measured zero.
+        return None
     return int(v) if v == int(v) and abs(v) < 1e15 else round(v, 4)
 
 
@@ -242,6 +245,7 @@ def main() -> None:
 
     device = pick_device(gnn_cfg["train"]["device"])
     model, ckpt = load_model(ckpt_path, device)
+    check_checkpoint(ckpt, gnn_cfg["preprocess_config"], "make_evidence")
     threshold = ckpt["threshold"]
     print(f"device: {device}   threshold {threshold:.4f} (from the checkpoint, "
           f"chosen on validation)\n")

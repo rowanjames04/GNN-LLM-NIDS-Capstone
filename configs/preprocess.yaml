@@ -24,6 +24,24 @@ features:
   # Never features. They define graph topology only -- using an address as a
   # model input teaches "this host is the attacker", which is the same class of
   # leak as the TTL shortcut and destroys cross-dataset generalisation.
+  # D47 (2026-10-17): recording artefacts, not measurements. On both datasets
+  # FLOW_DURATION_MILLISECONDS is either exactly 0 or a 32-bit wrap (2^32/1000
+  # minus a small gap), and DURATION_IN/OUT are non-zero only in wrapped rows,
+  # so the three carry no genuine timing at all. The wrap is concentrated in
+  # particular families (72% of NF-ToN-IoT-v2 ddos, ~3% of benign) and would be
+  # learned as a fingerprint. The four rate columns are computed from the same
+  # broken interval in wrapped rows. Imputing them was rejected: a constant
+  # placed in the wrapped rows is itself a marker of those rows.
+  # Evidence: results/metrics/data_quality_<dataset>.json.
+  drop_artefacts:
+    - FLOW_DURATION_MILLISECONDS
+    - DURATION_IN
+    - DURATION_OUT
+    - SRC_TO_DST_SECOND_BYTES
+    - DST_TO_SRC_SECOND_BYTES
+    - SRC_TO_DST_AVG_THROUGHPUT
+    - DST_TO_SRC_AVG_THROUGHPUT
+
   identity:
     - IPV4_SRC_ADDR
     - IPV4_DST_ADDR

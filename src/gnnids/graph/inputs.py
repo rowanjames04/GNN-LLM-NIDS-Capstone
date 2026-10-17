@@ -65,6 +65,20 @@ def load_graph_inputs(processed_dir: Path, dataset_name: str,
     # Built once as a float16 .npy, thereafter paged in by the OS on demand, so
     # the process holds only the windows it is touching.
     feat_path = proc / "edge_features.npy"
+    stamp_path = proc / "edge_features.json"
+    # The cache records the data version it was built from and is rebuilt when
+    # that changes. Without this, re-running preprocessing left every model
+    # reading the old features from a cache that was never invalidated (C33).
+    from ..data.version import data_version
+    current = data_version(proc)
+    if feat_path.exists():
+        built_from = (json.loads(stamp_path.read_text()).get("data_version")
+                      if stamp_path.exists() else None)
+        if built_from != current:
+            if verbose:
+                print(f"  edge-feature cache is from data {built_from}, data is "
+                      f"{current}: rebuilding")
+            feat_path.unlink()
     if not feat_path.exists():
         if verbose:
             print("  building memory-mappable edge features (one-off) ...")
@@ -73,6 +87,8 @@ def load_graph_inputs(processed_dir: Path, dataset_name: str,
             npz["continuous"], one_hot(npz["categorical"], meta["cardinalities"])
         ]).astype(np.float16)
         np.save(feat_path, arr)
+        stamp_path.write_text(json.dumps({"data_version": current,
+                                          "shape": list(arr.shape)}))
         del npz, arr
     edge_feats = np.load(feat_path, mmap_mode="r")
     if verbose:

@@ -1,0 +1,3457 @@
+{
+  "generated_at": "2026-10-17T03:28:53.089693+00:00",
+  "provider": "ollama",
+  "model": "gpt-oss:120b",
+  "prompt_version": "v1",
+  "packs_source": "evidence_NF-ToN-IoT-v2.json",
+  "smoke": false,
+  "summary": {
+    "n": 40,
+    "n_ok": 40,
+    "n_failed": 0,
+    "groundedness_mean": 0.971,
+    "reports_with_fabricated_addresses": 0,
+    "reports_with_jargon": 0,
+    "report_words_mean": 248.4,
+    "classification_faithful_rate": 0.85,
+    "classification_substituted_rate": 0.0,
+    "attribution_coverage_mean": 0.8088,
+    "attribution_cites_none_rate": 0.0,
+    "latency_seconds_mean": 2.691,
+    "latency_seconds_p50": 2.625,
+    "latency_seconds_p95": 3.624,
+    "generation_seconds_total": null,
+    "output_tokens_per_second": null,
+    "total_cost_usd": null,
+    "reference_cost_usd": 0.019525,
+    "ambiguous_detections": 10,
+    "uncertainty_conveyed_rate": 1.0,
+    "scoring_version": "2026-10-03",
+    "determinism": {
+      "temperature": 0,
+      "seed": 42,
+      "supported": true,
+      "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+    },
+    "n_retried_after_failure": 0,
+    "n_sessions": 1
+  },
+  "provenance": {
+    "sessions": [
+      {
+        "started_at": "2026-10-17T03:27:04.142848+00:00",
+        "git": {
+          "commit": "edfd2d6cc7f26c90810f2c61bbd7c9d0bb4ac083",
+          "dirty": false
+        },
+        "python": "3.13.0",
+        "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+        "gpus": null,
+        "model": {
+          "tag": "gpt-oss:120b",
+          "num_ctx": 8192,
+          "digest": "d98fe6ba01e6",
+          "parameter_size": "116829156672",
+          "quantization_level": "MXFP4",
+          "family": "gptoss",
+          "server_version": null,
+          "served_by": "ollama cloud"
+        }
+      }
+    ]
+  },
+  "reports": [
+    {
+      "detection_id": "611d5259-ef70-4ccf-af9b-2afd555bc148",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.32 opened a single\u2011packet TCP connection to host\u202f192.168.1.195 on destination port\u202f135. The flow transferred 48\u202fbytes inbound, 0\u202fbytes outbound, lasted 0\u202fms, and used source port\u202f59378. The L4 destination\u2011port bucket and L7 protocol were classified as \u201cother,\u201d and the TCP flags value was\u202f2.\n\n**Why it was flagged**  \nThe detection score was 0.9509, above the alert threshold of 0.87859. The model assigned the flow to the *scanning* category with 99.7\u202f% confidence and found no plausible alternative category. Contributing factors included:  \n\n- Destination port\u202f135 (outside the usual port buckets).  \n- Unusual source port\u202f59378.  \n- \u201cOther\u201d L7 protocol.  \n- Zero outbound bytes and a low TCP\u2011flags value, which lowered the score but were outweighed by other indicators.  \n\nAdditionally, the source host made 4,466 connections to 14 distinct addresses across 2,369 ports\u20144.7\u202f\u00d7 the typical address count for a host in this environment. The destination host also showed elevated activity (1,139 connections to 4 addresses across 190 ports, 4.0\u202f\u00d7 typical). These volume anomalies support the scanning interpretation.\n\n**What to do next**  \n1. **Rate\u2011limit** traffic from 192.168.1.32 and generate alerts if the host continues to contact an unusually high number of distinct destinations.  \n2. **Segment** east\u2011west traffic where possible to limit lateral probing between internal hosts.  \n3. Verify that any services exposed on port\u202f135 (or other \u201cother\u201d ports) are fully inventoried and patched.  \n\nMonitor for further scanning\u2011like flows from the same source and consider temporary isolation if the behavior persists.",
+      "latency_seconds": 3.134,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000453,
+      "input_tokens": 714,
+      "output_tokens": 577,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 248
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L4_SRC_PORT",
+          "L7_PROTO",
+          "OUT_BYTES"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.958
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "51e25694-ba81-4dbd-ae32-7e4c2d13c980",
+      "true_label": "backdoor",
+      "predicted_class": "backdoor",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.193 to 192.168.1.33 on destination port\u202f8080. The flow transferred 1\u202f440\u202fbytes inbound and 1\u202f200\u202fbytes outbound in 30 packets (duration reported as 0\u202fms). The transport protocol was TCP (protocol\u202f6). The source host opened 849 connections during the observation period to 4 distinct addresses across 5 ports \u2013 roughly twice the typical address count for a host in this environment. The destination host made 783 connections to a single address across 2 ports, which is typical.\n\n**Why it was flagged**  \nThe detection score was 0.98773, well above the alert threshold of 0.87859. The model assigned the \u201cbackdoor\u201d category with a confidence of 0.99991 and reported no other plausible category. Contributing factors included:  \n- Use of a non\u2011standard port (8080) for a persistent channel.  \n- High inbound byte count (1\u202f440\u202fbytes) and inbound packet count (30) \u2013 both raised the assessment.  \n- The source host\u2019s connection volume (849 connections) being 2\u202f\u00d7 the normal address count.  \n\nThese observations match the reference description of a backdoor (persistent unauthorized access on a non\u2011standard port).\n\n**What to do next**  \n1. Isolate the source host (192.168.1.193) for further investigation.  \n2. Inspect the host for unauthorized persistence mechanisms.  \n3. Block traffic to the destination (192.168.1.33:8080) and review egress filtering rules.  \n4. Rotate any credentials that the source host had access to.  \n\nThese steps follow the standard mitigations associated with the backdoor classification.",
+      "latency_seconds": 2.05,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000462,
+      "input_tokens": 718,
+      "output_tokens": 590,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 238
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "PROTOCOL",
+          "IN_BYTES"
+        ],
+        "features_missed": [
+          "L7_PROTO",
+          "NUM_PKTS_UP_TO_128_BYTES"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.486
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "de1f05f1-3e51-4f49-b873-1d6b24e6736d",
+      "true_label": "password",
+      "predicted_class": "password",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nOn a short\u2011lived flow (duration\u202f0\u202fms) the host\u202f192.168.1.31 contacted 192.168.1.190 on TCP port\u202f80. The flow transferred 586\u202fbytes in (5 packets) and 672\u202fbytes out. During the observation period the source made 9\u202f869 connections to 9 distinct addresses across\u202f1\u202f013 ports \u2013 about\u202f4.5\u202ftimes the normal address count for a host in this network. The destination made 704 connections to 2 addresses across\u202f11 ports (\u22482\u202f\u00d7 typical).\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.93889, exceeding the alert threshold of\u202f0.87859. The highest\u2011probability label is **password** (confidence\u202f0.84), which matches the reference definition of \u201crepeated authentication attempts aimed at guessing valid credentials\u201d (technique\u202fT1110/T1110.001). The classifier also notes uncertainty; an **injection** label has a lower but non\u2011negligible probability (0.15). Contributing factors included the destination port (80) being in an \u201cother\u201d bucket and the measured port value, which raised the assessment, while a relatively large TCP window size (29200) and the modest inbound byte count (586) lowered it. The score is stable \u2013 none of the 50 nearest neighbour flows altered it by more than\u202f0.01, and the topological influence is diffuse.\n\n**What to do next**  \n1. Correlate this flow with authentication logs on 192.168.1.190 to confirm whether failed login attempts occurred.  \n2. If repeated failures are observed, apply the standard mitigations: enforce account lockout or progressive delay, and consider requiring multi\u2011factor authentication for services exposed on port\u202f80.  \n3. Enable or refine alerts for multiple authentication failures originating from a single source.  \n4. Because the classification is uncertain, also review the flow for signs of injection (e.g., unexpected payload patterns) to rule out alternative activity.  \n\nFurther investigation should focus on the source host\u2019s high connection rate and any associated credential\u2011related events.",
+      "latency_seconds": 2.175,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000517,
+      "input_tokens": 719,
+      "output_tokens": 682,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 19,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 15,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 294
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.8401,
+        "hedges_found": [
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "injection",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "IN_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "coverage": 0.5,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.772
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "010d73db-e448-48d2-8180-5e0596059e0f",
+      "true_label": "ddos",
+      "predicted_class": "ddos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.31\u202fto\u202f192.168.1.194\u202fon TCP port\u202f80 was observed. The flow transferred 591\u202fbytes inbound and 688\u202fbytes outbound in 5 packets, with a measured duration of\u202f0\u202fms. During the observation period the source host opened 3,503 connections to 12 distinct addresses across 915 ports, and the destination host opened 1,271 connections to 3 distinct addresses across 245 ports. Both hosts exceeded their typical connection counts (source\u202f\u2248\u202f4.8\u00d7, destination\u202f\u2248\u202f3.0\u00d7).\n\n**Why it was flagged**  \nThe detection score was\u202f0.98349, well above the alert threshold of\u202f0.87859. The model assigned the category *ddos* with a confidence of\u202f0.99805 and reported no other plausible category. Contributing factors included: the destination port (80) being in the \u201cother\u201d bucket, the TCP protocol (6), a relatively large TCP window (29,200), and one packet in the 256\u2011512\u202fbyte size range. The flow\u2019s score was stable relative to 3,985 neighboring flows (no neighbor altered the score by more than\u202f0.01), indicating the assessment is not driven by a single adjacent flow.\n\n**What to do next**  \n1. Enable upstream volumetric filtering or scrubbing for traffic to the destination host.  \n2. Apply per\u2011source rate limits at the edge for traffic originating from\u202f192.168.1.31\u202f(and similar sources).  \n3. Verify that autoscaling and failover mechanisms for the service on port\u202f80 are correctly configured.  \n\nThese steps follow the standard mitigations associated with the identified technique (T1498, T1499).",
+      "latency_seconds": 2.628,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000424,
+      "input_tokens": 714,
+      "output_tokens": 529,
+      "scores": {
+        "groundedness": 0.9048,
+        "n_entities_claimed": 21,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 17,
+            "ungrounded": [
+              "256",
+              "512"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.8824
+          }
+        },
+        "report_words": 234
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "NUM_PKTS_256_TO_512_BYTES"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.459
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "377c82cf-5afe-42f3-8acc-d6139fb97e7c",
+      "true_label": "dos",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nAt 192.168.1.31 a single flow was observed to 192.168.1.1 on UDP port\u202f53. The flow consisted of one packet in each direction (54\u202fbytes each) and lasted 0\u202fms. During the measurement period the source host opened 871 connections to four distinct addresses/ports (about twice the usual address count), and the destination host opened 1,659 connections to three distinct addresses/ports (about three times the usual address count).\n\n**Why it was flagged**  \nThe detection score was 0.91867, exceeding the alert threshold of 0.87859. The model assigned the highest probability to a **dos** category (confidence\u202f0.76865) but also gave a non\u2011trivial probability to **ddos** (0.20077), so the classification is uncertain. Contributing factors included:  \n- L4_DST_PORT_bucket marked \u201cother\u201d (raised assessment)  \n- SERVER_TCP_FLAGS =\u202f0 (raised assessment)  \n- Protocol\u202f=\u202f17 (UDP) and DNS_QUERY_TYPE_present =\u202f1 (both lowered assessment)  \n- FTP_COMMAND_RET_CODE_present =\u202fother (lowered assessment)  \nNeighbouring flows had minimal impact on the score, indicating the assessment is not tied to a single peer flow.\n\n**What to do next**  \n1. Apply the standard mitigation for a possible DoS: rate\u2011limit traffic from 192.168.1.31 at the network edge.  \n2. Review the DNS service on 192.168.1.1 for connection and resource limits that could be exhausted.  \n3. Monitor both hosts for any increase in connection volume or additional anomalous flows, especially on UDP/53.  \n4. Document the event and note the classification uncertainty; if further evidence of distributed activity appears, consider a ddos response.  ",
+      "latency_seconds": 2.099,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000459,
+      "input_tokens": 697,
+      "output_tokens": 590,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 236
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.76865,
+        "hedges_found": [
+          "appears",
+          "could be",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "DNS_QUERY_TYPE",
+          "SERVER_TCP_FLAGS",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.696
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "49d9d76d-05bc-4591-95a9-7329b2aca967",
+      "true_label": "injection",
+      "predicted_class": "injection",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.35 to 192.168.1.195 on destination port\u202f80. The flow lasted 4,294,131\u202fms, transferred 6,048\u202fbytes inbound and 7,546\u202fbytes outbound, and consisted of 15 packets (7 of which were 1,024\u20111,514\u202fbytes). The source host opened 5,831 connections to 7 distinct addresses across 2 ports; the destination host opened 1,114 connections to 5 distinct addresses across 4 ports. Both hosts exceeded their typical connection counts (source\u202f\u2248\u202f3.5\u00d7, destination\u202f\u2248\u202f2.5\u00d7).\n\n**Why it was flagged**  \nThe detection score was 0.98223, well above the alert threshold of 0.87859. The score was increased by several measured attributes: a very long flow duration, a maximum TCP window size of 65,535, and the destination port falling into the \u201cother\u201d bucket. The score was slightly reduced by the number of large packets. The classifier\u2019s most likely category is *injection* (confidence\u202f0.628), but the classification is uncertain; *password* activity (confidence\u202f0.343) is also plausible.\n\n**What to do next**  \n1. Review the web server logs for the endpoint at 192.168.1.195 for malformed or unexpected input.  \n2. Verify that the application validates all input and uses parameterised queries.  \n3. If not already in place, deploy a web\u2011application firewall in front of the service to block suspicious payloads.  \n4. Monitor the source host (192.168.1.35) for further high\u2011volume or unusual connections and consider rate\u2011limiting or isolating it pending investigation.  ",
+      "latency_seconds": 2.04,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000443,
+      "input_tokens": 720,
+      "output_tokens": 558,
+      "scores": {
+        "groundedness": 0.8889,
+        "n_entities_claimed": 18,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 16,
+            "ungrounded": [
+              "1024",
+              "1514"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.875
+          }
+        },
+        "report_words": 225
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.628,
+        "hedges_found": [
+          "likely",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "FLOW_DURATION_MILLISECONDS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "DURATION_OUT",
+          "TCP_WIN_MAX_OUT",
+          "NUM_PKTS_1024_TO_1514_BYTES"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.633
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "dee8afa0-a8c0-412a-93c6-48274d6c8d9f",
+      "true_label": "mitm",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.31 to 192.168.1.1 on UDP port\u202f53. The flow consisted of a single packet (50\u202fbytes in, 50\u202fbytes out) with a duration of 0\u202fms. During the same period the source host opened 871 connections to four distinct addresses/ports (about twice the typical address count) and the destination host opened 1,659 connections to three distinct addresses/ports (about three times typical).\n\n**Why it was flagged**  \nThe detection score was 0.91039, exceeding the alert threshold of 0.87859. The model assigned the highest probability to a DoS category (confidence\u202f0.73959) but also indicated uncertainty, with a secondary plausible category of DDoS (0.22636). Contributing factors included:  \n\n* L4_DST_PORT bucket \u201cother\u201d and the measured destination port\u202f53 both raised the assessment.  \n* Protocol\u202f17 (UDP) and the presence of a DNS query type each lowered the assessment, as did an \u201cother\u201d FTP command return code.  \n* The source and destination hosts showed connection counts well above their normal baselines.  \n* No single neighboring flow altered the score significantly; the influence was diffuse across many flows.\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from 192.168.1.31 toward 192.168.1.1 at the network edge, following the standard mitigation for DoS.  \n2. Review the DNS service on the destination host for connection and resource limits that could be exhausted.  \n3. Continue monitoring the two hosts for further anomalous traffic, especially any increase in flow volume or additional ports, to clarify whether the activity is truly DoS or possibly a broader DDoS pattern.  \n\n(If the activity proves benign, adjust thresholds or whitelist as appropriate.)",
+      "latency_seconds": 2.717,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000474,
+      "input_tokens": 697,
+      "output_tokens": 616,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 264
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.73959,
+        "hedges_found": [
+          "could be",
+          "possibly",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "Benign",
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "Benign"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "DNS_QUERY_TYPE",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.289
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "088bd000-6ad3-4d49-923b-0be1eee5f70a",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.30 opened a TCP flow (protocol\u202f6) to host\u202f192.168.1.46 on destination port\u202f65370. The flow consisted of a single inbound packet (48\u202fbytes) with TCP flag\u202f2. No outbound traffic was observed and the flow duration was recorded as 0\u202fms.\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.99269, exceeding the alert threshold of\u202f0.87859. The model identified the activity as *scanning* with a confidence of\u202f0.99999 and reported no other plausible category. Contributing factors included:  \n\n- The source host made 4\u202f371 connections during the observation period, contacting 11 distinct addresses across 3\u202f647 ports \u2013 about\u202f5.5\u202ftimes the typical address count for a host in this environment.  \n- The destination host made 1\u202f100 connections to a single address across 1\u202f100 ports, well below its usual activity level.  \n- Protocol\u202f6 and TCP flag\u202f2 raised the assessment, while the high destination port (65370), L7 protocol value\u202f0.0, and TCP window size\u202f4096 lowered it.  \n- Nearby flows had negligible impact on the score, indicating the anomaly is isolated to this flow.\n\n**What to do next**  \n1. Apply the standard mitigation of rate\u2011limiting and generating alerts for hosts that contact an unusually high number of distinct destinations.  \n2. Consider restricting east\u2011west traffic for the source host through network segmentation.  \n3. Verify that any services exposed on the source and destination hosts are fully inventoried and patched, in line with the recommended mitigation.  \n\nThese steps address the observed scanning\u2011like behavior while staying within the evidence provided.",
+      "latency_seconds": 2.285,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000463,
+      "input_tokens": 723,
+      "output_tokens": 591,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 257
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "L4_DST_PORT",
+          "L7_PROTO"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS",
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.863
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "9d28d983-0556-4f7b-a6ff-199be0149c72",
+      "true_label": "xss",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from internal host\u202f192.168.1.32 to internal host\u202f192.168.1.1 was observed. The flow consisted of a single packet (68\u202fbytes in, 100\u202fbytes out) to destination port\u202f53 and lasted 0\u202fms. The source host made 2,713 connections to eight distinct addresses across three ports during the observation period, and the destination host made 5,684 connections to four distinct addresses across three ports\u2014both well above the typical address counts for hosts in this environment.\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.91332, exceeding the alert threshold of\u202f0.87859. The model identified the flow as most likely an XSS (cross\u2011site scripting) event with a confidence of\u202f0.94576 and reported no other plausible category. Contributing factors included:  \n\n* The shortest\u2011flow packet size (68\u202fbytes) lowered the assessment.  \n* The destination\u2011port bucket being \u201cother\u201d and the L7 protocol value of\u202f0.0 raised the assessment.  \n* Presence of a DNS query type and a client TCP\u2011flags value of\u202f0 also lowered the assessment.  \n\nNeighbouring flows (50 of 6,735 sharing a host) altered the score by less than\u202f0.01, indicating the anomaly is not driven by a single peer flow but is diffuse across the host\u2019s activity.\n\n**What to do next**  \n1. Review the affected application\u2019s request logs for evidence of script injection.  \n2. Verify that the application encodes output contextually and validates input server\u2011side.  \n3. Ensure a restrictive Content\u2011Security\u2011Policy header is in place.  \n4. Investigate the source host (192.168.1.32) for abnormal behavior and consider limiting its outbound connections pending further analysis.  \n\nThese steps align with the standard mitigations for the identified XSS category.",
+      "latency_seconds": 2.255,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000494,
+      "input_tokens": 717,
+      "output_tokens": 644,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 266
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "injection",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "injection"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "SHORTEST_FLOW_PKT",
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.679
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "7e414e9a-fbcf-402b-8d9e-b2b035f02e61",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.31 sent a single 44\u2011byte TCP packet to host\u202f192.168.1.194 on destination port\u202f514. The flow lasted 0\u202fms and contained no outbound traffic. During the observation window the source host opened 4,261 connections to 229 different IP addresses across 841 ports (\u2248\u202f76\u202f\u00d7 the normal address count). The destination host made 441 connections to 3 addresses across 281 ports (\u2248\u202f3\u202f\u00d7 normal).\n\n**Why it was flagged**  \nThe detection scored 0.89967, exceeding the alert threshold of 0.87859. The model assigned the \u201cscanning\u201d category with 98.6\u202f% confidence and reported no other plausible category. Contributing factors included:  \n- TCP protocol (6) and a TCP\u2011flags value of\u202f0, both of which raised the score.  \n- Destination\u2011port bucket classified as \u201cother,\u201d also raising the score.  \n- L7 protocol and FTP return\u2011code fields were \u201cother,\u201d which slightly lowered the score.  \n- The source\u2019s connection volume and diversity were far above typical behavior (76.3\u202f\u00d7 the usual number of distinct destinations).  \nNeighbouring flows had negligible impact on the score, indicating the assessment is based on this flow\u2019s characteristics rather than broader traffic patterns.\n\n**What to do next**  \n1. Verify whether the traffic to port\u202f514 (commonly syslog) is expected from 192.168.1.31.  \n2. If not legitimate, apply a rate\u2011limit or block for the source host on outbound connections to many distinct destinations.  \n3. Consider adding alerts for hosts that exceed normal distinct\u2011address/port counts.  \n4. Review east\u2011west segmentation to restrict unnecessary internal traffic.  \n5. Ensure any exposed services (e.g., syslog) are inventoried and up\u2011to\u2011date with patches.  \n\nThese steps follow the standard mitigations for scanning activity.",
+      "latency_seconds": 3.536,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000507,
+      "input_tokens": 722,
+      "output_tokens": 664,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 263
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "SERVER_TCP_FLAGS",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.301
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "6714917f-02d9-497d-802f-dce2f2a93f6a",
+      "true_label": "backdoor",
+      "predicted_class": "backdoor",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.193 to 192.168.1.33 on destination port\u202f8080. The flow transferred 1\u202f440\u202fbytes in (30 packets) and 1\u202f200\u202fbytes out, lasted 0\u202fms, and used TCP (protocol\u202f6). The source host opened 849 connections during the collection period to 4 distinct addresses across 5 ports (twice the typical address count). The destination host opened 783 connections to a single address across 2 ports, which is typical.\n\n**Why it was flagged**  \nThe detection score was 0.98774, well above the alert threshold of 0.87859. The model assigned the flow to the \u201cbackdoor\u201d category with a confidence of 0.99991 and reported no plausible alternative category. Contributing factors included the high number of inbound packets (30) and inbound bytes (1\u202f440), the use of TCP, and the unusually high connection count from the source host. The flow\u2019s L7 protocol value (131) and the count of small packets (60\u202f\u2264\u202f128\u202fbytes) slightly lowered the assessment, but the overall score remained high. Neighboring flows did not materially affect the score.\n\n**What to do next**  \n1. Isolate the source host (192.168.1.193) and inspect it for unauthorized persistence mechanisms.  \n2. Block traffic to the destination (192.168.1.33:8080) and review egress filtering rules for similar outbound connections.  \n3. Rotate any credentials that the source host had access to.  \n\nThese steps follow the standard mitigation guidance for a backdoor\u2011type activity.",
+      "latency_seconds": 3.154,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000471,
+      "input_tokens": 719,
+      "output_tokens": 606,
+      "scores": {
+        "groundedness": 0.9286,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [
+              "128"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9167
+          }
+        },
+        "report_words": 228
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "IN_PKTS",
+          "PROTOCOL",
+          "IN_BYTES"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.92
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "f1b53684-a7a8-4b62-a98f-cfee3ec2a500",
+      "true_label": "password",
+      "predicted_class": "password",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nOn a short\u2011lived flow (duration\u202f0\u202fms) from 192.168.1.35 to 192.168.1.195 on TCP port\u202f80, 8 packets were exchanged (\u22483\u202fKB in, \u22483.9\u202fKB out). The source host opened 5\u202f493 connections in the observation period, contacting 8 distinct addresses on 3 ports \u2013 about 3.2\u202f\u00d7 the usual address count for a host. The destination host made 1\u202f267 connections to 5 distinct addresses on 3 ports \u2013 about 5\u202f\u00d7 the typical address count. The flow\u2019s characteristics (large TCP window, \u201cother\u201d destination\u2011port bucket) contributed to the alert.  \n\n**Why it was flagged**  \nThe detection score was 0.97882, well above the alert threshold of 0.87859. The model\u2019s most likely category is **password** (confidence\u202f0.90225), which aligns with the reference definition of \u201crepeated authentication attempts aimed at guessing valid credentials\u201d (technique T1110/T1110.001). However, the classification is uncertain; an XSS category (confidence\u202f0.07716) is also plausible. The high number of connections from both hosts and the unusual port\u2011bucket further raised the assessment, while some packet\u2011size features lowered it. No single neighboring flow accounted for the score change, indicating a diffuse topological influence.  \n\n**What to do next**  \n1. Review authentication logs on 192.168.1.195 for repeated login failures from 192.168.1.35.  \n2. If failures are confirmed, apply the standard mitigations:  \n   - Enforce account lockout or progressive delay after failed attempts.  \n   - Require multi\u2011factor authentication for services exposed on port\u202f80.  \n   - Enable alerts for repeated authentication failures from a single source.  \n3. If the traffic is not authentication\u2011related, investigate the possibility of an XSS attempt given the secondary confidence.  \n4. Continue monitoring connection rates for both hosts to detect any further anomalies.  ",
+      "latency_seconds": 3.621,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000471,
+      "input_tokens": 729,
+      "output_tokens": 602,
+      "scores": {
+        "groundedness": 0.9231,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [
+              "3.9"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.8889
+          }
+        },
+        "report_words": 269
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_OUT",
+          "NUM_PKTS_1024_TO_1514_BYTES",
+          "LONGEST_FLOW_PKT",
+          "NUM_PKTS_512_TO_1024_BYTES"
+        ],
+        "coverage": 0.2,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.236
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "c54530ec-5c89-4b9d-98ed-0878106244db",
+      "true_label": "ddos",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA single UDP flow (protocol\u202f17) was observed from 192.168.1.30 to 192.168.1.1 on destination port\u202f53. The flow consisted of one packet carrying 71\u202fbytes inbound and no outbound traffic, lasting 0\u202fms. In the same period the source host opened 81 connections to 2 distinct addresses across 7 ports (twice the typical address count), and the destination host opened 95 connections to 3 distinct addresses across 2 ports (three times typical). A related flow from 192.168.1.194 to 192.168.1.30 was also present.\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.91897, exceeding the alert threshold of\u202f0.87859. The highest\u2011probability label was **xss** (confidence\u202f0.72412), but the classification is noted as uncertain, with **dos** (0.14066) and **ddos** (0.07931) also plausible. Contributing factors included:  \n\n* L4_DST_PORT_bucket marked as \u201cother\u201d (raised assessment)  \n* Shortest flow packet size of 71\u202fbytes (lowered assessment)  \n* L7_PROTO value of\u202f0.0 (raised assessment)  \n* Use of UDP (protocol\u202f17) (lowered assessment)  \n* DNS query type\u202f12 (lowered assessment)  \n\nThe unusually high number of connections for both hosts further increased the score.\n\n**What to do next**  \n1. Review the DNS request logs on the destination host for any anomalous query content.  \n2. Verify whether the traffic could be part of a legitimate DNS operation or an attempt to deliver malicious script content.  \n3. If XSS is a concern, apply the standard mitigations:  \n   * Encode output contextually and validate input server\u2011side.  \n   * Deploy a restrictive Content\u2011Security\u2011Policy header.  \n   * Examine the affected application\u2019s request logs for suspicious parameters.  \n4. Correlate the related flow (192.168.1.194\u202f\u2192\u202f192.168.1.30) to determine if it is part of the same activity.  \n5. Document findings and, if malicious activity is confirmed, follow the organization\u2019s incident response procedures for the relevant technique identifiers (T1059.007, T1189).",
+      "latency_seconds": 2.624,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000607,
+      "input_tokens": 702,
+      "output_tokens": 836,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 16,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 3,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 293
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.72412,
+        "hedges_found": [
+          "could be",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "ddos",
+          "dos",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "SHORTEST_FLOW_PKT",
+          "L7_PROTO",
+          "PROTOCOL",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.214
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "59e1e922-364c-40bc-807d-d94d9b3e44ae",
+      "true_label": "dos",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.31 to 192.168.1.1 on UDP port\u202f53. The flow consisted of a single packet in each direction (54\u202fbytes in, 54\u202fbytes out) and lasted 0\u202fms. The source host opened 871 connections to four distinct addresses/ports (about twice the typical address count), and the destination host opened 1,659 connections to three distinct addresses/ports (about three times typical).\n\n**Why it was flagged**  \nThe detection score was 0.91461, exceeding the alert threshold of 0.87859. Contributing factors included:  \n- L4_DST_PORT_bucket marked as \u201cother\u201d (raised assessment)  \n- SERVER_TCP_FLAGS =\u202f0 (raised assessment)  \n- Protocol\u202f=\u202f17 (UDP) and presence of DNS query type\u202f=\u202f1, as well as an \u201cother\u201d FTP command return code (each lowered assessment)  \n\nThe classifier assigned the highest probability to a **dos** category (confidence\u202f0.75853) but noted uncertainty, with **ddos** (0.20957) also plausible. Neighborhood analysis showed no single adjacent flow driving the score; the contribution was diffuse.\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from 192.168.1.31 at the network edge, following the standard mitigation for T1499.  \n2. Review the DNS service on 192.168.1.1 for connection and resource limits that could be exhausted.  \n3. Continue monitoring both hosts for any increase in connection volume or additional anomalous flows.  \n\nThese steps address the observed abnormal traffic while acknowledging the classification uncertainty.",
+      "latency_seconds": 2.277,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000469,
+      "input_tokens": 698,
+      "output_tokens": 607,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 1,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 220
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.75853,
+        "hedges_found": [
+          "could be",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "ddos",
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "DNS_QUERY_TYPE",
+          "FTP_COMMAND_RET_CODE",
+          "SERVER_TCP_FLAGS"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.755
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "3874bd12-7f40-4a78-97ca-42a77905faa7",
+      "true_label": "injection",
+      "predicted_class": "password",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nOn a single flow from 192.168.1.31 to 192.168.1.190 (TCP port\u202f80) the host sent 164\u202fbytes in 3 packets and received 120\u202fbytes. The flow lasted about 4,294,889\u202fms (\u224871\u202fmin). During the observation window the source made 4,621 connections to 5 distinct addresses on 3 ports (\u22482.5\u202f\u00d7 the normal address count), while the destination made 1,279 connections to 2 addresses on 1 port (\u22481.3\u202f\u00d7 normal).\n\n**Why it was flagged**  \nThe detection score was 0.99318, well above the alert threshold of 0.87859. Contributing factors included: very long flow duration, TCP protocol (6), an \u201cother\u201d destination\u2011port bucket, and a high maximum outbound TCP window (29,960). The source\u2019s unusually high number of connections also raised the assessment. The classifier assigned the highest probability to the **password** category (confidence\u202f0.58863) but noted uncertainty, with **injection** (confidence\u202f0.40958) also plausible.\n\n**What to do next**  \n1. Review authentication logs on the destination host for repeated login failures from 192.168.1.31 and verify whether credential\u2011guessing is occurring.  \n2. If failed attempts are observed, consider applying standard mitigations: enforce account lockout or progressive delay, and enable multi\u2011factor authentication for the service on port\u202f80.  \n3. Because injection cannot be ruled out, inspect the payload of the flow (if available) for signs of command or code injection.  \n4. Continue monitoring the source host\u2019s connection pattern for further anomalies and correlate with any other alerts.  \n5. Document findings and, if malicious activity is confirmed, follow the organization\u2019s incident response escalation procedure.  ",
+      "latency_seconds": 3.109,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000511,
+      "input_tokens": 716,
+      "output_tokens": 672,
+      "scores": {
+        "groundedness": 0.875,
+        "n_entities_claimed": 16,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 14,
+            "ungrounded": [
+              "29960",
+              "71"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.8571
+          }
+        },
+        "report_words": 245
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.58863,
+        "hedges_found": [
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "injection",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "FLOW_DURATION_MILLISECONDS",
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "TCP_WIN_MAX_OUT"
+        ],
+        "features_missed": [
+          "DURATION_IN"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.962
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "13fed9c7-fd33-42b1-a3c0-179c4026869b",
+      "true_label": "mitm",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.31\u202fto\u202f192.168.1.1\u202fon UDP port\u202f53 was observed. The flow consisted of a single packet (71\u202fbytes in, 71\u202fbytes out) with a duration of\u202f0\u202fms. The detection system assigned a score of\u202f0.97729, which is above the alert threshold of\u202f0.87859. The model labeled the flow as a denial\u2011of\u2011service (DoS) event with a confidence of\u202f0.98662, and no other category was considered plausible.\n\n**Why it was flagged**  \n- The score exceeded the alert threshold.  \n- The source host generated\u202f4,958\u202fconnections in the period, contacting\u202f5\u202fdistinct addresses across\u202f3\u202fports \u2013\u202f2.5\u202ftimes the typical address count for a host.  \n- The destination host generated\u202f2,371\u202fconnections to\u202f2\u202faddresses on\u202f1\u202fport \u2013\u202f2.0\u202ftimes its typical address count.  \n- Feature notes: the shortest packet size (71\u202fbytes) and the UDP protocol (17) slightly lowered the assessment, while the \u201cother\u201d destination\u2011port bucket, a zero L7 protocol value, and source\u2011port bucket\u202f1\u202fraised it.  \nThese factors together produced a high confidence DoS classification.\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from\u202f192.168.1.31\u202fat the network edge.  \n2. Review the DNS service on\u202f192.168.1.1\u202ffor connection and resource limits (e.g., maximum concurrent queries, per\u2011client rate caps).  \n\nThese steps follow the standard mitigation guidance for the T1499 DoS technique.",
+      "latency_seconds": 2.198,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000504,
+      "input_tokens": 689,
+      "output_tokens": 668,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 1,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 219
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL",
+          "L4_SRC_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.795
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "846b1f3e-72d1-45a8-bdba-6ee9fb7b9cf7",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.30\u202fto\u202f192.168.1.46\u202fwas observed. The flow consisted of a single inbound packet (48\u202fbytes) to destination port\u202f46, lasted\u202f0\u202fms, and carried no outbound traffic. The source host opened 4\u202f371 connections during the observation window, reaching 11 distinct destination addresses across\u202f3\u202f647 ports\u2014about\u202f5.5\u202ftimes the typical address count for a host in this environment. The destination host made 1\u202f100 connections to a single address across 1\u202f100 ports, which is below its usual activity level.\n\n**Why it was flagged**  \nThe detection score was\u202f0.99186, well above the alert threshold of\u202f0.87859. The model assigned the category \u201cscanning\u201d with a confidence of\u202f0.99999 and found no plausible alternative categories. Contributing factors included the TCP protocol (6), a single inbound packet, and the client TCP flag value\u202f2. The flow\u2019s L7 protocol value (0.0) and zero outbound window size slightly lowered the assessment, but the overall score remained high. Neighborhood analysis showed no single neighboring flow drove the score; the contribution was diffuse across many flows sharing the source host.\n\n**What to do next**  \n1. Apply the standard mitigation of rate\u2011limiting the source host (192.168.1.30) and generate alerts for any further contacts with an unusually high number of distinct destinations.  \n2. Consider restricting east\u2011west traffic for this host via network segmentation to limit lateral movement.  \n3. Verify that any services exposed on the destination port (46) are inventoried and fully patched.  \n\nDocument any follow\u2011up actions and monitor for repeat activity.",
+      "latency_seconds": 1.861,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000438,
+      "input_tokens": 723,
+      "output_tokens": 550,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 249
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "PROTOCOL",
+          "IN_PKTS",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_OUT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.452
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "109b376c-b6bb-4a1d-8bdf-5009b4660249",
+      "true_label": "xss",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.32\u202fto\u202f192.168.1.1\u202fwas observed. The flow consisted of a single packet (68\u202fbytes in, 100\u202fbytes out) to destination port\u202f53, lasting\u202f0\u202fms. The source host opened\u202f2,713\u202fconnections to eight distinct addresses across three ports (\u22482.7\u202f\u00d7\u202fits typical address count) and the destination host opened\u202f5,684\u202fconnections to four distinct addresses across three ports (\u22484.0\u202f\u00d7\u202fits typical address count).\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.91457, exceeding the alert threshold of\u202f0.87859. The highest\u2011confidence classification was **XSS** with a confidence of\u202f0.94371, and no other category was considered plausible. Feature contributions that raised the score included the \u201cother\u201d L4 destination\u2011port bucket and an L7 protocol value of\u202f0.0; features that lowered the score included the short packet size, presence of a DNS query type, and lack of TCP flags. The neighbourhood of 5,735 related flows did not materially affect the score, indicating the assessment is based on this flow itself.\n\n**What to do next**  \n1. Review the request logs for the destination host (192.168.1.1) for any script\u2011injection attempts or anomalous payloads.  \n2. Apply the standard mitigations for XSS:  \n   - Encode output contextually and validate input on the server side.  \n   - Deploy a restrictive Content\u2011Security\u2011Policy header.  \n3. Monitor both hosts for continued abnormal connection rates and for any further alerts of the same type.  \n4. If logs show no evidence of script injection, consider a false\u2011positive investigation, focusing on why DNS\u2011related traffic triggered an XSS classification.  ",
+      "latency_seconds": 2.745,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000548,
+      "input_tokens": 717,
+      "output_tokens": 734,
+      "scores": {
+        "groundedness": 0.9167,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [
+              "5735"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9
+          }
+        },
+        "report_words": 250
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "injection",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "injection"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.231
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "c21e9de6-8ffc-43e6-9e59-84d1b3188e09",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA single TCP flow (protocol\u202f6) was observed from 192.168.1.32 to 192.168.1.195 on destination port\u202f3868. The flow consisted of one inbound packet (48\u202fbytes) and no outbound traffic, lasting 0\u202fms. The source host opened 4,466 connections during the measurement period, reaching 14 distinct addresses across 2,369 ports (\u22484.7\u202f\u00d7 the usual address count). The destination host opened 1,139 connections to 4 distinct addresses across 190 ports (\u22484.0\u202f\u00d7 typical).\n\n**Why it was flagged**  \nThe detection score was 0.93727, exceeding the alert threshold of 0.87859. The model assigned the category \u201cscanning\u201d with a confidence of 0.99504 and found no other plausible category. Contributing factors included:  \n- TCP protocol and the source\u2011port bucket value both raised the assessment.  \n- An \u201cother\u201d ICMP type also raised the score, while the lack of outbound bytes and an \u201cother\u201d FTP return code lowered it.  \n- The unusually high number of distinct destinations and ports for both hosts further increased the score.  \nNeighbouring flows had minimal impact on the score (\u22640.01 change).\n\n**What to do next**  \n1. Apply rate\u2011limiting and generate alerts for hosts that contact an abnormal number of distinct destinations.  \n2. Review network segmentation to restrict unnecessary east\u2011west traffic between internal hosts.  \n3. Verify that any services exposed on the involved hosts are fully inventoried and patched.  \n\nThese steps address the observed scanning\u2011like activity and the elevated connection counts.",
+      "latency_seconds": 2.093,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000456,
+      "input_tokens": 723,
+      "output_tokens": 579,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 229
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "OUT_BYTES",
+          "PROTOCOL",
+          "L4_SRC_PORT",
+          "ICMP_TYPE"
+        ],
+        "features_missed": [
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.679
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "0a4e41a1-9964-4f7f-8471-c791ac6287f8",
+      "true_label": "backdoor",
+      "predicted_class": "backdoor",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.193 to 192.168.1.33 on TCP port\u202f8080. The flow transferred 1\u202f440\u202fbytes inbound and 1\u202f200\u202fbytes outbound in 30 packets (duration reported as 0\u202fms). The source host opened 849 connections during the observation period, contacting four distinct addresses across five ports \u2013 about twice the typical number of addresses for a host in this environment. The destination host made 783 connections to a single address across two ports, which is normal for this host.\n\n**Why it was flagged**  \nThe detection score was 0.98774, exceeding the alert threshold of 0.87859. The model assigned the \u201cbackdoor\u201d category with a confidence of 0.99991 and reported no other plausible category. Features that increased the score included the TCP protocol (6), the total inbound bytes (1\u202f440) and the number of inbound packets (30). Features that reduced the score were the L7 protocol value (131) and the count of packets \u2264128\u202fbytes (60). The score was not materially affected by any of the 50 neighboring flows examined, indicating the assessment is based on this flow itself rather than a single neighbor. The combination of a high\u2011scoring, non\u2011standard port (8080) and the unusually high number of distinct remote addresses for the source host matches the reference description of a persistent unauthorized access channel.\n\n**What to do next**  \n1. Isolate the source host (192.168.1.193) and inspect it for unauthorized persistence mechanisms.  \n2. Block traffic to the destination address (192.168.1.33) on port\u202f8080 and review egress filtering rules for similar outbound connections.  \n3. Rotate any credentials that the source host had access to.  \n\nThese steps follow the standard mitigations associated with the identified backdoor behavior.",
+      "latency_seconds": 2.143,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000464,
+      "input_tokens": 720,
+      "output_tokens": 593,
+      "scores": {
+        "groundedness": 0.9333,
+        "n_entities_claimed": 15,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 13,
+            "ungrounded": [
+              "128"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9231
+          }
+        },
+        "report_words": 277
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L7_PROTO",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "IN_PKTS",
+          "PROTOCOL",
+          "IN_BYTES"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.748
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "b9f56c33-095b-4293-9735-d58c0a73cbf0",
+      "true_label": "password",
+      "predicted_class": "password",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.31 to 192.168.1.190 on TCP port\u202f80. The flow lasted 4,294,295\u202fms, transferred 224\u202fbytes inbound and 120\u202fbytes outbound in 4 packets. The source host opened 4,621 connections to five distinct addresses across three ports (\u22482.5\u202f\u00d7\u202fits typical address count); the destination host opened 1,279 connections to two addresses on one port (\u22481.3\u202f\u00d7\u202ftypical).\n\n**Why it was flagged**  \nThe detection score was 0.98609, well above the alert threshold of 0.87859. The model\u2019s most likely category is \u201cpassword\u201d (confidence\u202f0.87512), which aligns with the reference definition of repeated authentication attempts to guess credentials (technique\u202fT1110/T1110.001). However, the classification is uncertain; \u201cinjection\u201d (confidence\u202f0.12068) is also a plausible category. Contributing factors that raised the score included the very long flow duration and the destination port being in the \u201cother\u201d bucket. Factors that lowered the score were a measured average L4 throughput of 0 and a short inbound duration (672\u202fms). Nearby flows did not materially affect the score.\n\n**What to do next**  \n1. Review authentication logs on the destination host for repeated failed login attempts from 192.168.1.31.  \n2. Verify whether any account lockout or progressive delay policies are in place; if not, consider enabling them.  \n3. If the service is exposed, ensure multi\u2011factor authentication is required.  \n4. Correlate this flow with any other signs of injection activity, given the residual uncertainty.  \n5. Continue monitoring the source host\u2019s connection pattern for further anomalies.  ",
+      "latency_seconds": 3.098,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000472,
+      "input_tokens": 720,
+      "output_tokens": 606,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 17,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 13,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 240
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.87512,
+        "hedges_found": [
+          "likely",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "injection",
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "FLOW_DURATION_MILLISECONDS",
+          "DURATION_IN",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "SRC_TO_DST_AVG_THROUGHPUT",
+          "DURATION_OUT"
+        ],
+        "coverage": 0.6,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.691
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "7381d96e-b279-4bba-a2d2-d57e6bfebcb0",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.32 sent a single 48\u2011byte TCP packet (protocol\u202f6, source port\u202f5900, TCP flag\u202f2) to host\u202f192.168.1.195 on destination port\u202f40371. The flow lasted 0\u202fms and produced no outbound traffic. In the same observation window the source host opened 4\u202f466 connections to 14 distinct addresses across 2\u202f369 ports (\u22484.7\u202f\u00d7 the normal address count), while the destination host opened 1\u202f139 connections to 4 distinct addresses across 190 ports (\u22484.0\u202f\u00d7 normal).\n\n**Why it was flagged**  \nThe detection scored 0.92985, exceeding the alert threshold of 0.87859. Feature contributions that raised the score included the TCP protocol, the high\u2011numbered destination port, and the presence of an \u201cother\u201d ICMP type flag. The overall assessment was classified as *scanning* with a confidence of 0.99589; no alternative category was considered plausible. The high connection counts relative to typical host behavior also supported the alert.\n\n**What to do next**  \n1. Rate\u2011limit traffic from 192.168.1.32 and monitor for continued attempts to contact many distinct ports or hosts.  \n2. Consider applying east\u2011west segmentation to restrict lateral movement between internal hosts.  \n3. Verify that any services exposed on high ports (e.g., 40371) are documented, necessary, and fully patched.  \n4. Generate an alert for any host that contacts an unusually large number of distinct destinations and follow the standard mitigation steps above.  ",
+      "latency_seconds": 2.123,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000456,
+      "input_tokens": 720,
+      "output_tokens": 580,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 220
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_SRC_PORT",
+          "PROTOCOL",
+          "L4_DST_PORT",
+          "ICMP_TYPE"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.721
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "b25bf943-c851-482e-9892-d3e0989dbcd4",
+      "true_label": "ddos",
+      "predicted_class": "ddos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nDuring a ~4.3\u202fmillion\u2011ms (\u224871\u202fmin) flow from 192.168.1.31 to 192.168.1.194 on TCP port\u202f80, the source sent 268\u202fbytes in 5 packets and received 240\u202fbytes. The source opened 4,958 connections to five distinct addresses on three ports, about 2.5\u202f\u00d7 the typical address count for a host here. The destination opened 752 connections to two distinct addresses on one port, about 2.0\u202f\u00d7 typical.\n\n**Why it was flagged**  \nThe flow received a detection score of 0.99202, well above the alert threshold of 0.87859. The model assigned the \u201cddos\u201d category with 0.99999 confidence and found no plausible alternative category. Contributing factors included:  \n- L4 destination\u2011port bucket marked as \u201cother\u201d (raised score)  \n- L7 protocol value 7.0 (lowered score)  \n- Transport protocol\u202f6 (TCP) (raised score)  \n- TCP window max inbound\u202f29200 (lowered score)  \n- TCP flags value\u202f18 (raised score)  \n\nNeighbouring flows (50 sampled from 6,133 sharing a host) altered the score by less than 0.01, indicating the elevated risk is not traceable to a single peer but is diffuse across the flow set.\n\n**What to do next**  \n1. Verify that upstream volumetric filtering or scrubbing is enabled for the destination service.  \n2. Apply per\u2011source rate limits at the edge for traffic from 192.168.1.31 (and similar sources).  \n3. Confirm that the targeted service\u2019s autoscaling and failover mechanisms are functioning as expected.  \n\nThese steps align with the standard mitigations for the identified technique (T1498, T1499).",
+      "latency_seconds": 2.486,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000499,
+      "input_tokens": 712,
+      "output_tokens": 654,
+      "scores": {
+        "groundedness": 0.9,
+        "n_entities_claimed": 20,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 16,
+            "ungrounded": [
+              "4.3",
+              "71"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.875
+          }
+        },
+        "report_words": 237
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL",
+          "TCP_WIN_MAX_IN",
+          "TCP_FLAGS"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.068
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "fa872462-b805-424d-b916-85221fbc8365",
+      "true_label": "dos",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.31 to 192.168.1.1 on UDP port\u202f53. The flow consisted of a single packet in each direction (67\u202fbytes in, 67\u202fbytes out) and completed in 0\u202fms. During the measurement period the source host opened 4,958 connections to five distinct addresses across three ports (\u22482.5\u202f\u00d7 the usual address count), and the destination host opened 2,371 connections to two distinct addresses across one port (\u22482.0\u202f\u00d7 typical).\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.9782, exceeding the alert threshold of\u202f0.87859. The highest\u2011confidence category was **dos** with a confidence of\u202f0.98471, and no other category was considered plausible. Contributing factors that increased the score included the destination port being 53, the L4_DST_PORT bucket labeled \u201cother,\u201d and an L7_PROTO value of\u202f0.0. Factors that lowered the score were the short packet size (67\u202fbytes) and the use of protocol\u202f17 (UDP). The neighbourhood analysis showed no single neighboring flow driving the score; the contribution was diffuse.\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from 192.168.1.31 at the network edge, especially for UDP/53.  \n2. Review the DNS service (port\u202f53) on 192.168.1.1 for connection\u2011handling and resource limits, adjusting as needed to mitigate potential exhaustion.  \n\nThese steps follow the standard mitigations for the identified technique (T1499).",
+      "latency_seconds": 2.909,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000436,
+      "input_tokens": 678,
+      "output_tokens": 557,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 1,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 218
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "L7_PROTO"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.397
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "a6aa0a89-eb57-44c2-bf70-d66d3f8fc94a",
+      "true_label": "injection",
+      "predicted_class": "injection",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.31\u202fto\u202f192.168.1.152\u202fon TCP port\u202f80 transferred 164\u202fbytes inbound and 112\u202fbytes outbound in 3 packets. The flow lasted\u202f4,294,935\u202fms. The source host opened 4,598 connections during the observation period, contacting 5 distinct addresses on 3 ports (about 2.5\u202f\u00d7 the typical address count for a host here). The destination host made 431 connections to a single address/port (typical for this host).\n\n**Why it was flagged**  \nThe detection score was\u202f0.99786, well above the alert threshold of\u202f0.87859. The model assigned the \u201cinjection\u201d category with a confidence of\u202f0.99147 and found no other plausible category. Features that increased the score included: the destination\u2011port bucket being \u201cother,\u201d protocol\u202f6 (TCP), and server TCP flags value\u202f19. Features that reduced the score were the very long flow duration and a short internal duration (32\u202fms). The high score persisted even when compared with 4,951 neighboring flows; none altered the score by more than\u202f0.01, indicating the assessment is not driven by a single neighboring flow.\n\n**What to do next**  \n1. Review the web\u2011application logs on\u202f192.168.1.152\u202ffor the endpoint that received this traffic, looking for malformed input or unexpected query patterns.  \n2. Verify that the application uses parameterised queries and validates all client\u2011supplied data server\u2011side.  \n3. If not already in place, deploy or update a web\u2011application firewall (WAF) in front of the service to block injection attempts.  \n4. Consider additional monitoring of the source host (192.168.1.31) given its unusually high connection count.  \n\nThese steps follow the standard mitigations associated with the T1190 \u201cinjection\u201d technique.",
+      "latency_seconds": 3.551,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000479,
+      "input_tokens": 703,
+      "output_tokens": 622,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 17,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 1,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 14,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 260
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "FLOW_DURATION_MILLISECONDS",
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "SERVER_TCP_FLAGS"
+        ],
+        "features_missed": [
+          "DURATION_IN"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.41
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "b329149c-9450-440a-a96a-d7fc9bab4049",
+      "true_label": "mitm",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from\u202f192.168.1.31\u202fto\u202f192.168.1.1\u202fon UDP port\u202f53. The flow consisted of a single packet in each direction, each 71\u202fbytes, and lasted 0\u202fms. During the observation window the source host opened 4,958 connections to five distinct addresses across three ports (\u22482.5\u202f\u00d7\u202fits usual address count). The destination host opened 2,371 connections to two distinct addresses on one port (\u22482.0\u202f\u00d7\u202fits usual address count).\n\n**Why it was flagged**  \nThe detection system assigned a score of\u202f0.97733, which exceeds the alert threshold of\u202f0.87859. The model\u2019s most likely category is \u201cdos\u201d with a confidence of\u202f0.98661, and no other category was considered plausible. Contributing factors noted in the evidence include: an unusually short packet size (71\u202fbytes), the destination port falling into an \u201cother\u201d bucket, a zero\u2011valued L7 protocol field, and the source port bucket value of\u202f1. Although the UDP protocol (value\u202f17) slightly lowered the assessment, the overall score remained high. The flow\u2019s neighbourhood (5,768 related flows) did not materially change the score, indicating the assessment is not tied to a single neighboring flow.\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from\u202f192.168.1.31\u202fat the network edge, as recommended for DoS mitigation.  \n2. Review the DNS service (port\u202f53) on\u202f192.168.1.1\u202fto confirm its connection and resource limits are appropriate.  \n3. Continue monitoring both hosts for similar short\u2011duration, high\u2011volume flows and adjust limits if the pattern persists.",
+      "latency_seconds": 2.341,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000498,
+      "input_tokens": 685,
+      "output_tokens": 659,
+      "scores": {
+        "groundedness": 0.9167,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [
+              "5768"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9
+          }
+        },
+        "report_words": 240
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL",
+          "L4_SRC_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.897
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "650ba289-387c-4043-a94d-7487e2f418ad",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.32 opened a single TCP flow (protocol\u202f6) to 192.168.1.180 on destination port\u202f30603. The flow consisted of one inbound packet (48\u202fbytes) and no outbound traffic, lasting 0\u202fms. The client TCP flags were set to\u202f2. During the observation window the source host made 3,739 connections to 10 distinct addresses across 3,319 ports \u2013 about five times the typical address count for a host in this environment. The destination host made 2,118 connections to 3 distinct addresses across 2,116 ports (1.2\u202f\u00d7\u202ftypical).  \n\n**Why it was flagged**  \nThe detection scored 0.99687, well above the alert threshold of 0.87859, and was classified with confidence\u202f1.0 as **scanning** (systematic probing of hosts or ports). Contributing factors included the TCP protocol, the SYN\u2011style flag (value\u202f2), and an \u201cother\u201d DNS query type, which raised the assessment, while the L7 protocol value and destination\u2011port bucket slightly lowered it. The source\u2019s unusually high number of distinct destination ports also contributed. Neighboring flows had negligible impact on the score.  \n\n**What to do next**  \n1. Apply the standard mitigation of rate\u2011limiting and generating alerts for the source host when it contacts an unusually large number of distinct destinations.  \n2. Consider restricting east\u2011west traffic for this host via network segmentation.  \n3. Verify that any services exposed on the involved hosts are fully inventoried and patched.  \n4. Conduct a focused investigation of host\u202f192.168.1.32 to determine whether the activity is legitimate (e.g., authorized scanning) or requires further containment.",
+      "latency_seconds": 2.854,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000483,
+      "input_tokens": 723,
+      "output_tokens": 625,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 244
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "CLIENT_TCP_FLAGS",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.211
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "54aca629-35e7-4230-b577-e4f25261d7dd",
+      "true_label": "xss",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA single\u2011packet flow was observed from 192.168.1.36 to 192.168.1.1 on UDP port\u202f53. The flow transferred 68\u202fbytes in each direction and lasted 0\u202fms. The source host opened 6,753 connections to 7 distinct addresses across 3 ports (\u22482.3\u202f\u00d7 the usual count), and the destination host opened 5,684 connections to 4 distinct addresses across 3 ports (\u22484.0\u202f\u00d7 typical).\n\n**Why it was flagged**  \nThe detection system assigned a score of 0.98114 (threshold\u202f0.87859) and classified the flow as \u201cxss\u201d with a confidence of 0.9959; no other category was considered plausible. Contributing measurements included:  \n- Shortest flow packet size\u202f=\u202f68\u202fbytes (lowered the score)  \n- DNS query type\u202f=\u202f28 (lowered)  \n- Destination\u2011port bucket labeled \u201cother\u201d (raised)  \n- L7 protocol value\u202f=\u202f0.0 (raised)  \n- L4 protocol\u202f=\u202f17 (UDP, lowered)  \n\nNeighbouring flows did not materially change the score, indicating the assessment is based on this flow\u2019s attributes rather than a single peer.\n\n**What to do next**  \n1. Apply the standard XSS mitigations listed in the evidence:  \n   - Encode output contextually and validate input on the server side.  \n   - Deploy a restrictive Content\u2011Security\u2011Policy header.  \n   - Review the affected application\u2019s request logs for suspicious payloads.  \n2. Verify whether the observed DNS traffic is legitimately part of a web application\u2019s operation or if it may be a mis\u2011routed request that triggered the XSS classifier.  \n3. If the flow is benign DNS activity, consider adjusting feature thresholds for DNS\u2011related traffic to reduce false positives.  \n\nAll actions should be documented and any findings shared with the broader security team.",
+      "latency_seconds": 3.171,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000616,
+      "input_tokens": 709,
+      "output_tokens": 850,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 258
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "Benign",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "Benign"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "SHORTEST_FLOW_PKT",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.569
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "1b18789a-6726-4c4b-8939-c19691d53144",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nAn internal host (192.168.1.32) opened a long\u2011lived TCP flow to an external address (101.119.11.17) on port\u202f80. The flow lasted about 4.3\u202fmillion\u202fms, transferred 836\u202fbytes in and 624\u202fbytes out over 17 packets. During the observation window the source host made 4,466 connections to 14 distinct remote addresses across 2,369 ports \u2013 roughly 4.7\u202f\u00d7 the normal address count for a host in this environment. The destination host made only two connections.\n\n**Why it was flagged**  \nThe detector assigned a score of\u202f0.90779, exceeding the alert threshold (0.87859). The highest\u2011probability label is *scanning* (confidence\u202f0.715), but the classification is noted as uncertain, with lower\u2011confidence alternatives of XSS (0.095) and benign (0.063). Contributing factors include:  \n\n* The destination port bucket was \u201cother.\u201d  \n* Measured outbound duration (1,094\u202fms) and outbound packet count (12) were lower than typical, reducing confidence.  \n* A high count of very small packets (29\u202f\u2264\u202f128\u202fbytes) and an atypical FTP command return code also lowered the assessment.  \n* The source\u2019s unusually high number of distinct destinations/ports (4.7\u202f\u00d7 typical) was a key indicator.  \n* Neighborhood analysis showed no single peer flow drove the score; the risk is diffuse across many flows sharing the host.\n\n**What to do next**  \n1. **Investigate the source host** \u2013 review its process list, scheduled tasks, and recent changes to determine why it is contacting many external endpoints.  \n2. **Apply rate\u2011limiting** on outbound connections from 192.168.1.32 and generate alerts for future spikes in distinct destination counts.  \n3. **Consider network segmentation** to restrict east\u2011west traffic from this host if it does not require broad external access.  \n4. **Verify that any exposed services on the destination (port\u202f80) are inventoried and patched** per standard mitigation.  \n5. **Log and monitor** subsequent traffic from this host for repeat patterns that would confirm scanning activity.  ",
+      "latency_seconds": 3.851,
+      "cost_usd": null,
+      "reference_cost_usd": 0.00055,
+      "input_tokens": 740,
+      "output_tokens": 731,
+      "scores": {
+        "groundedness": 0.9,
+        "n_entities_claimed": 20,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 18,
+            "ungrounded": [
+              "128",
+              "4.3"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.8889
+          }
+        },
+        "report_words": 302
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.71505,
+        "hedges_found": [
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "Benign",
+          "scanning",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "DURATION_OUT",
+          "OUT_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "FTP_COMMAND_RET_CODE"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 3.411
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "f00066c2-b54f-4caa-88b3-509d6742893c",
+      "true_label": "backdoor",
+      "predicted_class": "backdoor",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.193 (source) to 192.168.1.33 (destination) on TCP port\u202f80. The flow transferred 1\u202f440\u202fbytes in and 1\u202f200\u202fbytes out across 30 packets, lasting 0\u202fms. The source host opened 3\u202f554 connections to 18 distinct addresses on 8 ports (\u22483.3\u202f\u00d7 the typical address count), while the destination host opened 1\u202f571 connections to a single address on one port (typical for this host).\n\n**Why it was flagged**  \nThe detection score was 0.99119, well above the alert threshold of 0.87859. Feature contributions that raised the score included the number of inbound packets (30), inbound bytes (1\u202f440), and the destination\u2011port bucket being classified as \u201cother.\u201d Features that lowered the score were the count of packets \u2264128\u202fbytes (60) and the L7 protocol value (7.0). No neighboring flows altered the score by more than 0.01, indicating the assessment is driven by this flow itself. The model assigned the flow to the \u201cbackdoor\u201d category with confidence 0.99988 and found no other plausible category.\n\n**What to do next**  \n- Isolate the source host (192.168.1.193) for further investigation.  \n- Block outbound traffic to the destination (192.168.1.33) and review egress filtering rules.  \n- Inspect the source host for unauthorized persistence mechanisms and rotate any credentials it possessed.  \n\nThese steps follow the standard mitigations associated with the backdoor classification.",
+      "latency_seconds": 3.596,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000465,
+      "input_tokens": 721,
+      "output_tokens": 595,
+      "scores": {
+        "groundedness": 0.9375,
+        "n_entities_claimed": 16,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 14,
+            "ungrounded": [
+              "128"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9286
+          }
+        },
+        "report_words": 222
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "IN_BYTES",
+          "L4_DST_PORT",
+          "L7_PROTO"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.459
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "cb021627-30b3-48b2-8283-52f98f4f833d",
+      "true_label": "password",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.35\u202fto\u202f192.168.1.1\u202fon destination port\u202f53 was observed. The flow consisted of a single inbound packet of 70\u202fbytes and 228\u202fbytes outbound, lasting\u202f0\u202fms. The detection system assigned a score of\u202f0.89245, which exceeds the alert threshold of\u202f0.87859.\n\n**Why it was flagged**  \nThe score was driven by several measured attributes: the shortest\u2011packet size (70\u202fbytes) and the presence of a single packet in the 128\u2011to\u2011256\u2011byte range each lowered the assessment, while the destination\u2011port bucket being \u201cother,\u201d a layer\u20117 protocol value of\u202f0.0, and a source port of\u202f53716 each raised it. The source host made\u202f4,575\u202fconnections to\u202f8\u202fdistinct addresses across\u202f3\u202fports (\u22482.3\u202f\u00d7 the typical address count), and the destination host made\u202f52\u202fconnections to\u202f4\u202faddresses across\u202f3\u202fports (\u22484.0\u202f\u00d7 typical). The classifier\u2019s top\u2011scoring category is **xss** (confidence\u202f0.4074), but the classification is uncertain; **password** (0.31244) and **Benign** (0.12407) are also plausible. Neighborhood flows did not materially affect the score.\n\n**What to do next**  \n1. Review the request logs on both hosts for any signs of script injection or password\u2011related activity.  \n2. If XSS is suspected, apply the standard mitigations:  \n   - Encode output contextually and validate input server\u2011side.  \n   - Deploy a restrictive Content\u2011Security\u2011Policy header.  \n   - Examine the affected application\u2019s logs for anomalous requests.  \n3. If the activity appears benign or password\u2011related, investigate accordingly and adjust monitoring thresholds if needed.  \n4. Continue to monitor connection counts for both hosts for further deviations from baseline.",
+      "latency_seconds": 3.685,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000547,
+      "input_tokens": 734,
+      "output_tokens": 728,
+      "scores": {
+        "groundedness": 0.875,
+        "n_entities_claimed": 16,
+        "n_ungrounded": 2,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 14,
+            "ungrounded": [
+              "128",
+              "256"
+            ],
+            "n_ungrounded": 2,
+            "groundedness": 0.8571
+          }
+        },
+        "report_words": 247
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": {
+        "class_confidence": 0.4074,
+        "hedges_found": [
+          "appears",
+          "uncertain"
+        ],
+        "uncertainty_conveyed": true
+      },
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "Benign",
+          "injection",
+          "password",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "injection"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "NUM_PKTS_128_TO_256_BYTES",
+          "L7_PROTO",
+          "L4_SRC_PORT"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 3.269
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "6ae9a85f-ef04-43ad-b3bd-3ad1486f154c",
+      "true_label": "ddos",
+      "predicted_class": "ddos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.30 to 192.168.1.184 on destination port\u202f80. The flow transferred 451\u202fbytes in, 323\u202fbytes out, and 6 packets with a measured duration of 0\u202fms. The source host opened 2,651 connections during the observation period to 4 distinct addresses across 3 ports (twice the typical address count). The destination host opened 3,780 connections to 2 distinct addresses across 2 ports (also twice typical).  \n\n**Why it was flagged**  \nThe detection score was 0.99419, well above the alert threshold of 0.87859. The model assigned the \u201cddos\u201d category with a confidence of 0.99997 and reported no other plausible category. Contributing factors noted in the evidence include:  \n\n* L4_DST_PORT_bucket classified as \u201cother\u201d (raised assessment)  \n* Protocol\u202f6 (TCP) (raised assessment)  \n* L7_PROTO value\u202f7.0 (lowered assessment)  \n* TCP_WIN_MAX_IN\u202f29,200 (lowered assessment)  \n* NUM_PKTS_128_TO_256_BYTES\u202f=\u202f2 (lowered assessment)  \n\nNeighbouring flows (50 of 6,703 sharing a host) altered the score by less than 0.01, indicating the assessment is not driven by a single adjacent flow. The elevated connection counts for both source and destination hosts are double the typical values for hosts in this environment, matching the reference description of coordinated traffic volume intended to exhaust a target\u2019s capacity.  \n\n**What to do next**  \n1. Enable upstream volumetric filtering or scrubbing for traffic to the destination host.  \n2. Apply per\u2011source rate limits at the edge for traffic originating from 192.168.1.30 (and similar sources).  \n3. Verify that autoscaling and failover mechanisms for the service listening on port\u202f80 are correctly configured and functional.  \n\nThese steps follow the standard mitigations associated with the identified technique.",
+      "latency_seconds": 3.177,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000539,
+      "input_tokens": 719,
+      "output_tokens": 719,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 264
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "ddos",
+        "families_named": [
+          "ddos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "L7_PROTO",
+          "TCP_WIN_MAX_IN",
+          "NUM_PKTS_128_TO_256_BYTES"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.761
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "319a9561-ae13-4e92-aa8b-c8e5016d7b49",
+      "true_label": "dos",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from 192.168.1.30 to 192.168.1.1 on UDP port\u202f53. The flow consisted of a single packet in each direction, each 71\u202fbytes, and lasted 0\u202fms. During the measurement period the source host opened 3\u202f367 connections to four distinct addresses across three ports (about twice the typical address count), while the destination host opened 1\u202f723 connections to two distinct addresses on one port (about 1.3\u202f\u00d7 the typical count).\n\n**Why it was flagged**  \nThe detection score was 0.97191, well above the alert threshold of 0.87859. The model assigned the flow to the \u201cdos\u201d category with a confidence of 0.98616 and reported no other plausible category. Several observed attributes increased the score: the destination\u2011port bucket was \u201cother,\u201d the L7 protocol field was 0.0, and the L4 destination port was 53. Attributes that lowered the score included the short packet size (71\u202fbytes) and the use of protocol\u202f17 (UDP). The score was not significantly affected by any single neighboring flow; the contribution was diffuse across the broader traffic set. The combination of a high score, strong confidence, and the definition of DoS (single\u2011source traffic intended to exhaust a target) led to the alert.\n\n**What to do next**  \n1. Apply a rate\u2011limit for traffic from 192.168.1.30 to the network edge, especially targeting UDP/53.  \n2. Review the DNS service on 192.168.1.1 (or any service listening on port\u202f53) to ensure connection and resource limits are appropriate.  \n3. Monitor the source and destination hosts for further high\u2011frequency connection attempts and adjust limits as needed.",
+      "latency_seconds": 2.763,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000484,
+      "input_tokens": 685,
+      "output_tokens": 636,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 11,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 9,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 257
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 4,
+        "features_cited": [
+          "L4_DST_PORT",
+          "L7_PROTO",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.75,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.35
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "9248d69e-9e4f-410c-b76c-f423a7d6606f",
+      "true_label": "injection",
+      "predicted_class": "injection",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nTraffic from 192.168.1.36 to 192.168.1.152 on port\u202f80 generated a detection score of 0.95948, exceeding the alert threshold of 0.87859. The detector assigned the flow to the *injection* category with a confidence of 0.99885. The flow lasted 4,294,561\u202fms, transferred 1,087\u202fbytes inbound and 7,572\u202fbytes outbound, and consisted of 11 packets. The source host opened 8,229 connections to eight distinct addresses across three ports during the same period (about four times the typical address count for a host here). The destination host made 2,611 connections to a single address/port, which is typical.\n\n**Why it was flagged**  \nSeveral measured features raised the assessment:  \n- `DURATION_OUT`\u202f=\u202f406\u202fms  \n- `FLOW_DURATION_MILLISECONDS`\u202f=\u202f4,294,561\u202fms  \n- `TCP_WIN_MAX_OUT`\u202f=\u202f28,960  \n- `DST_TO_SRC_SECOND_BYTES`\u202f=\u202f37,603,812  \n\nThese values, together with the high outbound byte volume and the unusually large number of connections from the source host, pushed the score above the threshold. One feature (`DURATION_IN`\u202f=\u202f406\u202fms) lowered the score, but not enough to offset the others. No single neighboring flow contributed significantly; the topological influence was diffuse.\n\n**What to do next**  \n1. Review server\u2011side logs for the endpoint on 192.168.1.152 for signs of malformed input.  \n2. Verify that the application handling the traffic uses parameterised queries and validates input.  \n3. Deploy or update a web application firewall in front of the exposed service to block injection attempts.  \n\nThese steps follow the standard mitigations associated with the injection technique (T1190).",
+      "latency_seconds": 2.625,
+      "cost_usd": null,
+      "reference_cost_usd": 0.00045,
+      "input_tokens": 704,
+      "output_tokens": 574,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 16,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 1,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "numbers": {
+            "claimed": 13,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 238
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "injection",
+        "families_named": [
+          "injection"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_OUT",
+          "FLOW_DURATION_MILLISECONDS",
+          "TCP_WIN_MAX_OUT",
+          "DST_TO_SRC_SECOND_BYTES",
+          "DURATION_IN"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.107
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "2effab8f-9e11-49f3-9ed1-0d950195419e",
+      "true_label": "mitm",
+      "predicted_class": "dos",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from\u202f192.168.1.31\u202fto\u202f192.168.1.1\u202fon destination port\u202f53 (UDP). The flow consisted of a single packet in each direction, 67\u202fbytes in and 67\u202fbytes out, with a measured duration of\u202f0\u202fms. During the observation window the source host opened\u202f4,958\u202fconnections to\u202f5\u202fdistinct addresses across\u202f3\u202fports, roughly\u202f2.5\u202ftimes its typical address count. The destination host opened\u202f2,371\u202fconnections to\u202f2\u202fdistinct addresses across\u202f1\u202fport, about\u202f2.0\u202ftimes its usual address count.\n\n**Why it was flagged**  \nThe detection score was\u202f0.98008, exceeding the alert threshold of\u202f0.87859. The model assigned the \u201cdos\u201d category with a confidence of\u202f0.98563 and reported no other plausible category. Contributing factors that raised the assessment included the source\u2011port bucket (value\u202f1) and the destination\u2011port bucket being classified as \u201cother.\u201d The L7 protocol value (0.0) also raised the score. Factors that lowered the score were the short packet size (67\u202fbytes) and the use of protocol\u202f17 (UDP). The overall score remained high despite a diffuse topological contribution from neighboring flows (no single neighbor altered the score by more than\u202f0.01).\n\n**What to do next**  \n1. Apply a rate\u2011limit to traffic from\u202f192.168.1.31\u202fat the network edge, as recommended for DoS mitigation.  \n2. Review the DNS service (port\u202f53) on\u202f192.168.1.1\u202fto ensure connection and resource limits are appropriate.  \n3. Continue monitoring both hosts for any further abnormal connection patterns.",
+      "latency_seconds": 2.39,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000474,
+      "input_tokens": 690,
+      "output_tokens": 617,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 12,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 10,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 235
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "dos",
+        "families_named": [
+          "dos"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL",
+          "L4_SRC_PORT",
+          "L7_PROTO"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.814
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "93155a5d-4b24-4bcc-8634-7e67b3b1df72",
+      "true_label": "scanning",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.30 sent a single 48\u2011byte TCP packet (protocol\u202f6, SYN flag\u202f2) to host\u202f192.168.1.180 on destination port\u202f28114. The flow lasted 0\u202fms, had no response traffic, and was classified with a detection score of\u202f0.9934 (threshold\u202f0.87859). The system labeled the activity as *scanning* with a confidence of\u202f99.999\u202f% and noted no alternative category. During the observation window the source host opened 4\u202f371 connections to 11 distinct IPs across 3\u202f647 ports \u2013 about\u202f5.5\u202ftimes the typical address count for a host in this environment. The destination host made 2\u202f118 connections to 3 distinct IPs across 2\u202f116 ports (\u22481.2\u202f\u00d7 typical).\n\n**Why it was flagged**  \n- Very high detection score above the alert threshold.  \n- Feature values that increased the assessment: TCP protocol, SYN flag, and an \u201cother\u201d DNS query type.  \n- Feature values that slightly reduced the assessment (L7 protocol\u202f0.0, low\u2011port bucket) were insufficient to offset the overall high score.  \n- The source\u2019s connection volume and breadth of ports far exceed normal behavior for this host, matching the definition of systematic probing of hosts/ports.  \n- No nearby flows altered the score, indicating the activity itself drove the alert.\n\n**What to do next**  \n1. **Rate\u2011limit** traffic from 192.168.1.30 and generate an alert if the host continues to contact an unusually high number of distinct destinations.  \n2. **Review segmentation** policies to restrict east\u2011west traffic between internal subnets, especially for hosts exhibiting this pattern.  \n3. **Verify** that any services exposed on the destination port (28114) are inventoried, properly patched, and not unintentionally reachable.  \n4. **Monitor** the source host for further scanning attempts and consider temporary isolation pending investigation.  ",
+      "latency_seconds": 2.723,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000528,
+      "input_tokens": 729,
+      "output_tokens": 697,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 13,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 11,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 277
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "PROTOCOL",
+          "L7_PROTO",
+          "DNS_QUERY_TYPE",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.315
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "1378b2be-87f1-4e34-aec8-981b773c0dda",
+      "true_label": "xss",
+      "predicted_class": "xss",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from internal host\u202f192.168.1.36 to external host\u202f176.28.50.165 on TCP port\u202f80 was observed. The flow transferred 3\u202f225\u202fbytes inbound and 1\u202f128\u202fbytes outbound in 13 packets and lasted about\u202f4\u202f293\u202f932\u202fms. The detection system assigned a score of\u202f0.93268 (threshold\u202f0.87859) and classified the activity as a likely cross\u2011site scripting (XSS) event with confidence\u202f0.96921. The source host opened 6\u202f753 connections during the observation period (to 7 distinct addresses on 3 ports), roughly\u202f2.3\u202f\u00d7 the normal address count. The destination host made 690 connections (to 2 addresses on 1 port), about\u202f2.0\u202f\u00d7 typical.\n\n**Why it was flagged**  \nSeveral measured attributes raised the assessment:  \n- Outbound duration (DURATION_OUT) of\u202f1\u202f035\u202fms.  \n- Destination\u2011port bucket labeled \u201cother\u201d.  \n- Total flow duration (FLOW_DURATION_MILLISECONDS) of\u202f4\u202f293\u202f932\u202fms.  \n\nTwo attributes lowered the score (duration\u2011in\u202f1\u202f035\u202fms, TCP_WIN_MAX_IN\u202f29\u202f200), but the net effect kept the score well above the alert threshold. The neighbourhood analysis showed no single neighboring flow drove the score; the contribution was diffuse across many flows sharing the host.\n\n**What to do next**  \n1. Review the affected application\u2019s request logs for evidence of script injection.  \n2. Verify that the application encodes output contextually and validates input on the server side.  \n3. Ensure a restrictive Content\u2011Security\u2011Policy header is deployed.  \n4. Consider additional monitoring of the source host (192.168.1.36) for abnormal connection patterns.  \n\nThese steps follow the standard mitigations associated with the XSS classification.",
+      "latency_seconds": 2.518,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000502,
+      "input_tokens": 713,
+      "output_tokens": 659,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 15,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 13,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 246
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "xss",
+        "families_named": [
+          "injection",
+          "xss"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [
+          "injection"
+        ],
+        "substituted": false,
+        "faithful": false
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_OUT",
+          "L4_DST_PORT",
+          "FLOW_DURATION_MILLISECONDS",
+          "DURATION_IN",
+          "TCP_WIN_MAX_IN"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 2.088
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "b4adad95-e911-4e8c-a11b-c6b149c779a6",
+      "true_label": "Benign",
+      "predicted_class": "scanning",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nHost\u202f192.168.1.32 opened a single\u2011packet TCP flow to 192.168.1.190 on destination port\u202f23. The flow transferred 44\u202fbytes inbound and 40\u202fbytes outbound in 0\u202fms. During the observation window the source host made 2,865 connections to 219 distinct addresses across 715 ports \u2013 about 110\u202ftimes the typical address count for a host in this environment. The destination host made 671 connections to 8 distinct addresses across 384 ports (\u22484\u202ftimes typical).\n\n**Why it was flagged**  \nThe detection scored 0.9562, exceeding the alert threshold of 0.87859. The model assigned the \u201cscanning\u201d category with 99.9\u202f% confidence and found no plausible alternative. Contributing factors included: a very short flow packet size (40\u202fbytes), an \u201cother\u201d destination\u2011port bucket, a TCP window size of 1024, and the use of TCP (protocol\u202f6). The source\u2019s unusually high number of distinct destinations and ports also matches the reference definition of scanning (systematic probing of hosts/ports). Neighborhood flows did not materially affect the score, indicating the behavior is isolated to this flow.\n\n**What to do next**  \n1. Rate\u2011limit traffic from 192.168.1.32 and generate alerts for any further contacts to a large number of distinct destinations.  \n2. Review east\u2011west traffic policies and consider segmenting the subnet to restrict lateral movement.  \n3. Verify that any services exposed on port\u202f23 (or other ports) are inventoried, properly configured, and fully patched.  \n4. Conduct a brief host investigation (e.g., process list, recent logins) on 192.168.1.32 to determine if the activity is legitimate or indicative of compromise.",
+      "latency_seconds": 2.528,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000498,
+      "input_tokens": 717,
+      "output_tokens": 650,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 14,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 12,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 249
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "scanning",
+        "families_named": [
+          "scanning"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "L4_DST_PORT",
+          "PROTOCOL"
+        ],
+        "features_missed": [
+          "SHORTEST_FLOW_PKT",
+          "TCP_WIN_MAX_IN",
+          "CLIENT_TCP_FLAGS"
+        ],
+        "coverage": 0.4,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.916
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "709eeb5a-06cc-449b-bc09-69df62c213d6",
+      "true_label": "backdoor",
+      "predicted_class": "backdoor",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow was observed from internal host\u202f192.168.1.193 to internal host\u202f192.168.1.33 on TCP port\u202f80. The flow transferred 1\u202f440\u202fbytes in (30 packets) and 1\u202f200\u202fbytes out, lasting 0\u202fms. During the measurement period the source host opened 3\u202f554 connections to 18 distinct addresses across 8 ports (\u22483.3\u202f\u00d7 the typical address count for a host). The destination host opened 1\u202f571 connections to a single address on a single port, which is normal for that host.\n\n**Why it was flagged**  \nThe detection score was 0.99119, well above the alert threshold of 0.87859. The model assigned the flow to the *backdoor* category with a confidence of 0.99988 and reported no plausible alternative category. Features that increased the score included the number of inbound packets (30), inbound bytes (1\u202f440), the destination\u2011port bucket being \u201cother,\u201d and the L4 destination\u2011port. Features that reduced the score were the count of packets \u2264128\u202fbytes (60) and an L7 protocol value of\u202f7.0. The surrounding 50 neighboring flows had only a diffuse influence on the score (\u22640.01 change). The high connection count from the source host relative to its typical behavior contributed to the assessment.\n\n**What to do next**  \n1. Isolate host\u202f192.168.1.193 for further investigation.  \n2. Block traffic to the destination host\u202f192.168.1.33 and review egress\u2011filtering rules for any unauthorized outbound channels.  \n3. Inspect the isolated host for unauthorized persistence mechanisms and rotate any credentials it possessed.  \n\nThese steps follow the standard mitigations associated with a backdoor detection.",
+      "latency_seconds": 2.364,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000487,
+      "input_tokens": 721,
+      "output_tokens": 631,
+      "scores": {
+        "groundedness": 0.9412,
+        "n_entities_claimed": 17,
+        "n_ungrounded": 1,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 15,
+            "ungrounded": [
+              "128"
+            ],
+            "n_ungrounded": 1,
+            "groundedness": 0.9333
+          }
+        },
+        "report_words": 250
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "backdoor",
+        "families_named": [
+          "backdoor"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "IN_PKTS",
+          "NUM_PKTS_UP_TO_128_BYTES",
+          "IN_BYTES",
+          "L4_DST_PORT",
+          "L7_PROTO"
+        ],
+        "features_missed": [],
+        "coverage": 1.0,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.951
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    },
+    {
+      "detection_id": "9091be17-2954-44b3-a563-784fbcc3c5eb",
+      "true_label": "password",
+      "predicted_class": "password",
+      "ok": true,
+      "error": null,
+      "report": "**What happened**  \nA flow from\u202f192.168.1.32\u202fto\u202f192.168.1.195\u202fon destination port\u202f80 lasted\u202f4,294,529\u202fms, transferred\u202f841\u202fbytes inbound and\u202f2,366\u202fbytes outbound across\u202f14\u202fpackets. The source host opened\u202f3,689\u202fconnections to five addresses on two ports (\u22481.4\u202f\u00d7 the usual address count), while the destination host opened\u202f7,238\u202fconnections to seven addresses on ten ports (\u22487\u202f\u00d7 the usual address count).\n\n**Why it was flagged**  \nThe detection score was\u202f0.995, well above the alert threshold of\u202f0.87859. The model assigned the \u201cpassword\u201d category with\u202f0.99023\u202fconfidence and reported no other plausible category. Contributing factors included a very long flow duration, a maximum outbound TCP window size of\u202f65,535, and the destination port falling into the \u201cother\u201d bucket. Some measured values (e.g., inbound duration\u202f438\u202fms, inbound TCP window\u202f29,200) slightly lowered the assessment, but the overall score remained high. Nearby flows (7,803 sharing the host) did not materially affect the score.\n\n**What to do next**  \n1. Verify whether the traffic represents repeated authentication attempts (e.g., failed logins) from\u202f192.168.1.32\u202fto the service on\u202f192.168.1.195.  \n2. If confirmed, apply standard mitigations:  \n   - Enforce account lockout or progressive delay after failed attempts.  \n   - Require multi\u2011factor authentication for the exposed service.  \n   - Enable alerts for repeated authentication failures from a single source.  \n3. Document the finding in the incident tracking system and monitor both hosts for further similar activity.",
+      "latency_seconds": 2.132,
+      "cost_usd": null,
+      "reference_cost_usd": 0.000427,
+      "input_tokens": 705,
+      "output_tokens": 535,
+      "scores": {
+        "groundedness": 1.0,
+        "n_entities_claimed": 17,
+        "n_ungrounded": 0,
+        "fabricated_addresses": [],
+        "per_class": {
+          "ips": {
+            "claimed": 2,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          },
+          "mitre": {
+            "claimed": 0,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": null
+          },
+          "numbers": {
+            "claimed": 15,
+            "ungrounded": [],
+            "n_ungrounded": 0,
+            "groundedness": 1.0
+          }
+        },
+        "report_words": 228
+      },
+      "jargon": {
+        "jargon_found": [],
+        "clean": true
+      },
+      "uncertainty": null,
+      "classification": {
+        "predicted_class": "password",
+        "families_named": [
+          "password"
+        ],
+        "names_predicted": true,
+        "unsupported_families": [],
+        "substituted": false,
+        "faithful": true
+      },
+      "attribution": {
+        "n_attributed": 5,
+        "features_cited": [
+          "DURATION_IN",
+          "TCP_WIN_MAX_OUT",
+          "FLOW_DURATION_MILLISECONDS",
+          "L4_DST_PORT"
+        ],
+        "features_missed": [
+          "TCP_WIN_MAX_IN"
+        ],
+        "coverage": 0.8,
+        "cites_none": false
+      },
+      "timing": {
+        "generation_seconds": null,
+        "prompt_seconds": null,
+        "load_seconds": null,
+        "total_seconds": 1.668
+      },
+      "determinism": {
+        "temperature": 0,
+        "seed": 42,
+        "supported": true,
+        "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
+      },
+      "session": 0
+    }
+  ]
+}

@@ -1,0 +1,697 @@
+{
+  "dataset": "NF-ToN-IoT-v2",
+  "n_rows": 5910000,
+  "wrap_signatures": {
+    "IN_BYTES": {
+      "ge_2pow31": 0,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 1,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "OUT_BYTES": {
+      "ge_2pow31": 0,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 2,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "FLOW_DURATION_MILLISECONDS": {
+      "ge_2pow31": 0,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 849865,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "SRC_TO_DST_SECOND_BYTES": {
+      "ge_2pow31": 802,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 56,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "DST_TO_SRC_SECOND_BYTES": {
+      "ge_2pow31": 241,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 772,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "SRC_TO_DST_AVG_THROUGHPUT": {
+      "ge_2pow31": 11,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 14882,
+      "negative": 0,
+      "non_finite": 0
+    },
+    "DST_TO_SRC_AVG_THROUGHPUT": {
+      "ge_2pow31": 176,
+      "near_2pow32": 0,
+      "near_2pow32_over_1000": 20824,
+      "negative": 0,
+      "non_finite": 0
+    }
+  },
+  "validity_flags": {
+    "duration_wrapped": {
+      "n": 849865,
+      "share": 0.1438,
+      "share_by_family": {
+        "Benign": 0.0809,
+        "backdoor": 0.0152,
+        "ddos": 0.7246,
+        "dos": 0.0109,
+        "injection": 0.2667,
+        "mitm": 0.0402,
+        "password": 0.2293,
+        "ransomware": 0.1075,
+        "scanning": 0.0214,
+        "xss": 0.0835
+      },
+      "share_by_split": {
+        "train": 0.146,
+        "val": 0.1738,
+        "test": 0.1215
+      }
+    },
+    "duration_in_exceeds_flow": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "duration_out_exceeds_flow": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "size_buckets_not_packet_total": {
+      "n": 55420,
+      "share": 0.00938,
+      "share_by_family": {
+        "Benign": 0.0092,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.2888,
+        "password": 0.1008,
+        "ransomware": 0.0,
+        "scanning": 0.0001,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0048,
+        "val": 0.0046,
+        "test": 0.0277
+      }
+    },
+    "in_bytes_without_packets": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "in_bytes_below_20_per_packet": {
+      "n": 18354,
+      "share": 0.00311,
+      "share_by_family": {
+        "Benign": 0.0001,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0513,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0021,
+        "val": 0.002,
+        "test": 0.007
+      }
+    },
+    "in_retransmitted_exceeds_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "in_retransmitted_bytes_exceed_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_bytes_without_packets": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_bytes_below_20_per_packet": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_retransmitted_exceeds_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "out_retransmitted_bytes_exceed_total": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "longest_below_shortest": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "ip_packet_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "l4_src_port_out_of_range": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "l4_dst_port_out_of_range": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "tcp_win_max_in_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "tcp_win_max_out_over_65535": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "src_to_dst_second_bytes_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "dst_to_src_second_bytes_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "src_to_dst_avg_throughput_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    },
+    "dst_to_src_avg_throughput_non_finite_or_negative": {
+      "n": 0,
+      "share": 0.0,
+      "share_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "share_by_split": {
+        "train": 0.0,
+        "val": 0.0,
+        "test": 0.0
+      }
+    }
+  },
+  "per_family_top_auc": {
+    "Benign": {
+      "IN_BYTES": 0.7394,
+      "SRC_TO_DST_SECOND_BYTES": 0.7379,
+      "LONGEST_FLOW_PKT": 0.729,
+      "MAX_IP_PKT_LEN": 0.729,
+      "L4_DST_PORT": 0.699,
+      "TCP_WIN_MAX_IN": 0.6823,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.6689,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.668
+    },
+    "backdoor": {
+      "OUT_PKTS": 0.9863,
+      "IN_PKTS": 0.9664,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.9657,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.9343,
+      "IN_BYTES": 0.922,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.9065,
+      "SRC_TO_DST_SECOND_BYTES": 0.8954,
+      "OUT_BYTES": 0.8799
+    },
+    "ddos": {
+      "TCP_WIN_MAX_IN": 0.8697,
+      "TCP_WIN_MAX_OUT": 0.8542,
+      "flag:duration_wrapped": 0.8221,
+      "FLOW_DURATION_MILLISECONDS": 0.8215,
+      "DURATION_OUT": 0.8166,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8163,
+      "IN_PKTS": 0.8119,
+      "SRC_TO_DST_SECOND_BYTES": 0.8072
+    },
+    "dos": {
+      "TCP_WIN_MAX_IN": 0.861,
+      "DNS_QUERY_TYPE": 0.7921,
+      "L4_DST_PORT": 0.7711,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.7649,
+      "SHORTEST_FLOW_PKT": 0.7097,
+      "IN_BYTES": 0.6888,
+      "SRC_TO_DST_SECOND_BYTES": 0.6777,
+      "TCP_WIN_MAX_OUT": 0.6647
+    },
+    "injection": {
+      "OUT_BYTES": 0.8848,
+      "DST_TO_SRC_SECOND_BYTES": 0.8756,
+      "OUT_PKTS": 0.8693,
+      "LONGEST_FLOW_PKT": 0.8639,
+      "MAX_IP_PKT_LEN": 0.8639,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.846,
+      "TCP_WIN_MAX_OUT": 0.8448,
+      "IN_BYTES": 0.8293
+    },
+    "mitm": {
+      "SHORTEST_FLOW_PKT": 0.9181,
+      "DNS_QUERY_TYPE": 0.9117,
+      "TCP_WIN_MAX_IN": 0.8984,
+      "L4_DST_PORT": 0.8919,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.7476,
+      "LONGEST_FLOW_PKT": 0.7234,
+      "MAX_IP_PKT_LEN": 0.7234,
+      "DNS_TTL_ANSWER": 0.7213
+    },
+    "password": {
+      "LONGEST_FLOW_PKT": 0.8455,
+      "MAX_IP_PKT_LEN": 0.8455,
+      "TCP_WIN_MAX_OUT": 0.8306,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8255,
+      "OUT_BYTES": 0.8196,
+      "OUT_PKTS": 0.8185,
+      "DST_TO_SRC_SECOND_BYTES": 0.8169,
+      "TCP_WIN_MAX_IN": 0.7884
+    },
+    "ransomware": {
+      "IN_BYTES": 0.9497,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.9401,
+      "SRC_TO_DST_SECOND_BYTES": 0.9216,
+      "LONGEST_FLOW_PKT": 0.9184,
+      "MAX_IP_PKT_LEN": 0.9184,
+      "NUM_PKTS_128_TO_256_BYTES": 0.9083,
+      "IN_PKTS": 0.8985,
+      "NUM_PKTS_1024_TO_1514_BYTES": 0.867
+    },
+    "scanning": {
+      "DST_TO_SRC_SECOND_BYTES": 0.8188,
+      "OUT_BYTES": 0.8183,
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8035,
+      "OUT_PKTS": 0.8,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.7874,
+      "L4_DST_PORT": 0.7505,
+      "SRC_TO_DST_SECOND_BYTES": 0.7491,
+      "IN_BYTES": 0.7446
+    },
+    "xss": {
+      "L4_DST_PORT": 0.8502,
+      "LONGEST_FLOW_PKT": 0.8369,
+      "MAX_IP_PKT_LEN": 0.8369,
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.8278,
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.8166,
+      "SHORTEST_FLOW_PKT": 0.8058,
+      "IN_BYTES": 0.7691,
+      "OUT_BYTES": 0.7669
+    }
+  },
+  "per_family_shortcuts": [
+    {
+      "family": "backdoor",
+      "feature": "OUT_PKTS",
+      "abs_auc": 0.9863
+    },
+    {
+      "family": "backdoor",
+      "feature": "IN_PKTS",
+      "abs_auc": 0.9664
+    },
+    {
+      "family": "backdoor",
+      "feature": "NUM_PKTS_UP_TO_128_BYTES",
+      "abs_auc": 0.9657
+    }
+  ],
+  "duplicates": {
+    "with_hosts": {
+      "duplicate_rows_total": 205811,
+      "test_rows_also_in_train": 47155,
+      "test_rows_also_in_train_share": 0.0396,
+      "test_rows_also_in_train_by_family": {
+        "Benign": 0.0138,
+        "backdoor": 0.0,
+        "ddos": 0.0011,
+        "dos": 0.255,
+        "injection": 0.0016,
+        "mitm": 0.1449,
+        "password": 0.0001,
+        "ransomware": 0.0,
+        "scanning": 0.0001,
+        "xss": 0.1291
+      },
+      "rows_whose_identical_twin_has_another_label": 1393,
+      "contradictory_by_family": {
+        "ddos": 79,
+        "dos": 143,
+        "injection": 459,
+        "password": 13,
+        "scanning": 16,
+        "xss": 683
+      }
+    },
+    "features_only": {
+      "duplicate_rows_total": 1454676,
+      "test_rows_also_in_train": 247329,
+      "test_rows_also_in_train_share": 0.2078,
+      "test_rows_also_in_train_by_family": {
+        "Benign": 0.2906,
+        "backdoor": 0.0002,
+        "ddos": 0.0783,
+        "dos": 0.3219,
+        "injection": 0.0337,
+        "mitm": 0.1929,
+        "password": 0.1353,
+        "ransomware": 0.0,
+        "scanning": 0.1307,
+        "xss": 0.2359
+      },
+      "rows_whose_identical_twin_has_another_label": 23731,
+      "contradictory_by_family": {
+        "Benign": 690,
+        "backdoor": 2,
+        "ddos": 2280,
+        "dos": 8541,
+        "injection": 2523,
+        "mitm": 851,
+        "password": 150,
+        "scanning": 170,
+        "xss": 8524
+      }
+    }
+  },
+  "generated_at": "2026-10-17T05:53:31.897608+00:00",
+  "shortcut_threshold": 0.95
+}

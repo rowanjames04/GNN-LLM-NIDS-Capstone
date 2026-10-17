@@ -78,6 +78,7 @@ def train_torch_mlp(
     """
     import torch
     from gnnids.models.mlp import FlowMLP, FocalLoss
+from gnnids.data.version import data_version  # noqa: E402
 
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -329,6 +330,9 @@ def main() -> None:
                 # PR-AUC floor moved underneath them.
                 "reported_at_prevalence": target_prev,
                 "schema": SCHEMA,
+                # Which preprocessed data produced this entry (C32). Readers
+                # refuse an entry from other data, so a merge cannot mix them.
+                "data_version": data_version(proc),
                 "aggregate": aggregate_seeds([r[prev_key] for r in runs]),
                 "aggregate_native": aggregate_seeds([r["native"] for r in runs]),
                 "runs": runs, "info": infos,
@@ -355,10 +359,22 @@ def main() -> None:
             if isinstance(v, dict) and "schema" not in v:
                 v["schema"] = STALE_SCHEMA
                 v["reported_at_prevalence"] = "native"
+        # Entries from other data are dropped, not merged: re-running only some
+        # models after a preprocessing change would otherwise leave the others
+        # on the old data under the current schema tag (pre-mortem, 2026-10-17).
+        current = data_version(proc)
+        stale_data = sorted(k for k, v in merged.items()
+                            if isinstance(v, dict) and v.get("data_version") != current)
+        for k in stale_data:
+            del merged[k]
+        if stale_data:
+            print(f"  dropped {len(stale_data)} entr{'y' if len(stale_data) == 1 else 'ies'} "
+                  f"from other data: {stale_data}")
         merged.update(results); results = merged
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "config": cfg,
+        "data_version": data_version(proc),
         "host_feature_names": FEATURE_NAMES,
         "host_feature_scaling": host_stats,
         "n_features": {"flow": n_flow, "flow+host": n_flow + host.shape[1]},

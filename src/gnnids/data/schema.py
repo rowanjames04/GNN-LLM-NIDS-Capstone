@@ -79,8 +79,12 @@ def build_schema(cfg: dict, df: pd.DataFrame, repo_root: Path) -> FeatureSchema:
     drops = {
         "shortcuts": list(f["drop_shortcuts"]),
         "uninformative": list(f["drop_uninformative"]),
+        # D47: columns whose recorded values are an exporter artefact rather
+        # than a measurement. Kept in raw_values.npy, so the audit and the
+        # evidence can still state that they are unreliable; never a model input.
+        "artefacts": list(f.get("drop_artefacts", [])),
     }
-    dropped = set(drops["shortcuts"]) | set(drops["uninformative"])
+    dropped = set(drops["shortcuts"]) | set(drops["uninformative"]) | set(drops["artefacts"])
 
     missing = (dropped | set(f["identity"])) - cols
     if missing:

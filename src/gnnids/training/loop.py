@@ -25,6 +25,7 @@ import torch
 from sklearn.metrics import average_precision_score
 from torch_geometric.loader import DataLoader
 
+from ..data.version import version_for_preprocess_config
 from ..eval.metrics import choose_threshold, evaluate_multiclass
 from ..eval.prevalence import report_both, subsample_to_prevalence
 from ..models.dual_channel import DualChannelGNN, channel_attribution
@@ -215,6 +216,9 @@ def train_one(cfg, datasets, edge_dim, n_classes, ablation, seed, device,
             "model_cfg": cfg["model"],
             "val_pr_auc_at_target": out["val_pr_auc_at_target"],
             "threshold": threshold,
+            # Which preprocessed data this model was trained on (C32). Every
+            # script that loads a checkpoint refuses one from other data.
+            "data_version": version_for_preprocess_config(cfg["preprocess_config"]),
         }, ckpt_path)
         out["checkpoint"] = str(ckpt_path.name)
 

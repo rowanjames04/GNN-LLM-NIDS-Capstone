@@ -39,7 +39,8 @@ FEATURE_NAMES = [
     "src_flow_count",
     "src_distinct_proto",
     "src_bytes_total",
-    "src_mean_duration",
+    # src_mean_duration removed (D47): the duration column is an exporter
+    # artefact, and its mean over a host's window carried the same marker.
     "dst_fanin",            # distinct sources contacting this host; DoS drives it
     "dst_flow_count",
     "src_ports_per_peer",   # ports touched per host reached -- scan vs. session
@@ -48,7 +49,6 @@ FEATURE_NAMES = [
 
 def windowed_host_features(
     df: pd.DataFrame, window_size: int, byte_col: str = "IN_BYTES",
-    duration_col: str = "FLOW_DURATION_MILLISECONDS",
 ) -> np.ndarray:
     """Per-flow array of its endpoints' behaviour within the flow's own window.
 
@@ -65,7 +65,6 @@ def windowed_host_features(
         "port": df[DPORT].to_numpy(),
         "proto": df[PROTO].to_numpy(),
         "bytes": df[byte_col].to_numpy(),
-        "dur": df[duration_col].to_numpy(),
     })
 
     src_agg = work.groupby(["win", "src"], observed=True, sort=False).agg(
@@ -74,7 +73,6 @@ def windowed_host_features(
         src_flow_count=("dst", "size"),
         src_distinct_proto=("proto", "nunique"),
         src_bytes_total=("bytes", "sum"),
-        src_mean_duration=("dur", "mean"),
     ).reset_index()
 
     dst_agg = work.groupby(["win", "dst"], observed=True, sort=False).agg(

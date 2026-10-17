@@ -50,6 +50,7 @@ from gnnids.graph.dataset import SnapshotDataset  # noqa: E402
 from gnnids.graph.inputs import load_graph_inputs  # noqa: E402
 from gnnids.training.campaign import fingerprint, read_if_matching  # noqa: E402
 from gnnids.training.loop import pick_device, train_one  # noqa: E402
+from gnnids.data.version import version_for_preprocess_config  # noqa: E402
 
 
 def build_holdout_datasets(inputs, plan, window, max_windows=None) -> dict:
@@ -212,6 +213,7 @@ def write_merged(ctx: dict, path: Path, results: dict, skipped: dict,
         "dataset": ctx["ds_cfg"]["name"],
         "protocol": "leave-one-attack-out (D4, Protocol 2)",
         "smoke": smoke, "fingerprint": ctx["fingerprint"],
+        "data_version": version_for_preprocess_config(gnn_cfg["preprocess_config"]),
         "ablation": cfg["ablation"],
         "reported_at_prevalence": gnn_cfg["eval"]["target_prevalence"],
         "config": cfg, "gnn_config": gnn_cfg,
@@ -389,6 +391,10 @@ def main() -> None:
         print(f"\n  WARNING: these runs failed and are excluded: {failed}")
     shown = out_path.relative_to(REPO_ROOT) if out_path.is_relative_to(REPO_ROOT) else out_path
     print(f"\nwritten -> {shown}\n")
+    if failed:
+        # Non-zero, so the campaign runner records the step as failed (it used
+        # to exit 0 whatever happened).
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
