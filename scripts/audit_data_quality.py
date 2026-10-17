@@ -155,7 +155,8 @@ def audit(key: str, max_auc_rows: int) -> dict:
     disagree = (binary == 1) != (fam != "Benign")
     src = meta["IPV4_SRC_ADDR"].astype(str).to_numpy()
     dst = meta["IPV4_DST_ADDR"].astype(str).to_numpy()
-    private = lambda a: np.char.startswith(a.astype("U15"), ("192.168.", "10.", "172.16.", "59.166.", "149.171."))
+    prefixes = ("192.168.", "10.", "172.16.", "59.166.", "149.171.")
+    private = lambda a: pd.Series(a).str.startswith(prefixes).to_numpy()
     involves_external = ~private(src) | ~private(dst)
     involves_router = (src == "192.168.1.1") | (dst == "192.168.1.1")
     def by_label(mask):

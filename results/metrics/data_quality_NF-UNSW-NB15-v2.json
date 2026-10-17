@@ -518,107 +518,257 @@
   },
   "per_family_top_auc": {
     "Analysis": {
+      "MIN_IP_PKT_LEN": 0.9846,
+      "MIN_TTL": 0.9787,
+      "MAX_TTL": 0.9716,
       "OUT_PKTS": 0.9295,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.9274,
       "DST_TO_SRC_SECOND_BYTES": 0.9254,
       "OUT_BYTES": 0.9226,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.9211,
-      "L4_DST_PORT": 0.9115,
-      "L4_SRC_PORT": 0.877,
-      "IN_PKTS": 0.8392
+      "NUM_PKTS_UP_TO_128_BYTES": 0.9211
     },
     "Backdoor": {
+      "MIN_IP_PKT_LEN": 0.9858,
+      "MIN_TTL": 0.9798,
+      "MAX_TTL": 0.9737,
       "DST_TO_SRC_SECOND_BYTES": 0.9534,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.9514,
       "OUT_BYTES": 0.9511,
       "OUT_PKTS": 0.9465,
-      "L4_SRC_PORT": 0.9241,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.9197,
-      "L4_DST_PORT": 0.902,
-      "RETRANSMITTED_OUT_BYTES": 0.8406
+      "L4_SRC_PORT": 0.9241
     },
     "Benign": {
+      "MIN_TTL": 0.9944,
+      "MAX_TTL": 0.9939,
+      "MIN_IP_PKT_LEN": 0.9886,
+      "SERVER_TCP_FLAGS": 0.8,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.7937,
       "OUT_BYTES": 0.7819,
       "DST_TO_SRC_SECOND_BYTES": 0.7816,
-      "OUT_PKTS": 0.7787,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.7656,
-      "RETRANSMITTED_OUT_PKTS": 0.7477,
-      "RETRANSMITTED_OUT_BYTES": 0.7437,
-      "IN_PKTS": 0.7094
+      "OUT_PKTS": 0.7787
     },
     "DoS": {
+      "MIN_TTL": 0.9749,
+      "MAX_TTL": 0.9736,
+      "MIN_IP_PKT_LEN": 0.9679,
+      "SERVER_TCP_FLAGS": 0.7949,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.7834,
       "DST_TO_SRC_SECOND_BYTES": 0.7693,
       "OUT_PKTS": 0.7671,
-      "OUT_BYTES": 0.7661,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.7657,
-      "RETRANSMITTED_OUT_PKTS": 0.7318,
-      "L4_DST_PORT": 0.7254,
-      "RETRANSMITTED_OUT_BYTES": 0.7211
+      "OUT_BYTES": 0.7661
     },
     "Exploits": {
+      "MAX_TTL": 0.9736,
+      "MIN_TTL": 0.9721,
+      "MIN_IP_PKT_LEN": 0.963,
       "SHORTEST_FLOW_PKT": 0.9073,
       "TCP_WIN_MAX_OUT": 0.7612,
-      "L4_DST_PORT": 0.6324,
-      "ICMP_TYPE": 0.6281,
-      "DST_TO_SRC_AVG_THROUGHPUT": 0.6259,
-      "OUT_PKTS": 0.6237,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.6226,
-      "OUT_BYTES": 0.6083
+      "SERVER_TCP_FLAGS": 0.7485,
+      "L7_PROTO": 0.6831,
+      "L4_DST_PORT": 0.6324
     },
     "Fuzzers": {
+      "MAX_TTL": 0.9863,
+      "MIN_TTL": 0.9836,
+      "MIN_IP_PKT_LEN": 0.975,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.8314,
       "OUT_BYTES": 0.8238,
       "DST_TO_SRC_SECOND_BYTES": 0.8233,
       "RETRANSMITTED_OUT_BYTES": 0.8056,
-      "RETRANSMITTED_OUT_PKTS": 0.8048,
-      "OUT_PKTS": 0.7938,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.7563,
-      "SHORTEST_FLOW_PKT": 0.7364
+      "RETRANSMITTED_OUT_PKTS": 0.8048
     },
     "Generic": {
+      "MIN_IP_PKT_LEN": 0.9853,
+      "MIN_TTL": 0.9829,
+      "MAX_TTL": 0.9761,
       "NUM_PKTS_UP_TO_128_BYTES": 0.9152,
       "OUT_PKTS": 0.9078,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.8992,
       "DST_TO_SRC_SECOND_BYTES": 0.8969,
-      "OUT_BYTES": 0.8954,
-      "SRC_TO_DST_SECOND_BYTES": 0.8638,
-      "SRC_TO_DST_AVG_THROUGHPUT": 0.8545,
-      "IN_BYTES": 0.8445
+      "OUT_BYTES": 0.8954
     },
     "Reconnaissance": {
+      "MIN_TTL": 0.9829,
+      "MAX_TTL": 0.9826,
+      "MIN_IP_PKT_LEN": 0.9781,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.8788,
       "DST_TO_SRC_SECOND_BYTES": 0.8742,
       "OUT_BYTES": 0.8654,
       "RETRANSMITTED_OUT_PKTS": 0.8585,
-      "RETRANSMITTED_OUT_BYTES": 0.8583,
-      "OUT_PKTS": 0.8442,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.8167,
-      "LONGEST_FLOW_PKT": 0.801
+      "RETRANSMITTED_OUT_BYTES": 0.8583
     },
     "Shellcode": {
+      "MIN_TTL": 0.983,
+      "MAX_TTL": 0.9822,
+      "MIN_IP_PKT_LEN": 0.9766,
       "DST_TO_SRC_SECOND_BYTES": 0.897,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.8926,
       "OUT_BYTES": 0.8877,
       "RETRANSMITTED_OUT_BYTES": 0.8578,
-      "RETRANSMITTED_OUT_PKTS": 0.8578,
-      "OUT_PKTS": 0.856,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.8338,
-      "L4_DST_PORT": 0.8163
+      "RETRANSMITTED_OUT_PKTS": 0.8578
     },
     "Worms": {
+      "MAX_TTL": 0.9854,
+      "MIN_TTL": 0.9819,
+      "MIN_IP_PKT_LEN": 0.9697,
+      "L7_PROTO": 0.8296,
       "SHORTEST_FLOW_PKT": 0.8147,
-      "DST_TO_SRC_AVG_THROUGHPUT": 0.7317,
-      "RETRANSMITTED_IN_PKTS": 0.7248,
-      "RETRANSMITTED_OUT_PKTS": 0.7147,
-      "RETRANSMITTED_OUT_BYTES": 0.7146,
-      "NUM_PKTS_256_TO_512_BYTES": 0.714,
-      "DST_TO_SRC_SECOND_BYTES": 0.7136,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.706
+      "TCP_FLAGS": 0.7684,
+      "SERVER_TCP_FLAGS": 0.7585,
+      "CLIENT_TCP_FLAGS": 0.7548
     }
   },
   "per_family_shortcuts": [
+    {
+      "family": "Benign",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9944
+    },
+    {
+      "family": "Benign",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9939
+    },
+    {
+      "family": "Benign",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9886
+    },
+    {
+      "family": "Fuzzers",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9863
+    },
+    {
+      "family": "Backdoor",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9858
+    },
+    {
+      "family": "Worms",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9854
+    },
+    {
+      "family": "Generic",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9853
+    },
+    {
+      "family": "Analysis",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9846
+    },
+    {
+      "family": "Fuzzers",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9836
+    },
+    {
+      "family": "Shellcode",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.983
+    },
+    {
+      "family": "Generic",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9829
+    },
+    {
+      "family": "Reconnaissance",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9829
+    },
+    {
+      "family": "Reconnaissance",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9826
+    },
+    {
+      "family": "Shellcode",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9822
+    },
+    {
+      "family": "Worms",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9819
+    },
+    {
+      "family": "Backdoor",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9798
+    },
+    {
+      "family": "Analysis",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9787
+    },
+    {
+      "family": "Reconnaissance",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9781
+    },
+    {
+      "family": "Shellcode",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9766
+    },
+    {
+      "family": "Generic",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9761
+    },
+    {
+      "family": "Fuzzers",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.975
+    },
+    {
+      "family": "DoS",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9749
+    },
+    {
+      "family": "Backdoor",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9737
+    },
+    {
+      "family": "DoS",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9736
+    },
+    {
+      "family": "Exploits",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9736
+    },
+    {
+      "family": "Exploits",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.9721
+    },
+    {
+      "family": "Analysis",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9716
+    },
+    {
+      "family": "Worms",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9697
+    },
+    {
+      "family": "DoS",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.9679
+    },
+    {
+      "family": "Exploits",
+      "feature": "MIN_IP_PKT_LEN",
+      "abs_auc": 0.963
+    },
     {
       "family": "Backdoor",
       "feature": "DST_TO_SRC_SECOND_BYTES",
@@ -635,10 +785,56 @@
       "abs_auc": 0.9511
     }
   ],
+  "labels": {
+    "binary_disagrees_with_family": 0,
+    "involves_external_address": {
+      "share_of_rows": 0.0527,
+      "attack_rate_when_true": 0.7544,
+      "attack_rate_when_false": 0.0,
+      "share_by_family": {
+        "Analysis": 1.0,
+        "Backdoor": 1.0,
+        "Benign": 0.0135,
+        "DoS": 1.0,
+        "Exploits": 1.0,
+        "Fuzzers": 1.0,
+        "Generic": 1.0,
+        "Reconnaissance": 1.0,
+        "Shellcode": 1.0,
+        "Worms": 1.0
+      }
+    },
+    "involves_192_168_1_1": {
+      "share_of_rows": 0.0,
+      "attack_rate_when_true": null,
+      "attack_rate_when_false": 0.0398,
+      "share_by_family": {
+        "Analysis": 0.0,
+        "Backdoor": 0.0,
+        "Benign": 0.0,
+        "DoS": 0.0,
+        "Exploits": 0.0,
+        "Fuzzers": 0.0,
+        "Generic": 0.0,
+        "Reconnaissance": 0.0,
+        "Shellcode": 0.0,
+        "Worms": 0.0
+      }
+    }
+  },
+  "field_bounds_violations": {
+    "TCP_FLAGS": 0,
+    "CLIENT_TCP_FLAGS": 0,
+    "SERVER_TCP_FLAGS": 0,
+    "PROTOCOL": 0,
+    "ICMP_TYPE": 0,
+    "MIN_TTL": 0,
+    "MAX_TTL": 0
+  },
   "duplicates": {
     "with_hosts": {
-      "duplicate_rows_total": 34553,
-      "test_rows_also_in_train": 14,
+      "duplicate_rows_total": 12038,
+      "test_rows_also_in_train": 0,
       "test_rows_also_in_train_share": 0.0,
       "test_rows_also_in_train_by_family": {
         "Analysis": 0.0,
@@ -647,7 +843,7 @@
         "DoS": 0.0,
         "Exploits": 0.0,
         "Fuzzers": 0.0,
-        "Generic": 0.0015,
+        "Generic": 0.0,
         "Reconnaissance": 0.0,
         "Shellcode": 0.0,
         "Worms": 0.0
@@ -665,35 +861,34 @@
       }
     },
     "features_only": {
-      "duplicate_rows_total": 410944,
-      "test_rows_also_in_train": 104474,
+      "duplicate_rows_total": 406789,
+      "test_rows_also_in_train": 104470,
       "test_rows_also_in_train_share": 0.2232,
       "test_rows_also_in_train_by_family": {
         "Analysis": 0.8055,
         "Backdoor": 0.7082,
         "Benign": 0.2199,
-        "DoS": 0.3577,
+        "DoS": 0.3572,
         "Exploits": 0.0699,
         "Fuzzers": 0.107,
-        "Generic": 0.7693,
+        "Generic": 0.7688,
         "Reconnaissance": 0.1839,
         "Shellcode": 0.0,
         "Worms": 0.0
       },
-      "rows_whose_identical_twin_has_another_label": 14531,
+      "rows_whose_identical_twin_has_another_label": 14503,
       "contradictory_by_family": {
         "Analysis": 1932,
         "Backdoor": 1834,
-        "Benign": 14,
         "DoS": 2236,
         "Exploits": 2355,
         "Fuzzers": 2186,
-        "Generic": 2019,
+        "Generic": 2005,
         "Reconnaissance": 1945,
         "Worms": 10
       }
     }
   },
-  "generated_at": "2026-10-17T05:53:46.366918+00:00",
+  "generated_at": "2026-10-17T06:07:44.841240+00:00",
   "shortcut_threshold": 0.95
 }

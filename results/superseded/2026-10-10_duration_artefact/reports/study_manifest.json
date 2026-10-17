@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-10-10T04:57:24.568240+00:00",
+  "packs": "evidence_NF-ToN-IoT-v2.json",
+  "n_detections": 200,
+  "prompt_versions": [
+    "v1",
+    "v2"
+  ],
+  "only": [
+    "stub"
+  ],
+  "runs": [
+    {
+      "provider": "stub",
+      "model": null,
+      "billing": "free",
+      "prompt_version": "v1",
+      "ok": true,
+      "status": "complete"
+    },
+    {
+      "provider": "stub",
+      "model": null,
+      "billing": "free",
+      "prompt_version": "v2",
+      "ok": true,
+      "status": "complete"
+    }
+  ],
+  "projected_cost_usd": 0.0
+}

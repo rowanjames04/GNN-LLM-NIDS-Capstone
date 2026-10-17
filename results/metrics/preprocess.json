@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T04:18:43.227112+00:00",
+  "generated_at": "2026-10-17T06:06:07.275775+00:00",
   "config": {
     "dataset_config": "configs/dataset.yaml",
     "eda_metrics": "results/metrics/eda.json",
@@ -12,6 +12,15 @@
       "drop_uninformative": [
         "DNS_QUERY_ID",
         "ICMP_IPV4_TYPE"
+      ],
+      "drop_artefacts": [
+        "FLOW_DURATION_MILLISECONDS",
+        "DURATION_IN",
+        "DURATION_OUT",
+        "SRC_TO_DST_SECOND_BYTES",
+        "DST_TO_SRC_SECOND_BYTES",
+        "SRC_TO_DST_AVG_THROUGHPUT",
+        "DST_TO_SRC_AVG_THROUGHPUT"
       ],
       "identity": [
         "IPV4_SRC_ADDR",
@@ -76,11 +85,11 @@
     "capped": false
   },
   "schema": {
-    "n_continuous": 31,
+    "n_continuous": 24,
     "n_categorical": 5,
     "n_conditional_indicators": 4,
     "n_port_buckets": 2,
-    "n_log_transformed": 22,
+    "n_log_transformed": 16,
     "dropped": {
       "shortcuts": [
         "MIN_TTL",
@@ -90,6 +99,15 @@
       "uninformative": [
         "DNS_QUERY_ID",
         "ICMP_IPV4_TYPE"
+      ],
+      "artefacts": [
+        "FLOW_DURATION_MILLISECONDS",
+        "DURATION_IN",
+        "DURATION_OUT",
+        "SRC_TO_DST_SECOND_BYTES",
+        "DST_TO_SRC_SECOND_BYTES",
+        "SRC_TO_DST_AVG_THROUGHPUT",
+        "DST_TO_SRC_AVG_THROUGHPUT"
       ]
     },
     "continuous": [
@@ -99,20 +117,13 @@
       "IN_PKTS",
       "OUT_BYTES",
       "OUT_PKTS",
-      "FLOW_DURATION_MILLISECONDS",
-      "DURATION_IN",
-      "DURATION_OUT",
       "LONGEST_FLOW_PKT",
       "SHORTEST_FLOW_PKT",
       "MAX_IP_PKT_LEN",
-      "SRC_TO_DST_SECOND_BYTES",
-      "DST_TO_SRC_SECOND_BYTES",
       "RETRANSMITTED_IN_BYTES",
       "RETRANSMITTED_IN_PKTS",
       "RETRANSMITTED_OUT_BYTES",
       "RETRANSMITTED_OUT_PKTS",
-      "SRC_TO_DST_AVG_THROUGHPUT",
-      "DST_TO_SRC_AVG_THROUGHPUT",
       "NUM_PKTS_UP_TO_128_BYTES",
       "NUM_PKTS_128_TO_256_BYTES",
       "NUM_PKTS_256_TO_512_BYTES",
@@ -133,6 +144,7 @@
       "SERVER_TCP_FLAGS"
     ]
   },
+  "split_method": "contiguous",
   "splits": {
     "train": {
       "name": "train",
@@ -159,6 +171,11 @@
     "test": 0.073307
   },
   "rows_purged": 40000,
+  "rows_identical_to_previous_preprocessing": true,
+  "share_identical_to_a_training_row": {
+    "val": 0.2326,
+    "test": 0.2375
+  },
   "categorical_cardinalities": {
     "PROTOCOL": 3,
     "L7_PROTO": 7,

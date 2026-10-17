@@ -1,0 +1,195 @@
+{
+  "generated_at": "2026-08-22T04:18:43.227112+00:00",
+  "config": {
+    "dataset_config": "configs/dataset.yaml",
+    "eda_metrics": "results/metrics/eda.json",
+    "features": {
+      "drop_shortcuts": [
+        "MIN_TTL",
+        "MAX_TTL",
+        "MIN_IP_PKT_LEN"
+      ],
+      "drop_uninformative": [
+        "DNS_QUERY_ID",
+        "ICMP_IPV4_TYPE"
+      ],
+      "identity": [
+        "IPV4_SRC_ADDR",
+        "IPV4_DST_ADDR"
+      ],
+      "categorical": [
+        "PROTOCOL",
+        "L7_PROTO",
+        "TCP_FLAGS",
+        "CLIENT_TCP_FLAGS",
+        "SERVER_TCP_FLAGS"
+      ],
+      "categorical_min_frequency": 0.001,
+      "categorical_max_cardinality": 64,
+      "conditional": [
+        "ICMP_TYPE",
+        "DNS_QUERY_TYPE",
+        "DNS_TTL_ANSWER",
+        "FTP_COMMAND_RET_CODE"
+      ],
+      "ports": [
+        "L4_SRC_PORT",
+        "L4_DST_PORT"
+      ],
+      "log_transform": "from_eda",
+      "scaler": "standard"
+    },
+    "split": {
+      "method": "contiguous",
+      "train": 0.7,
+      "val": 0.1,
+      "test": 0.2,
+      "purge_gap": 10000,
+      "fit_on": "train"
+    },
+    "graph": {
+      "window": "fixed_count",
+      "window_size": 10000,
+      "window_sizes_to_sweep": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "directed": true,
+      "multigraph": true,
+      "node_identity": "ip",
+      "global_node_map": true
+    },
+    "output": {
+      "dir": "data/processed",
+      "stats": "results/metrics/preprocess.json",
+      "seed": 42
+    }
+  },
+  "n_rows": 2390275,
+  "load": {
+    "source_rows": 2390275,
+    "rows_loaded": 2390275,
+    "row_groups_total": 3,
+    "row_groups_read": 3,
+    "capped": false
+  },
+  "schema": {
+    "n_continuous": 31,
+    "n_categorical": 5,
+    "n_conditional_indicators": 4,
+    "n_port_buckets": 2,
+    "n_log_transformed": 22,
+    "dropped": {
+      "shortcuts": [
+        "MIN_TTL",
+        "MAX_TTL",
+        "MIN_IP_PKT_LEN"
+      ],
+      "uninformative": [
+        "DNS_QUERY_ID",
+        "ICMP_IPV4_TYPE"
+      ]
+    },
+    "continuous": [
+      "L4_SRC_PORT",
+      "L4_DST_PORT",
+      "IN_BYTES",
+      "IN_PKTS",
+      "OUT_BYTES",
+      "OUT_PKTS",
+      "FLOW_DURATION_MILLISECONDS",
+      "DURATION_IN",
+      "DURATION_OUT",
+      "LONGEST_FLOW_PKT",
+      "SHORTEST_FLOW_PKT",
+      "MAX_IP_PKT_LEN",
+      "SRC_TO_DST_SECOND_BYTES",
+      "DST_TO_SRC_SECOND_BYTES",
+      "RETRANSMITTED_IN_BYTES",
+      "RETRANSMITTED_IN_PKTS",
+      "RETRANSMITTED_OUT_BYTES",
+      "RETRANSMITTED_OUT_PKTS",
+      "SRC_TO_DST_AVG_THROUGHPUT",
+      "DST_TO_SRC_AVG_THROUGHPUT",
+      "NUM_PKTS_UP_TO_128_BYTES",
+      "NUM_PKTS_128_TO_256_BYTES",
+      "NUM_PKTS_256_TO_512_BYTES",
+      "NUM_PKTS_512_TO_1024_BYTES",
+      "NUM_PKTS_1024_TO_1514_BYTES",
+      "TCP_WIN_MAX_IN",
+      "TCP_WIN_MAX_OUT",
+      "ICMP_TYPE",
+      "DNS_QUERY_TYPE",
+      "DNS_TTL_ANSWER",
+      "FTP_COMMAND_RET_CODE"
+    ],
+    "categorical": [
+      "PROTOCOL",
+      "L7_PROTO",
+      "TCP_FLAGS",
+      "CLIENT_TCP_FLAGS",
+      "SERVER_TCP_FLAGS"
+    ]
+  },
+  "splits": {
+    "train": {
+      "name": "train",
+      "start": 0,
+      "stop": 1663192,
+      "n_rows": 1663192
+    },
+    "val": {
+      "name": "val",
+      "start": 1683192,
+      "stop": 1902219,
+      "n_rows": 219027
+    },
+    "test": {
+      "name": "test",
+      "start": 1922219,
+      "stop": 2390275,
+      "n_rows": 468056
+    }
+  },
+  "split_attack_rates": {
+    "train": 0.026224,
+    "val": 0.067115,
+    "test": 0.073307
+  },
+  "rows_purged": 40000,
+  "categorical_cardinalities": {
+    "PROTOCOL": 3,
+    "L7_PROTO": 7,
+    "TCP_FLAGS": 8,
+    "CLIENT_TCP_FLAGS": 8,
+    "SERVER_TCP_FLAGS": 10,
+    "L4_SRC_PORT_bucket": 3,
+    "L4_DST_PORT_bucket": 3,
+    "ICMP_TYPE_present": 2,
+    "DNS_QUERY_TYPE_present": 2,
+    "DNS_TTL_ANSWER_present": 2,
+    "FTP_COMMAND_RET_CODE_present": 2
+  },
+  "gate_checks": {
+    "edge_count_equals_flow_count": true,
+    "node_count_equals_unique_ips": true,
+    "attack_count_preserved": true,
+    "node_indices_are_bijective": true,
+    "no_nan_in_features": true
+  },
+  "window_sweep": {},
+  "attack_families": {
+    "Analysis": 0,
+    "Backdoor": 1,
+    "Benign": 2,
+    "DoS": 3,
+    "Exploits": 4,
+    "Fuzzers": 5,
+    "Generic": 6,
+    "Reconnaissance": 7,
+    "Shellcode": 8,
+    "Worms": 9
+  }
+}

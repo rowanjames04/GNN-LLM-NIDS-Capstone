@@ -55,6 +55,7 @@ from gnnids.eval.metrics import aggregate_seeds, choose_threshold  # noqa: E402
 # Safe here despite xgboost: gnnids.graph.inputs imports no torch (C3).
 from gnnids.graph.inputs import one_hot  # noqa: E402
 from gnnids.eval.prevalence import report_both, subsample_to_prevalence  # noqa: E402
+from gnnids.data.version import data_version  # noqa: E402
 
 OUT_DIR = REPO_ROOT / "results" / "metrics" / "baselines"
 
@@ -78,7 +79,6 @@ def train_torch_mlp(
     """
     import torch
     from gnnids.models.mlp import FlowMLP, FocalLoss
-from gnnids.data.version import data_version  # noqa: E402
 
     torch.manual_seed(seed)
     np.random.seed(seed)

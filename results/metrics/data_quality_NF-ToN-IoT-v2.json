@@ -529,33 +529,33 @@
     },
     "backdoor": {
       "OUT_PKTS": 0.9863,
+      "MIN_TTL": 0.977,
+      "MAX_TTL": 0.9769,
       "IN_PKTS": 0.9664,
       "NUM_PKTS_UP_TO_128_BYTES": 0.9657,
       "SRC_TO_DST_AVG_THROUGHPUT": 0.9343,
       "IN_BYTES": 0.922,
-      "DST_TO_SRC_AVG_THROUGHPUT": 0.9065,
-      "SRC_TO_DST_SECOND_BYTES": 0.8954,
-      "OUT_BYTES": 0.8799
+      "DST_TO_SRC_AVG_THROUGHPUT": 0.9065
     },
     "ddos": {
       "TCP_WIN_MAX_IN": 0.8697,
       "TCP_WIN_MAX_OUT": 0.8542,
+      "MIN_TTL": 0.8288,
+      "MAX_TTL": 0.8288,
       "flag:duration_wrapped": 0.8221,
       "FLOW_DURATION_MILLISECONDS": 0.8215,
       "DURATION_OUT": 0.8166,
-      "NUM_PKTS_UP_TO_128_BYTES": 0.8163,
-      "IN_PKTS": 0.8119,
-      "SRC_TO_DST_SECOND_BYTES": 0.8072
+      "NUM_PKTS_UP_TO_128_BYTES": 0.8163
     },
     "dos": {
       "TCP_WIN_MAX_IN": 0.861,
+      "CLIENT_TCP_FLAGS": 0.8499,
+      "TCP_FLAGS": 0.8286,
+      "DNS_QUERY_ID": 0.8063,
+      "PROTOCOL": 0.8023,
       "DNS_QUERY_TYPE": 0.7921,
       "L4_DST_PORT": 0.7711,
-      "SRC_TO_DST_AVG_THROUGHPUT": 0.7649,
-      "SHORTEST_FLOW_PKT": 0.7097,
-      "IN_BYTES": 0.6888,
-      "SRC_TO_DST_SECOND_BYTES": 0.6777,
-      "TCP_WIN_MAX_OUT": 0.6647
+      "SRC_TO_DST_AVG_THROUGHPUT": 0.7649
     },
     "injection": {
       "OUT_BYTES": 0.8848,
@@ -563,59 +563,59 @@
       "OUT_PKTS": 0.8693,
       "LONGEST_FLOW_PKT": 0.8639,
       "MAX_IP_PKT_LEN": 0.8639,
+      "CLIENT_TCP_FLAGS": 0.848,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.846,
-      "TCP_WIN_MAX_OUT": 0.8448,
-      "IN_BYTES": 0.8293
+      "TCP_WIN_MAX_OUT": 0.8448
     },
     "mitm": {
       "SHORTEST_FLOW_PKT": 0.9181,
+      "MIN_IP_PKT_LEN": 0.9129,
       "DNS_QUERY_TYPE": 0.9117,
-      "TCP_WIN_MAX_IN": 0.8984,
-      "L4_DST_PORT": 0.8919,
-      "DST_TO_SRC_AVG_THROUGHPUT": 0.7476,
-      "LONGEST_FLOW_PKT": 0.7234,
-      "MAX_IP_PKT_LEN": 0.7234,
-      "DNS_TTL_ANSWER": 0.7213
+      "DNS_QUERY_ID": 0.9071,
+      "PROTOCOL": 0.9058,
+      "TCP_FLAGS": 0.9019,
+      "CLIENT_TCP_FLAGS": 0.9011,
+      "TCP_WIN_MAX_IN": 0.8984
     },
     "password": {
       "LONGEST_FLOW_PKT": 0.8455,
       "MAX_IP_PKT_LEN": 0.8455,
+      "TCP_FLAGS": 0.8395,
+      "CLIENT_TCP_FLAGS": 0.8334,
       "TCP_WIN_MAX_OUT": 0.8306,
       "NUM_PKTS_UP_TO_128_BYTES": 0.8255,
-      "OUT_BYTES": 0.8196,
-      "OUT_PKTS": 0.8185,
-      "DST_TO_SRC_SECOND_BYTES": 0.8169,
-      "TCP_WIN_MAX_IN": 0.7884
+      "SERVER_TCP_FLAGS": 0.825,
+      "OUT_BYTES": 0.8196
     },
     "ransomware": {
+      "TCP_FLAGS": 0.9741,
       "IN_BYTES": 0.9497,
       "SRC_TO_DST_AVG_THROUGHPUT": 0.9401,
       "SRC_TO_DST_SECOND_BYTES": 0.9216,
       "LONGEST_FLOW_PKT": 0.9184,
       "MAX_IP_PKT_LEN": 0.9184,
       "NUM_PKTS_128_TO_256_BYTES": 0.9083,
-      "IN_PKTS": 0.8985,
-      "NUM_PKTS_1024_TO_1514_BYTES": 0.867
+      "IN_PKTS": 0.8985
     },
     "scanning": {
       "DST_TO_SRC_SECOND_BYTES": 0.8188,
       "OUT_BYTES": 0.8183,
+      "MIN_IP_PKT_LEN": 0.8168,
       "NUM_PKTS_UP_TO_128_BYTES": 0.8035,
       "OUT_PKTS": 0.8,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.7874,
       "L4_DST_PORT": 0.7505,
-      "SRC_TO_DST_SECOND_BYTES": 0.7491,
-      "IN_BYTES": 0.7446
+      "SRC_TO_DST_SECOND_BYTES": 0.7491
     },
     "xss": {
       "L4_DST_PORT": 0.8502,
+      "MIN_IP_PKT_LEN": 0.8462,
       "LONGEST_FLOW_PKT": 0.8369,
       "MAX_IP_PKT_LEN": 0.8369,
       "DST_TO_SRC_AVG_THROUGHPUT": 0.8278,
       "SRC_TO_DST_AVG_THROUGHPUT": 0.8166,
       "SHORTEST_FLOW_PKT": 0.8058,
-      "IN_BYTES": 0.7691,
-      "OUT_BYTES": 0.7669
+      "IN_BYTES": 0.7691
     }
   },
   "per_family_shortcuts": [
@@ -623,6 +623,21 @@
       "family": "backdoor",
       "feature": "OUT_PKTS",
       "abs_auc": 0.9863
+    },
+    {
+      "family": "backdoor",
+      "feature": "MIN_TTL",
+      "abs_auc": 0.977
+    },
+    {
+      "family": "backdoor",
+      "feature": "MAX_TTL",
+      "abs_auc": 0.9769
+    },
+    {
+      "family": "ransomware",
+      "feature": "TCP_FLAGS",
+      "abs_auc": 0.9741
     },
     {
       "family": "backdoor",
@@ -635,63 +650,92 @@
       "abs_auc": 0.9657
     }
   ],
-  "duplicates": {
-    "with_hosts": {
-      "duplicate_rows_total": 205811,
-      "test_rows_also_in_train": 47155,
-      "test_rows_also_in_train_share": 0.0396,
-      "test_rows_also_in_train_by_family": {
-        "Benign": 0.0138,
-        "backdoor": 0.0,
-        "ddos": 0.0011,
-        "dos": 0.255,
-        "injection": 0.0016,
-        "mitm": 0.1449,
-        "password": 0.0001,
-        "ransomware": 0.0,
-        "scanning": 0.0001,
-        "xss": 0.1291
-      },
-      "rows_whose_identical_twin_has_another_label": 1393,
-      "contradictory_by_family": {
-        "ddos": 79,
-        "dos": 143,
-        "injection": 459,
-        "password": 13,
-        "scanning": 16,
-        "xss": 683
+  "labels": {
+    "binary_disagrees_with_family": 0,
+    "involves_external_address": {
+      "share_of_rows": 0.0714,
+      "attack_rate_when_true": 0.6438,
+      "attack_rate_when_false": 0.654,
+      "share_by_family": {
+        "Benign": 0.0734,
+        "backdoor": 0.0067,
+        "ddos": 0.0006,
+        "dos": 0.0664,
+        "injection": 0.1579,
+        "mitm": 0.0358,
+        "password": 0.0556,
+        "ransomware": 0.0035,
+        "scanning": 0.0,
+        "xss": 0.2302
       }
     },
-    "features_only": {
-      "duplicate_rows_total": 1454676,
-      "test_rows_also_in_train": 247329,
-      "test_rows_also_in_train_share": 0.2078,
-      "test_rows_also_in_train_by_family": {
-        "Benign": 0.2906,
-        "backdoor": 0.0002,
-        "ddos": 0.0783,
-        "dos": 0.3219,
-        "injection": 0.0337,
-        "mitm": 0.1929,
-        "password": 0.1353,
+    "involves_192_168_1_1": {
+      "share_of_rows": 0.1323,
+      "attack_rate_when_true": 0.9293,
+      "attack_rate_when_false": 0.6112,
+      "share_by_family": {
+        "Benign": 0.027,
+        "backdoor": 0.002,
+        "ddos": 0.0168,
+        "dos": 0.7377,
+        "injection": 0.0521,
+        "mitm": 0.9642,
+        "password": 0.0031,
         "ransomware": 0.0,
-        "scanning": 0.1307,
-        "xss": 0.2359
-      },
-      "rows_whose_identical_twin_has_another_label": 23731,
-      "contradictory_by_family": {
-        "Benign": 690,
-        "backdoor": 2,
-        "ddos": 2280,
-        "dos": 8541,
-        "injection": 2523,
-        "mitm": 851,
-        "password": 150,
-        "scanning": 170,
-        "xss": 8524
+        "scanning": 0.0013,
+        "xss": 0.513
       }
     }
   },
-  "generated_at": "2026-10-17T05:53:31.897608+00:00",
+  "field_bounds_violations": {
+    "TCP_FLAGS": 0,
+    "CLIENT_TCP_FLAGS": 0,
+    "SERVER_TCP_FLAGS": 0,
+    "PROTOCOL": 0,
+    "ICMP_TYPE": 0,
+    "MIN_TTL": 0,
+    "MAX_TTL": 0
+  },
+  "duplicates": {
+    "with_hosts": {
+      "duplicate_rows_total": 0,
+      "test_rows_also_in_train": 0,
+      "test_rows_also_in_train_share": 0.0,
+      "test_rows_also_in_train_by_family": {
+        "Benign": 0.0,
+        "backdoor": 0.0,
+        "ddos": 0.0,
+        "dos": 0.0,
+        "injection": 0.0,
+        "mitm": 0.0,
+        "password": 0.0,
+        "ransomware": 0.0,
+        "scanning": 0.0,
+        "xss": 0.0
+      },
+      "rows_whose_identical_twin_has_another_label": 0,
+      "contradictory_by_family": {}
+    },
+    "features_only": {
+      "duplicate_rows_total": 1143180,
+      "test_rows_also_in_train": 174481,
+      "test_rows_also_in_train_share": 0.1466,
+      "test_rows_also_in_train_by_family": {
+        "Benign": 0.271,
+        "backdoor": 0.0,
+        "ddos": 0.0736,
+        "dos": 0.0005,
+        "injection": 0.0261,
+        "mitm": 0.0,
+        "password": 0.1349,
+        "ransomware": 0.0,
+        "scanning": 0.1305,
+        "xss": 0.0008
+      },
+      "rows_whose_identical_twin_has_another_label": 0,
+      "contradictory_by_family": {}
+    }
+  },
+  "generated_at": "2026-10-17T06:07:27.356829+00:00",
   "shortcut_threshold": 0.95
 }
