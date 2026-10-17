@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-17T15:21:56 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-17T17:04:04 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
