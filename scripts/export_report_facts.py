@@ -372,6 +372,47 @@ def sec_explainability() -> list[str]:
     return out
 
 
+def _prompt_sensitivity() -> list[str]:
+    """v3 against v4 on the packs EVERY v4 run reached (D46 makes that a
+    balanced subset). The free allowance ran out during v4, so a per-file mean
+    would compare prompts over different packs."""
+    import statistics
+    rep = RESULTS / "reports"
+    runs = {}
+    for f in sorted(rep.glob("reports_ollama_*_v[34].json")):
+        d = json.loads(f.read_text())
+        runs[(d["model"], d["prompt_version"])] = {r["detection_id"]: r for r in d["reports"]}
+    v4 = [ids for (m, v), ids in runs.items() if v == "v4"]
+    if not v4:
+        return []
+    common = set.intersection(*(set(ids) for ids in v4))
+    out = ["", "### Prompt sensitivity: v3 against v4 on the same packs", "",
+           f"The free usage allowance ran out during prompt v4, so v4 covers only the "
+           f"first packs of the balanced order. This table compares the two prompts on "
+           f"the {len(common)} packs that every v4 run reached; v3 numbers here are "
+           f"therefore not the 200-pack headline above.", "",
+           "| Model | Prompt | Packs | Groundedness | Direction faithful | Borderline "
+           "conveyed | Names predicted class | Mean words |", "|---|---|---|---|---|---|---|---|"]
+    def stat(rows, fn):
+        vals = [fn(r) for r in rows]
+        vals = [v for v in vals if v is not None]
+        return f"{statistics.mean(vals):.4f}" if vals else "n/a"
+    for model in sorted({m for m, _ in runs}):
+        for v in ("v3", "v4"):
+            ids = runs.get((model, v))
+            if not ids:
+                continue
+            rows = [ids[i] for i in common if i in ids and ids[i].get("ok")]
+            out.append(
+                f"| {model} | {v} | {len(rows)} | "
+                f"{stat(rows, lambda r: (r.get('scores') or {}).get('groundedness'))} | "
+                f"{stat(rows, lambda r: None if not (r.get('direction') or {}).get('n_checked') else float(r['direction']['direction_faithful']))} | "
+                f"{stat(rows, lambda r: None if not r.get('borderline') else float(r['borderline']['borderline_conveyed']))} | "
+                f"{stat(rows, lambda r: None if not r.get('classification') else float(r['classification']['names_predicted']))} | "
+                f"{stat(rows, lambda r: (r.get('scores') or {}).get('report_words'))} |")
+    return out
+
+
 def sec_llm() -> list[str]:
     out = ["## 9. Language-model comparison", ""]
     rows = script("summarise_llm_study").rows()
@@ -403,6 +444,7 @@ def sec_llm() -> list[str]:
             f"{f(r['attr_coverage'])} | {f(r['attr_cites_none'])} | "
             f"{f(r['latency_p50'], 2)} / {f(r['latency_p95'], 2)} | "
             f"{money(r['cost'])} | {money(r['reference_cost'])} |")
+    out += _prompt_sensitivity()
     out += ["", "### Direction of reasons, and borderline detections (D49)", "",
             "| Model | Prompt | Uncertainty conveyed (ambiguous category) | Reports with a "
             "checkable reason | Direction faithful | Direction errors | Borderline "

@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-17T17:04:04 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-17T22:26:17 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -363,6 +363,25 @@ Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdo
 | ollama/nemotron-3-super | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.9750 | 0.0000 | 0.6700 | 0.0000 | 44.33 / 81.60 | unknown | 0.0495 |
 | ollama/nemotron-3-ultra | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.8250 | 0.0000 | 0.6475 | 0.0000 | 11.72 / 17.83 | unknown | 0.1662 |
 | stub/template-v1 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+
+### Prompt sensitivity: v3 against v4 on the same packs
+
+The free usage allowance ran out during prompt v4, so v4 covers only the first packs of the balanced order. This table compares the two prompts on the 40 packs that every v4 run reached; v3 numbers here are therefore not the 200-pack headline above.
+
+| Model | Prompt | Packs | Groundedness | Direction faithful | Borderline conveyed | Names predicted class | Mean words |
+|---|---|---|---|---|---|---|---|
+| gemma4:31b | v3 | 40 | 1.0000 | 0.9333 | 1.0000 | 1.0000 | 193.9250 |
+| gemma4:31b | v4 | 40 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 177.8750 |
+| gpt-oss:120b | v3 | 40 | 0.9983 | 0.9286 | 1.0000 | 1.0000 | 241.5500 |
+| gpt-oss:120b | v4 | 40 | 1.0000 | 0.8462 | 1.0000 | 1.0000 | 431.8750 |
+| gpt-oss:20b | v3 | 40 | 1.0000 | 0.9259 | 1.0000 | 1.0000 | 234.8000 |
+| gpt-oss:20b | v4 | 40 | 1.0000 | 0.8750 | 1.0000 | 1.0000 | 303.2250 |
+| nemotron-3-nano:30b | v3 | 40 | 1.0000 | 0.9211 | 1.0000 | 1.0000 | 312.5000 |
+| nemotron-3-nano:30b | v4 | 40 | 1.0000 | 0.9143 | 1.0000 | 1.0000 | 382.9250 |
+| nemotron-3-super | v3 | 40 | 1.0000 | 0.9231 | 1.0000 | 1.0000 | 255.7000 |
+| nemotron-3-super | v4 | 40 | 1.0000 | 0.9167 | 1.0000 | 1.0000 | 382.0750 |
+| nemotron-3-ultra | v3 | 40 | 0.9990 | 0.9231 | 1.0000 | 1.0000 | 253.4250 |
+| nemotron-3-ultra | v4 | 40 | 1.0000 | 0.9412 | 1.0000 | 1.0000 | 360.0000 |
 
 ### Direction of reasons, and borderline detections (D49)
 
