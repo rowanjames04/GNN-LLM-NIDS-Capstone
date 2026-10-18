@@ -103,7 +103,7 @@ class ReportLog:
         regenerated all of its reports and overwrote the file (C30).
         """
         finished = Path(finished)
-        if self.path.exists() or not finished.exists():
+        if not finished.exists():
             return None
         data = json.loads(finished.read_text())
         if {k: data.get(k) for k in IDENTITY_KEYS} != self.identity:
@@ -111,8 +111,14 @@ class ReportLog:
                 f"{finished.name} was written by a different run than this one "
                 f"({self.identity}). Move it aside or pass --fresh.")
         rows = {r["detection_id"]: r for r in data.get("reports", [])}
+        # Checked before the partial log: a log left by a LATER round (more
+        # packs) must not block an earlier round that is already finished. On
+        # 2026-10-18 a 75-row round-2 log made the 40-pack round-1 call refuse,
+        # as if the packs had changed (C36).
         if set(pack_ids) <= set(rows) and not force:
             return "complete"
+        if self.path.exists():
+            return None
         unknown = set(rows) - set(pack_ids)
         if unknown:
             raise ResumeMismatch(

@@ -265,3 +265,19 @@ def test_a_finished_run_is_not_regenerated_and_can_be_extended(tmp_path):
     other = ReportLog(tmp_path / "other.partial.jsonl", {**ident, "model": "n"})
     with pytest.raises(ResumeMismatch):
         other.seed_from_finished(finished, ["a", "b", "c"])
+
+
+def test_a_later_rounds_partial_log_does_not_block_a_finished_earlier_round(tmp_path):
+    """C36."""
+    from gnnids.llm.resume import ReportLog
+
+    ident = {"provider": "ollama", "model": "m", "prompt_version": "v4",
+             "packs_source": "p.json"}
+    finished = tmp_path / "reports.json"
+    finished.write_text(json.dumps({**ident, "reports": [{"detection_id": "a", "ok": True},
+                                                         {"detection_id": "b", "ok": True}]}))
+    log = ReportLog(tmp_path / "reports.partial.jsonl", ident)
+    log.start({"a": {"detection_id": "a"}, "b": {"detection_id": "b"},
+               "c": {"detection_id": "c"}})            # a round-3 log, 3 packs
+    assert log.seed_from_finished(finished, ["a", "b"]) == "complete"
+    assert log.seed_from_finished(finished, ["a", "b", "c", "d"]) is None   # resume from log
