@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-18T06:13:35 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-18T06:16:20 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -394,6 +394,33 @@ Each model is compared with itself, on the packs it answered under both prompts 
 | nemotron-3-super | v4 | 200 | 1.0000 | 0.9639 | 0.9583 | 1.0000 | 1.0000 | 377 |
 | nemotron-3-ultra | v3 | 200 | 0.9996 | 0.9699 | 1.0000 | 1.0000 | 1.0000 | 256 |
 | nemotron-3-ultra | v4 | 200 | 0.9996 | 0.9643 | 1.0000 | 0.6667 | 1.0000 | 353 |
+
+### Output beyond the note
+
+The service counts a model's reasoning as output tokens; only the note is kept and scored. Plain English needs about 1.3-1.7 tokens a word, so a higher ratio is reasoning nobody reads. Medians over completed reports.
+
+| Model | Prompt | Reports | Output tokens | Note words | Output tokens per note word |
+|---|---|---|---|---|---|
+| deepseek-v4-pro:0813 | v3 | 196 | 1,304 | 196 | 6.3 |
+| gemma4:31b | v3 | 200 | 323 | 192 | 1.7 |
+| glm-5.3 | v3 | 200 | 6,094 | 262 | 23.3 |
+| gpt-oss:120b | v3 | 200 | 595 | 240 | 2.5 |
+| gpt-oss:20b | v3 | 200 | 902 | 234 | 3.9 |
+| mistral-large-4 | v3 | 200 | 3,518 | 279 | 13.0 |
+| nemotron-3-nano:30b | v3 | 200 | 3,421 | 260 | 12.8 |
+| nemotron-3-super | v3 | 200 | 1,191 | 242 | 5.0 |
+| nemotron-3-ultra | v3 | 200 | 1,088 | 256 | 4.2 |
+| deepseek-v4-pro:0813 | v4 | 25 | 4,550 | 353 | 11.3 |
+| gemma4:31b | v4 | 200 | 380 | 172 | 2.2 |
+| glm-5.3 | v4 | 200 | 4,438 | 434 | 10.2 |
+| gpt-oss:120b | v4 | 200 | 1,150 | 416 | 2.8 |
+| gpt-oss:20b | v4 | 200 | 3,260 | 303 | 11.2 |
+| mistral-large-4 | v4 | 200 | 3,236 | 315 | 10.2 |
+| nemotron-3-nano:30b | v4 | 199 | 4,959 | 368 | 13.6 |
+| nemotron-3-super | v4 | 200 | 1,888 | 382 | 5.0 |
+| nemotron-3-ultra | v4 | 200 | 1,394 | 355 | 3.9 |
+
+List-price equivalent of every language-model call: $26.05 (v3 $14.21, v4 $11.84); $21.35 of it for reports that completed, the rest on failed or runaway generations. The calls ran first on Ollama's free allowance (D45) and then on a flat-fee subscription (D50); neither itemises per call, so what each call actually cost is unknown.
 
 ### Direction of reasons, and borderline detections (D49)
 

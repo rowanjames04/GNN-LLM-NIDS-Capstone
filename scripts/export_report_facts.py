@@ -416,6 +416,61 @@ def _prompt_sensitivity() -> list[str]:
     return out
 
 
+def _list_price_total() -> list[str]:
+    """What the whole sweep would cost at the service's list prices, failed
+    calls included (a runaway generation is billed in full). The study ran on
+    the free allowance, then a flat-fee subscription; neither itemises."""
+    total, done = {}, {}
+    for f in sorted((RESULTS / "reports").glob("reports_ollama_*_v[34].json")):
+        d = json.loads(f.read_text())
+        v = d["prompt_version"]
+        for r in d["reports"]:
+            c = r.get("reference_cost_usd") or 0.0
+            total[v] = total.get(v, 0.0) + c
+            if r.get("ok") and not r.get("degenerate"):
+                done[v] = done.get(v, 0.0) + c
+    if not total:
+        return []
+    parts = ", ".join(f"{v} ${total[v]:.2f}" for v in sorted(total))
+    return ["", f"List-price equivalent of every language-model call: "
+            f"${sum(total.values()):.2f} ({parts}); ${sum(done.values()):.2f} of it "
+            f"for reports that completed, the rest on failed or runaway generations. "
+            f"The calls ran first on Ollama's free allowance (D45) and then on a "
+            f"flat-fee subscription (D50); neither itemises per call, so what each "
+            f"call actually cost is unknown."]
+
+
+def _hidden_output() -> list[str]:
+    """How much each model generated beyond the note. The hosted service bills
+    reasoning as output tokens but the adapter keeps only the note, so the
+    ratio of output tokens to note words shows unseen reasoning: plain English
+    runs at roughly 1.3-1.7 tokens a word."""
+    import statistics
+    rows = []
+    for f in sorted((RESULTS / "reports").glob("reports_ollama_*_v[34].json")):
+        d = json.loads(f.read_text())
+        rs = [r for r in d["reports"] if r.get("ok") and not r.get("degenerate")
+              and r.get("output_tokens")]
+        if not rs:
+            continue
+        tok = statistics.median(r["output_tokens"] for r in rs)
+        words = statistics.median(len(r["report"].split()) for r in rs)
+        ratio = statistics.median(r["output_tokens"] / max(1, len(r["report"].split()))
+                                  for r in rs)
+        rows.append((d["prompt_version"], d["model"], len(rs), tok, words, ratio))
+    if not rows:
+        return []
+    out = ["", "### Output beyond the note", "",
+           "The service counts a model's reasoning as output tokens; only the note is "
+           "kept and scored. Plain English needs about 1.3-1.7 tokens a word, so a "
+           "higher ratio is reasoning nobody reads. Medians over completed reports.", "",
+           "| Model | Prompt | Reports | Output tokens | Note words | Output tokens per note word |",
+           "|---|---|---|---|---|---|"]
+    for v, m, n, tok, words, ratio in sorted(rows):
+        out.append(f"| {m} | {v} | {n} | {tok:,.0f} | {words:,.0f} | {ratio:.1f} |")
+    return out
+
+
 def sec_llm() -> list[str]:
     out = ["## 9. Language-model comparison", ""]
     rows = script("summarise_llm_study").rows()
@@ -448,6 +503,8 @@ def sec_llm() -> list[str]:
             f"{f(r['latency_p50'], 2)} / {f(r['latency_p95'], 2)} | "
             f"{money(r['cost'])} | {money(r['reference_cost'])} |")
     out += _prompt_sensitivity()
+    out += _hidden_output()
+    out += _list_price_total()
     out += ["", "### Direction of reasons, and borderline detections (D49)", "",
             "| Model | Prompt | Uncertainty conveyed (ambiguous category) | Reports with a "
             "checkable reason | Direction faithful | Direction errors | Borderline "
