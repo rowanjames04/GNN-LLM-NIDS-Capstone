@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T15:21:56.421557+00:00",
+  "generated_at": "2026-10-18T06:13:35.538018+00:00",
   "smoke": false,
   "figures": {
     "ablation": {
@@ -116,7 +116,7 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-17T15:21:55.602272+00:00"
+          "generated_at": "2026-10-18T06:07:33.042467+00:00"
         }
       ]
     },
@@ -127,7 +127,7 @@
       "sources": [
         {
           "file": "results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json",
-          "generated_at": "2026-10-17T15:21:55.602272+00:00"
+          "generated_at": "2026-10-18T06:07:33.042467+00:00"
         }
       ]
     },
@@ -145,11 +145,19 @@
     "llm": {
       "status": "drawn",
       "file": "results_09_llm_groundedness.png",
-      "caption": "Groundedness of each language model's reports on identical evidence packs and an identical prompt. Blue: all reports. Orange: the false-positive arm, where the detector was wrong. The line is the template control, which invents nothing by construction. n is the number of reports scored. Groundedness measures whether a report invented anything, not whether its reasoning is correct.",
+      "caption": "Groundedness of each language model's reports on identical evidence packs and an identical prompt. Blue: all reports. Orange: the false-positive arm, where the detector was wrong. The line is the template control, which invents nothing by construction. n is the number of reports scored. Groundedness measures whether a report invented anything, not whether its reasoning is correct. The axis is zoomed: the lowest point is 0.9965, so every model is within 0.0035 of the control.",
       "sources": [
+        {
+          "file": "results/reports/reports_ollama_deepseek-v4-pro-0813_v3.json",
+          "generated_at": "2026-10-18T01:32:47.501282+00:00"
+        },
         {
           "file": "results/reports/reports_ollama_gemma4-31b_v3.json",
           "generated_at": "2026-10-17T12:35:03.176501+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_glm-5.3_v3.json",
+          "generated_at": "2026-10-18T01:45:05.167394+00:00"
         },
         {
           "file": "results/reports/reports_ollama_gpt-oss-120b_v3.json",
@@ -158,6 +166,10 @@
         {
           "file": "results/reports/reports_ollama_gpt-oss-20b_v3.json",
           "generated_at": "2026-10-17T13:14:29.945409+00:00"
+        },
+        {
+          "file": "results/reports/reports_ollama_mistral-large-4_v3.json",
+          "generated_at": "2026-10-18T01:41:04.268969+00:00"
         },
         {
           "file": "results/reports/reports_ollama_nemotron-3-nano-30b_v3.json",

@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-18T01:45:38 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-18T06:13:35 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -290,7 +290,7 @@ PR-AUC of a random model at this prevalence: 0.04.
 
 ## 8. Explainability (over the evidence packs)
 
-*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-17T15:21:55 UTC.*
+*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-18T06:07:33 UTC.*
 
 200 evidence packs: 170 true attacks and 30 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
 
@@ -345,49 +345,55 @@ Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdo
 
 *Source: every `results/reports/reports_*.json`, pooled by `scripts/summarise_llm_study.py`.*
 
-| Model | Prompt | Reports | Failed | Groundedness | Fabricated-address reports | Groundedness on false positives | Names predicted class | Substitutes class | Attributed features cited | Cites none | Latency p50 / p95 (s) | Charged (USD) | List price (USD) |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| stub/template-v1 | v1 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.7345 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
-| stub/template-v1 | v2 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.7345 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
-| ollama/deepseek-v4-pro:0813 | v3 | 196 | 4 | 1.0000 | 0 | 1.0000 (n = 29) | 1.0000 | 0.0000 | 0.6686 | 0.0000 | 7.43 / 12.78 | unknown | 1.3371 |
-| ollama/gemma4:31b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.6062 | 0.0050 | 1.61 / 2.56 | unknown | 0.0584 |
-| ollama/glm-5.3 | v3 | 200 | 0 | 0.9992 | 0 | 0.9965 (n = 30) | 0.9950 | 0.0000 | 0.6120 | 0.0000 | 21.88 / 108.69 | unknown | 8.6262 |
-| ollama/gpt-oss:120b | v3 | 200 | 0 | 0.9993 | 0 | 1.0000 (n = 30) | 0.9500 | 0.0000 | 0.6112 | 0.0050 | 2.15 / 3.16 | unknown | 0.1060 |
-| ollama/gpt-oss:20b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 0.9800 | 0.0000 | 0.6095 | 0.0050 | 8.39 / 23.47 | unknown | 0.0869 |
-| ollama/mistral-large-4 | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.6878 | 0.0000 | 28.23 / 72.54 | unknown | 1.9323 |
-| ollama/nemotron-3-nano:30b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 0.9950 | 0.0000 | 0.6480 | 0.0000 | 15.27 / 55.40 | unknown | 0.2023 |
-| ollama/nemotron-3-super | v3 | 200 | 0 | 0.9997 | 0 | 1.0000 (n = 30) | 0.9850 | 0.0000 | 0.6610 | 0.0000 | 28.67 / 57.56 | unknown | 0.1588 |
-| ollama/nemotron-3-ultra | v3 | 200 | 0 | 0.9996 | 0 | 0.9986 (n = 30) | 1.0000 | 0.0000 | 0.6610 | 0.0000 | 13.63 / 27.61 | unknown | 0.6576 |
-| stub/template-v1 | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
-| ollama/gemma4:31b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.9875 | 0.0000 | 0.3725 | 0.0250 | 1.94 / 4.28 | unknown | 0.0229 |
-| ollama/gpt-oss:120b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.8750 | 0.0000 | 0.6194 | 0.0000 | 4.09 / 5.65 | unknown | 0.0658 |
-| ollama/gpt-oss:20b | v4 | 80 | 0 | 1.0000 | 0 | 1.0000 (n = 12) | 0.9625 | 0.0000 | 0.5550 | 0.0000 | 29.01 / 70.98 | unknown | 0.0950 |
-| ollama/nemotron-3-nano:30b | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 1.0000 | 0.0000 | 0.6763 | 0.0000 | 13.08 / 19.50 | unknown | 0.0549 |
-| ollama/nemotron-3-super | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.9750 | 0.0000 | 0.6700 | 0.0000 | 44.33 / 81.60 | unknown | 0.0495 |
-| ollama/nemotron-3-ultra | v4 | 40 | 0 | 1.0000 | 0 | 1.0000 (n = 6) | 0.8250 | 0.0000 | 0.6475 | 0.0000 | 11.72 / 17.83 | unknown | 0.1662 |
-| stub/template-v1 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| Model | Prompt | Reports | Failed | Groundedness | Fabricated-address reports | Groundedness on false positives | Names predicted class | Class faithful | Substitutes class | Attributed features cited | Cites none | Latency p50 / p95 (s) | Charged (USD) | List price (USD) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| stub/template-v1 | v1 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.7345 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| stub/template-v1 | v2 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.7345 | 0.0000 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| ollama/deepseek-v4-pro:0813 | v3 | 196 | 4 | 1.0000 | 0 | 1.0000 (n = 29) | 1.0000 | 1.0000 | 0.0000 | 0.6686 | 0.0000 | 7.43 / 12.78 | unknown | 1.3371 |
+| ollama/gemma4:31b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.6062 | 0.0050 | 1.61 / 2.56 | unknown | 0.0584 |
+| ollama/glm-5.3 | v3 | 200 | 0 | 0.9992 | 0 | 0.9965 (n = 30) | 1.0000 | 0.9950 | 0.0000 | 0.6120 | 0.0000 | 21.88 / 108.69 | unknown | 8.6262 |
+| ollama/gpt-oss:120b | v3 | 200 | 0 | 0.9993 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9500 | 0.0000 | 0.6112 | 0.0050 | 2.15 / 3.16 | unknown | 0.1060 |
+| ollama/gpt-oss:20b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9800 | 0.0000 | 0.6095 | 0.0050 | 8.39 / 23.47 | unknown | 0.0869 |
+| ollama/mistral-large-4 | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.6878 | 0.0000 | 28.23 / 72.54 | unknown | 1.9323 |
+| ollama/nemotron-3-nano:30b | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9950 | 0.0000 | 0.6480 | 0.0000 | 15.27 / 55.40 | unknown | 0.2023 |
+| ollama/nemotron-3-super | v3 | 200 | 0 | 0.9997 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9850 | 0.0000 | 0.6610 | 0.0000 | 28.67 / 57.56 | unknown | 0.1588 |
+| ollama/nemotron-3-ultra | v3 | 200 | 0 | 0.9996 | 0 | 0.9986 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.6610 | 0.0000 | 13.63 / 27.61 | unknown | 0.6576 |
+| stub/template-v1 | v3 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
+| ollama/deepseek-v4-pro:0813 | v4 | 25 | 15 | 1.0000 | 0 | 1.0000 (n = 2) | 1.0000 | 1.0000 | 0.0000 | 0.6640 | 0.0000 | 20.05 / 47.31 | unknown | 0.4473 |
+| ollama/gemma4:31b | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9950 | 0.0000 | 0.3770 | 0.0150 | 2.04 / 3.57 | unknown | 0.0571 |
+| ollama/glm-5.3 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9650 | 0.0000 | 0.6308 | 0.0000 | 25.16 / 58.00 | unknown | 4.4009 |
+| ollama/gpt-oss:120b | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.8700 | 0.0000 | 0.6145 | 0.0000 | 3.71 / 5.28 | unknown | 0.1669 |
+| ollama/gpt-oss:20b | v4 | 200 | 0 | 0.9996 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9400 | 0.0000 | 0.5825 | 0.0050 | 28.49 / 82.46 | unknown | 0.2553 |
+| ollama/mistral-large-4 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9750 | 0.0000 | 0.5923 | 0.0000 | 25.08 / 46.76 | unknown | 1.4802 |
+| ollama/nemotron-3-nano:30b | v4 | 199 | 1 | 0.9995 | 1 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.6525 | 0.0050 | 15.03 / 61.04 | unknown | 0.2668 |
+| ollama/nemotron-3-super | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 0.9750 | 0.0000 | 0.6478 | 0.0050 | 42.57 / 96.37 | unknown | 0.2495 |
+| ollama/nemotron-3-ultra | v4 | 200 | 0 | 0.9996 | 0 | 1.0000 (n = 30) | 1.0000 | 0.8700 | 0.0000 | 0.6458 | 0.0000 | 13.13 / 56.65 | unknown | 0.8611 |
+| stub/template-v1 | v4 | 200 | 0 | 1.0000 | 0 | 1.0000 (n = 30) | 1.0000 | 1.0000 | 0.0000 | 0.4405 | 0.0200 | 0.00 / 0.00 | 0.0000 | 0.0000 |
 
 ### Prompt sensitivity: v3 against v4 on the same packs
 
-The free usage allowance ran out during prompt v4, so v4 covers only the first packs of the balanced order. This table compares the two prompts on the 40 packs that every v4 run reached; v3 numbers here are therefore not the 200-pack headline above.
+Each model is compared with itself, on the packs it answered under both prompts (failed and degenerate reports left out on either side). deepseek-v4-pro:0813 was capped at 40 packs on v4 after runaway generations (D51), so its pairing is small.
 
-| Model | Prompt | Packs | Groundedness | Direction faithful | Borderline conveyed | Names predicted class | Mean words |
-|---|---|---|---|---|---|---|---|
-| deepseek-v4-pro:0813 | v3 | 39 | 1.0000 | 0.9118 | 1.0000 | 1.0000 | 203.3333 |
-| gemma4:31b | v3 | 40 | 1.0000 | 0.9333 | 1.0000 | 1.0000 | 193.9250 |
-| gemma4:31b | v4 | 40 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 177.8750 |
-| glm-5.3 | v3 | 40 | 0.9985 | 0.9091 | 1.0000 | 1.0000 | 260.1750 |
-| gpt-oss:120b | v3 | 40 | 0.9983 | 0.9286 | 1.0000 | 1.0000 | 241.5500 |
-| gpt-oss:120b | v4 | 40 | 1.0000 | 0.8462 | 1.0000 | 1.0000 | 431.8750 |
-| gpt-oss:20b | v3 | 40 | 1.0000 | 0.9259 | 1.0000 | 1.0000 | 234.8000 |
-| gpt-oss:20b | v4 | 40 | 1.0000 | 0.8750 | 1.0000 | 1.0000 | 303.2250 |
-| mistral-large-4 | v3 | 40 | 1.0000 | 0.9250 | 1.0000 | 1.0000 | 271.2750 |
-| nemotron-3-nano:30b | v3 | 40 | 1.0000 | 0.9211 | 1.0000 | 1.0000 | 312.5000 |
-| nemotron-3-nano:30b | v4 | 40 | 1.0000 | 0.9143 | 1.0000 | 1.0000 | 382.9250 |
-| nemotron-3-super | v3 | 40 | 1.0000 | 0.9231 | 1.0000 | 1.0000 | 255.7000 |
-| nemotron-3-super | v4 | 40 | 1.0000 | 0.9167 | 1.0000 | 1.0000 | 382.0750 |
-| nemotron-3-ultra | v3 | 40 | 0.9990 | 0.9231 | 1.0000 | 1.0000 | 253.4250 |
-| nemotron-3-ultra | v4 | 40 | 1.0000 | 0.9412 | 1.0000 | 1.0000 | 360.0000 |
+| Model | Prompt | Packs | Groundedness | Direction faithful | Borderline conveyed | Uncertainty conveyed | Names predicted class | Mean words |
+|---|---|---|---|---|---|---|---|---|
+| deepseek-v4-pro:0813 | v3 | 25 | 1.0000 | 0.9545 | 1.0000 | 1.0000 | 1.0000 | 195 |
+| deepseek-v4-pro:0813 | v4 | 25 | 1.0000 | 0.9545 | 1.0000 | 1.0000 | 1.0000 | 351 |
+| gemma4:31b | v3 | 200 | 1.0000 | 0.9691 | 1.0000 | 1.0000 | 1.0000 | 193 |
+| gemma4:31b | v4 | 200 | 1.0000 | 1.0000 | 1.0000 | 0.7778 | 1.0000 | 172 |
+| glm-5.3 | v3 | 200 | 0.9992 | 0.9727 | 1.0000 | 1.0000 | 1.0000 | 262 |
+| glm-5.3 | v4 | 200 | 1.0000 | 0.9673 | 1.0000 | 1.0000 | 1.0000 | 445 |
+| gpt-oss:120b | v3 | 200 | 0.9993 | 0.9726 | 1.0000 | 1.0000 | 1.0000 | 241 |
+| gpt-oss:120b | v4 | 200 | 1.0000 | 0.9365 | 1.0000 | 0.8889 | 1.0000 | 419 |
+| gpt-oss:20b | v3 | 200 | 1.0000 | 0.9683 | 1.0000 | 1.0000 | 1.0000 | 234 |
+| gpt-oss:20b | v4 | 200 | 0.9996 | 0.9552 | 1.0000 | 1.0000 | 1.0000 | 342 |
+| mistral-large-4 | v3 | 200 | 1.0000 | 0.9695 | 1.0000 | 1.0000 | 1.0000 | 275 |
+| mistral-large-4 | v4 | 200 | 1.0000 | 0.9545 | 1.0000 | 1.0000 | 1.0000 | 313 |
+| nemotron-3-nano:30b | v3 | 199 | 1.0000 | 0.9721 | 1.0000 | 1.0000 | 1.0000 | 264 |
+| nemotron-3-nano:30b | v4 | 199 | 0.9995 | 0.9532 | 1.0000 | 1.0000 | 1.0000 | 360 |
+| nemotron-3-super | v3 | 200 | 0.9997 | 0.9686 | 1.0000 | 1.0000 | 1.0000 | 245 |
+| nemotron-3-super | v4 | 200 | 1.0000 | 0.9639 | 0.9583 | 1.0000 | 1.0000 | 377 |
+| nemotron-3-ultra | v3 | 200 | 0.9996 | 0.9699 | 1.0000 | 1.0000 | 1.0000 | 256 |
+| nemotron-3-ultra | v4 | 200 | 0.9996 | 0.9643 | 1.0000 | 0.6667 | 1.0000 | 353 |
 
 ### Direction of reasons, and borderline detections (D49)
 
@@ -405,37 +411,48 @@ The free usage allowance ran out during prompt v4, so v4 covers only the first p
 | ollama/nemotron-3-super | v3 | 1.0000 | 191 | 0.9686 | 6 | 24 | 1.0000 |
 | ollama/nemotron-3-ultra | v3 | 1.0000 | 133 | 0.9699 | 5 | 24 | 1.0000 |
 | stub/template-v1 | v3 | 1.0000 | 0 | n/a | 0 | 24 | 1.0000 |
-| ollama/gemma4:31b | v4 | 0.8750 | 17 | 1.0000 | 0 | 14 | 1.0000 |
-| ollama/gpt-oss:120b | v4 | 0.8750 | 54 | 0.9074 | 8 | 14 | 1.0000 |
-| ollama/gpt-oss:20b | v4 | 1.0000 | 51 | 0.9412 | 3 | 14 | 1.0000 |
-| ollama/nemotron-3-nano:30b | v4 | 1.0000 | 35 | 0.9143 | 3 | 11 | 1.0000 |
-| ollama/nemotron-3-super | v4 | 1.0000 | 36 | 0.9167 | 3 | 11 | 1.0000 |
-| ollama/nemotron-3-ultra | v4 | 0.7143 | 17 | 0.9412 | 1 | 11 | 1.0000 |
+| ollama/deepseek-v4-pro:0813 | v4 | 1.0000 | 22 | 0.9545 | 1 | 9 | 1.0000 |
+| ollama/gemma4:31b | v4 | 0.7778 | 53 | 1.0000 | 0 | 24 | 1.0000 |
+| ollama/glm-5.3 | v4 | 1.0000 | 153 | 0.9673 | 5 | 24 | 1.0000 |
+| ollama/gpt-oss:120b | v4 | 0.8889 | 126 | 0.9365 | 12 | 24 | 1.0000 |
+| ollama/gpt-oss:20b | v4 | 1.0000 | 134 | 0.9552 | 6 | 24 | 1.0000 |
+| ollama/mistral-large-4 | v4 | 1.0000 | 154 | 0.9545 | 7 | 24 | 1.0000 |
+| ollama/nemotron-3-nano:30b | v4 | 1.0000 | 171 | 0.9532 | 8 | 24 | 1.0000 |
+| ollama/nemotron-3-super | v4 | 1.0000 | 166 | 0.9639 | 7 | 24 | 0.9583 |
+| ollama/nemotron-3-ultra | v4 | 0.6667 | 84 | 0.9643 | 3 | 24 | 1.0000 |
 | stub/template-v1 | v4 | 1.0000 | 0 | n/a | 0 | 24 | 1.0000 |
+
+Reports that opened with the model's own working-out instead of the note (C38): gpt-oss:20b v4: 2; nemotron-3-nano:30b v4: 1.
+
+Failed reports by model (empty after the output limit, network, or error) and degenerate reports (collapsed into repeated characters, C37; kept out of every quality mean): deepseek-v4-pro:0813 v3: 4 failed; deepseek-v4-pro:0813 v4: 15 failed; nemotron-3-nano:30b v4: 1 failed; nemotron-3-nano:30b v4: 1 degenerate.
 
 - The stub is a template with no language model: the control arm.
 - The direction check reads a reason's direction from clause-level wording and skips any clause it cannot read, so its error count is a lower bound.
 - "Borderline" is decided by the facts layer by fixed rules: margin over the threshold below a tenth of the room above it, category confidence below 0.6, or a second category at 0.05 or more.
 - Groundedness measures "invented nothing", not "reasoned correctly".
 - The class and feature checks are lexical: they match names and phrases, are blind to negation, and are generous about what counts as citing a feature.
+- "Class faithful" means the report names the predicted category and no category the detector gave below 0.05. It is lexical: "may be scanning" or naming injection beside cross-site scripting (a kind of injection) counts against it. "Substitutes class" -- another category named instead of the prediction -- is the failure the study looks for.
 - Latency is response time from a hosted service; it is not model speed.
 - A cost of "unknown" is not zero.
 
-- deepseek-v4-pro:0813: digest `db976f1eacdd`, 1650497936906, FP8, GPU none, 5 session(s)
-- gemma4:31b: digest `221b330d11a8`, 32682372656, BF16, GPU none, 5 session(s)
-- gemma4:31b: digest `221b330d11a8`, 32682372656, BF16, GPU none, 2 session(s)
-- glm-5.3: digest `632dfda18c6d`, 753329940480, FP8, GPU none, 5 session(s)
-- gpt-oss:120b: digest `d98fe6ba01e6`, 116829156672, MXFP4, GPU none, 5 session(s)
-- gpt-oss:120b: digest `d98fe6ba01e6`, 116829156672, MXFP4, GPU none, 2 session(s)
-- gpt-oss:20b: digest `05afbac4bad6`, 20914757184, MXFP4, GPU none, 6 session(s)
-- gpt-oss:20b: digest `05afbac4bad6`, 20914757184, MXFP4, GPU none, 2 session(s)
-- mistral-large-4: digest `52309cacf736`, 1050000000000, , GPU none, 5 session(s)
-- nemotron-3-nano:30b: digest `a4b4f1851393`, 32000000000, FP8, GPU none, 5 session(s)
-- nemotron-3-nano:30b: digest `a4b4f1851393`, 32000000000, FP8, GPU none, 1 session(s)
-- nemotron-3-super: digest `da11955bb451`, 120000000000, NVFP4, GPU none, 5 session(s)
-- nemotron-3-super: digest `da11955bb451`, 120000000000, NVFP4, GPU none, 1 session(s)
-- nemotron-3-ultra: digest `4eecabff7a75`, 550000000000, , GPU none, 5 session(s)
-- nemotron-3-ultra: digest `4eecabff7a75`, 550000000000, , GPU none, 1 session(s)
+- deepseek-v4-pro:0813 (v3): digest `db976f1eacdd`, 1,650.5B parameters, FP8, hardware not disclosed by the hosted service, 5 session(s)
+- deepseek-v4-pro:0813 (v4): digest `db976f1eacdd`, 1,650.5B parameters, FP8, hardware not disclosed by the hosted service, 2 session(s)
+- gemma4:31b (v3): digest `221b330d11a8`, 32.7B parameters, BF16, hardware not disclosed by the hosted service, 5 session(s)
+- gemma4:31b (v4): digest `221b330d11a8`, 32.7B parameters, BF16, hardware not disclosed by the hosted service, 5 session(s)
+- glm-5.3 (v3): digest `632dfda18c6d`, 753.3B parameters, FP8, hardware not disclosed by the hosted service, 5 session(s)
+- glm-5.3 (v4): digest `632dfda18c6d`, 753.3B parameters, FP8, hardware not disclosed by the hosted service, 5 session(s)
+- gpt-oss:120b (v3): digest `d98fe6ba01e6`, 116.8B parameters, MXFP4, hardware not disclosed by the hosted service, 5 session(s)
+- gpt-oss:120b (v4): digest `d98fe6ba01e6`, 116.8B parameters, MXFP4, hardware not disclosed by the hosted service, 5 session(s)
+- gpt-oss:20b (v3): digest `05afbac4bad6`, 20.9B parameters, MXFP4, hardware not disclosed by the hosted service, 6 session(s)
+- gpt-oss:20b (v4): digest `05afbac4bad6`, 20.9B parameters, MXFP4, hardware not disclosed by the hosted service, 5 session(s)
+- mistral-large-4 (v3): digest `52309cacf736`, 1,050.0B parameters, quantisation not reported, hardware not disclosed by the hosted service, 5 session(s)
+- mistral-large-4 (v4): digest `52309cacf736`, 1,050.0B parameters, quantisation not reported, hardware not disclosed by the hosted service, 5 session(s)
+- nemotron-3-nano:30b (v3): digest `a4b4f1851393`, 32.0B parameters, FP8, hardware not disclosed by the hosted service, 5 session(s)
+- nemotron-3-nano:30b (v4): digest `a4b4f1851393`, 32.0B parameters, FP8, hardware not disclosed by the hosted service, 7 session(s)
+- nemotron-3-super (v3): digest `da11955bb451`, 120.0B parameters, NVFP4, hardware not disclosed by the hosted service, 5 session(s)
+- nemotron-3-super (v4): digest `da11955bb451`, 120.0B parameters, NVFP4, hardware not disclosed by the hosted service, 5 session(s)
+- nemotron-3-ultra (v3): digest `4eecabff7a75`, 550.0B parameters, quantisation not reported, hardware not disclosed by the hosted service, 5 session(s)
+- nemotron-3-ultra (v4): digest `4eecabff7a75`, 550.0B parameters, quantisation not reported, hardware not disclosed by the hosted service, 5 session(s)
 
 ## 10. Replay (the demonstration harness)
 
@@ -459,10 +476,10 @@ Offline replay of the held-out split. Not a real-time measurement.
 - **`results/figures/results_06_channel_weights.png`** — How the fusion layer divides each decision between a flow's own features and its neighbourhood, over 200 flagged flows. Dot: median; bar: interquartile range; n: evidence packs in the group. The sample is stratified by family, so the groups are small and the ordering is indicative.
 - **`results/figures/results_07_top_features.png`** — The features that carry the detections: for each, the share of 200 evidence packs in which integrated gradients ranks it among the 5 most influential. A column and its encoded variants are counted once per pack.
 - **`results/figures/results_08_attack_family_confusion.png`** — The attack-family head on the NF-ToN-IoT-v2 test split, seed 0: each row shows how flows of one true family were named. Cells below 0.05 are left unlabelled. Macro-F1 0.885; on true-positive detections the named family is correct for 97.7%.
-- **`results/figures/results_09_llm_groundedness.png`** — Groundedness of each language model's reports on identical evidence packs and an identical prompt. Blue: all reports. Orange: the false-positive arm, where the detector was wrong. The line is the template control, which invents nothing by construction. n is the number of reports scored. Groundedness measures whether a report invented anything, not whether its reasoning is correct.
+- **`results/figures/results_09_llm_groundedness.png`** — Groundedness of each language model's reports on identical evidence packs and an identical prompt. Blue: all reports. Orange: the false-positive arm, where the detector was wrong. The line is the template control, which invents nothing by construction. n is the number of reports scored. Groundedness measures whether a report invented anything, not whether its reasoning is correct. The axis is zoomed: the lowest point is 0.9965, so every model is within 0.0035 of the control.
 
 ## 12. Process
 
-- Automated tests in the repository: 287
+- Automated tests in the repository: 290
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

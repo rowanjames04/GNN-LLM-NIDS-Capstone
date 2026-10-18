@@ -53,6 +53,31 @@ REFERENCE GUIDANCE FOR DOS (a fixed lookup by category, not specific to this flo
 
 Write the incident note.
 
+### ollama / deepseek-v4-pro:0813
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 228 words
+
+> ## What happened
+> The detector flagged the UDP flow from 192.168.1.30:47567 to 192.168.1.1:53 (DNS). It was 1 packet, 67 bytes, with 1 packet, 67 bytes back; every packet was 67 bytes. DNS query type was 1 (A). Application protocol not identified. Flow duration and transfer rates are not known.
+> 
+> ## Why it was flagged
+> Score 0.96997 against threshold 0.87139 — a clear detection, clearing the threshold by 0.0986. Most likely attack category is dos, with high confidence (0.9837); no other category was plausible.
+> 
+> Reasons for the score:
+> - Raised: shortest packet in the flow, 67 bytes.
+> - Lowered: DNS query type was recorded.
+> - Lowered: TCP flags sent, none, as this is not a TCP flow.
+> - Lowered: transport protocol, UDP.
+> - Lowered: TCP flags seen, none, as this is not a TCP flow.
+> 
+> About 16% of the decision rested on the flow’s own measurements and 84% on surrounding host activity. No single nearby flow explains the score: none of 50 nearby flows tested (of 6,138 sharing a host) changed it by more than 0.01.
+> 
+> Background context (not reasons for the score): source started 4,521 flows to 4 distinct addresses on 3 distinct ports; destination received 2,491 flows from 2 distinct addresses on 1 distinct port.
+> 
+> ## What to do next
+> - Rate-limit the source at the network edge.
+> - Review the targeted service’s connection and resource limits.
+
 ### ollama / gemma4:31b
 
 groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 207 words
@@ -71,6 +96,19 @@ groundedness **1.0** · fabricated addresses 0 · names the predicted category: 
 > Following standard mitigation for dos:
 > - Rate-limit the source at the network edge.
 > - Review the targeted service's connection and resource limits.
+
+### ollama / glm-5.3
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 276 words
+
+> ## What happened
+> The detector flagged a flow from 192.168.1.30 to 192.168.1.1: UDP to destination port 53 (DNS) from source port 47567; the application protocol was not identified. Each direction carried 67 bytes in 1 packet, and every packet was 67 bytes. The DNS query type was A. The score was 0.96997 against a threshold of 0.87139, clearing it by 0.0986 — a wide margin. The most likely category is dos, held with high confidence (0.9837); no other category was plausible. This is a clear detection.
+> 
+> ## Why it was flagged
+> The only feature that raised the score was the shortest packet in the flow, 67 bytes. Features that lowered it: the DNS query type was recorded, the transport protocol is UDP, and no TCP flags were seen (this is not a TCP flow). About 16% of the decision rested on the flow's own measurements and 84% on the activity of the hosts around it; that influence is spread across many flows — none of the 50 nearby flows tested changed the score by more than 0.01 when removed. For context (not reasons for the score): the source host started 4,521 flows in the period, to 4 addresses on 3 ports; the destination received 2,491 flows from 2 addresses on 1 port; the period covers 10,000 flows among 29 hosts.
+> 
+> ## What to do next
+> Apply the standard dos mitigations: rate-limit the source at the network edge, and review the targeted service's connection and resource limits (MITRE T1499). Note that the flow's duration and transfer rates are not known — the recorded duration is either zero or a counter overflow, so it is not a measurement.
 
 ### ollama / gpt-oss:120b
 
@@ -115,6 +153,25 @@ groundedness **1.0** · fabricated addresses 0 · names the predicted category: 
 > - Note that the flow’s duration and transfer rates are not known; no further timing data is available.  
 > 
 > This is a clear detection with a wide margin and high‑confidence dos classification.
+
+### ollama / mistral-large-4
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 306 words
+
+> ## What happened
+> The detector flagged a UDP flow from 192.168.1.30 (source port 47567) to 192.168.1.1 (destination port 53, DNS). The flow carried 67 bytes in 1 packet each direction, with every packet 67 bytes. The DNS query type was 1 (A). The application protocol was not identified. The flow duration and transfer rates are not known: the recorded duration is either zero or a counter overflow.
+> 
+> The score was 0.96997 against an alert threshold of 0.87139, clearing it by 0.0986. The most likely attack category is dos, with high confidence (0.9837). No other category was plausible. This is a clear detection.
+> 
+> In the same period, the source host started 4,521 flows to 4 distinct addresses on 3 distinct ports, and the destination host received 2,491 flows from 2 distinct addresses on 1 distinct port.
+> 
+> ## Why it was flagged
+> The score was raised by the shortest packet in the flow, 67 bytes. It was lowered by the DNS query type being recorded for this flow, by the TCP flags the source sent (none, as this is not a TCP flow), by the transport protocol (UDP), and by the TCP flags seen in the flow (none, as this is not a TCP flow).
+> 
+> About 16% of the decision rested on the flow's own measurements and 84% on the activity of the hosts around it. None of the 50 nearby flows tested (of 6,138 sharing a host with this one) changed the score by more than 0.01 when removed; the influence of the surrounding activity is spread across many flows, and no single nearby flow explains the score.
+> 
+> ## What to do next
+> Per standard guidance for dos (single-source traffic intended to exhaust a target service or host, MITRE ATT&CK T1499): rate-limit the source at the network edge, and review the targeted service's connection and resource limits.
 
 ### ollama / nemotron-3-nano:30b
 
@@ -201,203 +258,255 @@ groundedness **1.0** · fabricated addresses 0 · names the predicted category: 
 
 ## Excerpt 2 — false positive (a benign flow the detector flagged) with the largest difference
 
-Detection `cb3b30f8-5e66-4e22-8ba4-ac88ab33f647`
+Detection `6145ed3f-4ffa-435f-9365-4af97e19e971`
 
-True label: **Benign** · detector's category: **ddos** (confidence 0.99623)
+True label: **Benign** · detector's category: **scanning** (confidence 0.98373)
 
 **Evidence given to every model:**
 
-Findings for detection cb3b30f8-5e66-4e22-8ba4-ac88ab33f647:
+Findings for detection 6145ed3f-4ffa-435f-9365-4af97e19e971:
 
 THE DETECTION
-- The detector flagged the flow from 192.168.1.36 (the source) to 192.168.1.194 (the destination).
-- Its score was 0.92783 against an alert threshold of 0.87139: it cleared the threshold by 0.0564, a moderate margin.
-- The most likely attack category is ddos, with high confidence (0.99623).
+- The detector flagged the flow from 192.168.1.32 (the source) to 192.168.1.195 (the destination).
+- Its score was 0.8852 against an alert threshold of 0.87139: it cleared the threshold by 0.0138, a moderate margin.
+- The most likely attack category is scanning, with high confidence (0.98373).
 - No other category was plausible.
 - This is a clear detection: a moderate margin and a category held with high confidence.
 
 THE FLOW, AS MEASURED
 - Transport protocol: TCP.
-- Application protocol: HTTP.
-- Source port 32998; destination port 80 (HTTP).
-- From source to destination: 737 bytes in 5 packets, an average of 147 bytes per packet.
-- From destination back to source: 454 bytes in 3 packets, an average of 151 bytes per packet.
-- The source sent these TCP flags: SYN+RST+PSH+ACK.
-- The destination sent these TCP flags: SYN+PSH+ACK.
-- Packet sizes ranged from 52 to 521 bytes.
+- Application protocol: not identified.
+- Source port 42303; destination port 50800.
+- From source to destination: 44 bytes in 1 packet, an average of 44 bytes per packet.
+- From destination back to source: 0 bytes in 0 packets.
+- The source sent these TCP flags: SYN.
+- The destination sent these TCP flags: no TCP flags.
+- Every packet was 44 bytes.
 
 WHY THE DETECTOR FLAGGED IT (these are the reasons for the score)
-- Raised the score: the source port range, a registered port (1,024 to 49,151).
-- Raised the score: the destination port range, a well-known port (below 1,024).
-- Raised the score: the FTP server's reply code was not recorded for this flow.
-- Raised the score: the TCP flags the destination sent, SYN+PSH+ACK.
-- Lowered the score: the bytes sent from source to destination, 737 bytes.
-- About 58% of this decision rested on the flow's own measurements and 42% on the activity of the hosts around it.
-- None of the 50 nearby flows tested (of 683 sharing a host with this one) changed this score by more than 0.01 when removed. The influence of the surrounding activity is spread across many flows; no single nearby flow explains the score.
+- Raised the score: the destination port, 50800.
+- Raised the score: the bytes sent from destination back to source, 0 bytes.
+- Lowered the score: the shortest packet in the flow, 44 bytes.
+- Lowered the score: the destination port range, an ephemeral port (49,152 and above).
+- Lowered the score: the application protocol, not identified.
+- About 31% of this decision rested on the flow's own measurements and 69% on the activity of the hosts around it.
+- None of the 50 nearby flows tested (of 3,480 sharing a host with this one) changed this score by more than 0.01 when removed. The influence of the surrounding activity is spread across many flows; no single nearby flow explains the score.
 
 BACKGROUND CONTEXT (what the two hosts were doing in the same period; context, not a reason for the score)
-- The source host started 65 flows in this period, to 3 distinct addresses on 4 distinct ports: 1.5 times as many distinct addresses as a typical host here.
-- The destination host received 681 flows in this period, from 3 distinct addresses, on 535 distinct ports of its own: 3 times as many distinct sources as a typical host here.
-- The period covers 10,000 flows among 19 hosts.
+- The source host started 2,865 flows in this period, to 219 distinct addresses on 715 distinct ports: 109.5 times as many distinct addresses as a typical host here.
+- The destination host received 381 flows in this period, from 8 distinct addresses, on 73 distinct ports of its own: 4 times as many distinct sources as a typical host here.
+- The period covers 10,000 flows among 261 hosts.
 
 WHAT IS NOT KNOWN
 - How long the flow lasted, and its transfer rates, are not known: in this dataset the recorded duration is either zero or a counter overflow, so it is not a measurement, and the detector does not use it.
 
-REFERENCE GUIDANCE FOR DDOS (a fixed lookup by category, not specific to this flow)
-- Description: Coordinated traffic volume from many sources intended to exhaust a target's capacity.
-- Associated MITRE ATT&CK technique identifiers: T1498, T1499.
-- Standard mitigation: Enable upstream volumetric filtering or scrubbing.
-- Standard mitigation: Apply per-source rate limits at the edge.
-- Standard mitigation: Confirm autoscaling and failover behaviour for the targeted service.
+REFERENCE GUIDANCE FOR SCANNING (a fixed lookup by category, not specific to this flow)
+- Description: Systematic probing of hosts or ports to map reachable services.
+- Associated MITRE ATT&CK technique identifiers: T1046, T1595, T1018.
+- Standard mitigation: Rate-limit and alert on hosts contacting an unusual number of distinct destinations.
+- Standard mitigation: Restrict east-west traffic with network segmentation.
+- Standard mitigation: Ensure exposed services are inventoried and patched.
 
 Write the incident note.
 
-### ollama / gemma4:31b
+### ollama / deepseek-v4-pro:0813
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 192 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.75 · 259 words
 
 > ## What happened
-> A clear detection occurred for a TCP/HTTP flow from 192.168.1.36 to 192.168.1.194. The detector identified this as a ddos attack with high confidence (0.99623). The source sent 737 bytes in 5 packets to destination port 80, and the destination replied with 454 bytes in 3 packets. The flow duration and transfer rates are not known.
+> A TCP flow from 192.168.1.32 to 192.168.1.195 was flagged. Source port 42303, destination port 50800. Source sent 44 bytes in 1 packet (all packets 44 bytes), with TCP SYN flag; destination sent 0 bytes in 0 packets and no TCP flags. Application protocol not identified. Duration and transfer rates are not known. During the period, the source host started 2,865 flows to 219 distinct addresses on 715 distinct ports (109.5 times as many distinct addresses as a typical host); the destination host received 381 flows from 8 distinct addresses on 73 distinct ports (4 times as many distinct sources as a typical host). The period covers 10,000 flows among 261 hosts.
 > 
 > ## Why it was flagged
-> The score of 0.92783 cleared the threshold by a moderate margin of 0.0564 based on the following:
-> * **Score increased by:** The source port being in the registered range (1,024 to 49,151), the destination port being in the well-known range (below 1,024), the destination sending SYN+PSH+ACK flags, and the fact that the FTP server's reply code was not recorded.
-> * **Score decreased by:** The 737 bytes sent from source to destination.
-> 
-> The decision was based 58% on flow measurements and 42% on surrounding host activity, though no single nearby flow significantly influenced the score.
+> Score 0.8852 against threshold 0.87139, cleared by 0.0138 (moderate margin). Most likely category is scanning with high confidence (0.98373); no other category was plausible. This is a clear detection. Raised the score: destination port 50800; 0 bytes sent from destination back to source. Lowered the score: shortest packet 44 bytes; destination port range ephemeral (49,152 and above); application protocol not identified. About 31% of this decision rested on the flow's own measurements and 69% on the activity of the hosts around it. None of the 50 nearby flows tested (of 3,480 sharing a host with this one) changed this score by more than 0.01 when removed.
 > 
 > ## What to do next
-> Following standard mitigation for ddos:
-> * Enable upstream volumetric filtering or scrubbing.
-> * Apply per-source rate limits at the edge.
-> * Confirm autoscaling and failover behaviour for the targeted service.
+> For scanning, standard mitigations: rate-limit and alert on hosts contacting an unusual number of distinct destinations; restrict east-west traffic with network segmentation; ensure exposed services are inventoried and patched.
+
+### ollama / gemma4:31b
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.75 · 214 words
+
+> ## What happened
+> A TCP flow was detected from 192.168.1.32 to 192.168.1.195 (source port 42303, destination port 50800). The source sent one 44-byte packet with the SYN flag; the destination sent 0 bytes in 0 packets. The application protocol was not identified. Flow duration and transfer rates are not known.
+> 
+> This is a clear detection. With high confidence (0.98373), the most likely attack category is scanning.
+> 
+> ## Why it was flagged
+> The score of 0.8852 (clearing the 0.87139 threshold by a moderate margin) was influenced by the following:
+> * **Raised score:** The destination port (50800) and the fact that 0 bytes were sent from destination to source.
+> * **Lowered score:** The shortest packet (44 bytes), the destination port being in the ephemeral range (49,152 and above), and the unidentified application protocol.
+> 
+> Approximately 69% of the decision was based on surrounding host activity, though no single nearby flow significantly influenced the score. For context, the source host contacted 219 distinct addresses on 715 distinct ports, which is 109.5 times as many distinct addresses as a typical host.
+> 
+> ## What to do next
+> Following standard mitigation for scanning:
+> * Rate-limit and alert on hosts contacting an unusual number of distinct destinations.
+> * Restrict east-west traffic using network segmentation.
+> * Ensure exposed services are inventoried and patched.
+
+### ollama / glm-5.3
+
+groundedness **0.9444** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.75 · 271 words
+
+Not in the evidence: `0.98383`
+
+> ## What happened
+> A TCP flow from 192.168.1.32 (port 42303) to 192.168.1.195 (port 50800) was flagged as scanning with high confidence (0.98383); no other category was plausible. The source sent one 44-byte SYN packet; the destination returned 0 bytes and no TCP flags. The application protocol was not identified. The score, 0.8852, cleared the alert threshold of 0.87139 by 0.0138 — a moderate margin, making this a clear detection. Flow duration and transfer rates are not known; the recorded duration is not a valid measurement in this dataset.
+> 
+> ## Why it was flagged
+> The score was raised by the destination port (50800) and by the destination sending 0 bytes back. It was lowered by the 44-byte packet size, the destination port being in the ephemeral range, and the unidentified application protocol. About 69% of the decision rested on the hosts' surrounding activity and 31% on the flow itself; no single nearby flow explains the score — the influence is spread across many. As context (not part of the scoring): the source host started 2,865 flows to 219 distinct addresses on 715 distinct ports — 109.5 times as many as a typical host here — and the destination received 381 flows from 8 distinct addresses on 73 distinct ports, 4 times as many distinct sources as a typical host here.
+> 
+> ## What to do next
+> This matches systematic probing of hosts or ports to map reachable services (MITRE T1046, T1595, T1018). Recommended mitigations: rate-limit and alert on hosts contacting an unusual number of distinct destinations; restrict east-west traffic with segmentation; inventory and patch exposed services. Check whether 192.168.1.32's broad probing is expected.
 
 ### ollama / gpt-oss:120b
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 279 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.75 · 259 words
 
 > **What happened**  
-> A TCP flow from 192.168.1.36 (source) to 192.168.1.194 (destination) was observed. The flow used source port 32998 (registered range 1,024‑49,151) and destination port 80 (well‑known). It carried 737 bytes in 5 packets from source to destination (average 147 bytes/packet) and 454 bytes in 3 packets back (average 151 bytes/packet). The source sent SYN+RST+PSH+ACK flags; the destination sent SYN+PSH+ACK. Packet sizes ranged 52‑521 bytes. The detector scored the flow 0.92783, exceeding the alert threshold 0.87139 by 0.0564 (moderate margin). The most likely attack category is **ddos** with high confidence 0.99623, and no other category was plausible. The detection is described as clear.
+> A TCP flow was observed from 192.168.1.32 (source) to 192.168.1.195 (destination). The source sent a single SYN packet (44 bytes, source port 42303) to destination port 50800; the destination sent no packets back. The detector scored the flow **0.8852**, exceeding the alert threshold of **0.87139** by **0.0138** – a moderate margin. The most likely attack category is **scanning**, held with **high confidence (0.98373)**. No other category was plausible, so the detection is considered clear.
 > 
 > **Why it was flagged**  
-> - **Raised the score**: source port is in the registered range (1,024‑49,151).  
-> - **Raised the score**: destination port is a well‑known port (below 1,024).  
-> - **Raised the score**: the FTP server’s reply code was not recorded for this flow.  
-> - **Raised the score**: destination TCP flags SYN+PSH+ACK.  
-> - **Lowered the score**: bytes sent from source to destination (737 bytes).  
-> - Decision weighting: ≈58 % based on the flow’s own measurements, ≈42 % on surrounding host activity.  
-> - Nearby activity: none of the 50 nearby flows (out of 683 sharing a host) altered the score by more than 0.01 when removed, indicating the score is not driven by any single neighboring flow.
+> - **Raised the score:** destination port 50800.  
+> - **Raised the score:** zero bytes sent from the destination back to the source.  
+> - **Lowered the score:** shortest packet size of 44 bytes.  
+> - **Lowered the score:** destination port falls in the ephemeral range (≥ 49,152).  
+> - **Lowered the score:** application protocol not identified.  
+> - About **31 %** of the decision came from the flow’s own measurements; **69 %** came from surrounding host activity. Nearby flows had minimal individual impact (none changed the score by more than 0.01).
 > 
 > **What to do next**  
-> - Apply standard DDoS mitigations: enable upstream volumetric filtering or scrubbing, enforce per‑source rate limits at the edge, and verify autoscaling/failover for the targeted service.  
-> - Since the flow duration and transfer rates are not known, no timing‑based actions can be taken.  
-> - Log the event and monitor the source and destination hosts for further anomalous flows.
+> - Apply the standard scanning mitigations:  
+>   1. **Rate‑limit and alert** on hosts that contact an unusually high number of distinct destinations.  
+>   2. **Restrict east‑west traffic** through network segmentation.  
+>   3. **Inventory and patch** any exposed services on the destination host.  
+> - Review the source host’s activity (2,865 flows to 219 distinct addresses on 715 ports) for signs of broader scanning behavior.  
+> - Monitor the destination host (381 inbound flows from 8 sources on 73 ports) for any follow‑up connections.  
+> 
+> No information is available about the flow’s duration or transfer rates.
 
 ### ollama / gpt-oss:20b
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 227 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.75 · 195 words
 
 > **What happened**  
-> A TCP/HTTP flow from 192.168.1.36 (source port 32998) to 192.168.1.194 (destination port 80) was flagged. The source sent 737 bytes in 5 packets (avg 147 bytes); the destination replied 454 bytes in 3 packets (avg 151 bytes). Flags: source SYN+RST+PSH+ACK, destination SYN+PSH+ACK. Packet sizes ranged 52–521 bytes.
+> A single TCP SYN packet (44 bytes) was sent from 192.168.1.32 to 192.168.1.195 on port 50800. No reply was received.
 > 
 > **Why it was flagged**  
-> Score 0.92783 exceeded the alert threshold 0.87139 by 0.0564 (moderate margin).  
-> *Raised score:*  
-> - Source port in registered range (1 024–49 151).  
-> - Destination port a well‑known port (< 1 024).  
-> - FTP server reply code not recorded.  
-> - Destination TCP flags SYN+PSH+ACK.  
-> *Lowered score:*  
-> - Bytes sent from source to destination (737 bytes).  
-> The decision was 58 % based on the flow’s own measurements and 42 % on surrounding activity; no single nearby flow altered the score by >0.01.  
-> The detector identified the attack category as **ddos** with high confidence (0.99623); no other category was plausible. The detection is clear.
+> * Score: 0.8852, exceeding the alert threshold of 0.87139 by 0.0138 (moderate margin).  
+> * Category: scanning, high confidence 0.98373.  
+> * Score drivers:  
+>   * Raised by destination port 50800.  
+>   * Raised by 0 bytes sent from destination back to source.  
+>   * Lowered by shortest packet 44 bytes.  
+>   * Lowered by destination port range (ephemeral 49,152 +).  
+>   * Lowered by application protocol not identified.  
+> * 31 % of the decision came from the flow’s own measurements; 69 % from surrounding activity.  
+> * No single nearby flow altered the score by more than 0.01.
 > 
 > **What to do next**  
-> 1. Deploy upstream volumetric filtering or scrubbing.  
-> 2. Apply per‑source rate limits at the edge.  
-> 3. Verify autoscaling and failover behavior for the targeted service.  
-> 4. Monitor the source host (65 flows to 3 addresses on 4 ports) and destination host (681 flows from 3 addresses on 535 ports) for continued anomalous activity.  
-> 5. Since duration and transfer rates are unknown, focus on packet‑level metrics and repeat detection checks.
+> * Investigate the source host: it initiated 2,865 flows to 219 distinct addresses on 715 ports (109.5× typical).  
+> * Review the destination host: it received 381 flows from 8 distinct addresses on 73 ports (4× typical).  
+> * Apply standard mitigations for scanning: rate‑limit or alert on hosts contacting many distinct destinations, segment east‑west traffic, and inventory/patch exposed services.  
+> * Monitor for additional scanning activity.  
+> * Note: flow duration and transfer rates are not known.
+
+### ollama / mistral-large-4
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 1.0 · 324 words
+
+> ## What happened
+> A TCP flow from 192.168.1.32 (source port 42303) to 192.168.1.195 (destination port 50800) was flagged. The source sent 44 bytes in 1 packet (average 44 bytes per packet) with a SYN flag; the destination sent 0 bytes in 0 packets with no TCP flags. Every packet was 44 bytes. The application protocol was not identified. The flow's duration and transfer rates are not known: the recorded duration is either zero or a counter overflow.
+> 
+> ## Why it was flagged
+> The detector scored the flow 0.8852 against an alert threshold of 0.87139, clearing it by 0.0138, a moderate margin. The most likely attack category is scanning, with high confidence (0.98373); no other category was plausible. This is a clear detection.
+> 
+> The score was raised by the destination port 50800 and by the 0 bytes sent from destination back to source. The score was lowered by the shortest packet in the flow (44 bytes), by the destination port range being an ephemeral port (49,152 and above), and by the application protocol not being identified. About 31% of the decision rested on the flow's own measurements and 69% on the activity of the hosts around it. None of the 50 nearby flows tested (of 3,480 sharing a host with this one) changed the score by more than 0.01 when removed.
+> 
+> Context: In the same period, the source host started 2,865 flows to 219 distinct addresses on 715 distinct ports (109.5 times as many distinct addresses as a typical host here), and the destination host received 381 flows from 8 distinct addresses on 73 distinct ports (4 times as many distinct sources as a typical host here).
+> 
+> ## What to do next
+> Apply standard mitigations for scanning: rate-limit and alert on hosts contacting an unusual number of distinct destinations (the source host started 2,865 flows to 219 distinct addresses in this period); restrict east-west traffic with network segmentation; ensure exposed services are inventoried and patched.
 
 ### ollama / nemotron-3-nano:30b
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 177 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 1.0 · 268 words
 
-> **What happened**  
-> The detector flagged the flow from 192.168.1.36 (source) to 192.168.1.194 (destination). Its score was 0.92783 against a threshold of 0.87139, clearing the threshold by 0.0564 (a moderate margin). The most likely attack category is ddos with high confidence 0.99623; no other category was plausible. This is described as a clear detection.
+> ## What happened
+> - The detector flagged a TCP flow from 192.168.1.32 (source) to 192.168.1.195 (destination).  
+> - Score was 0.8852 against an alert threshold of 0.87139, clearing the threshold by 0.0138, described as a moderate margin.  
+> - The most likely attack category is scanning, with high confidence (0.98373). No other category was plausible.  
+> - The detector considers this a clear detection: a moderate margin and a category held with high confidence.  
+> - How long the flow lasted and its transfer rates are not known: in this dataset the recorded duration is either zero or a counter overflow, so it is not a measurement, and the detector does not use it.  
 > 
-> **Why it was flagged**  
-> - Raised the score: source port is a registered port (1,024‑49,151); destination port is a well‑known port (below 1,024); the FTP server’s reply code was not recorded; the destination sent TCP flags SYN+PSH+ACK.  
-> - Lowered the score: bytes sent from source to destination total 737 bytes.  
-> - About 58 % of the decision rested on the flow’s own measurements and 42 % on the activity of surrounding hosts; removal of any of 50 nearby flows changed the score by no more than 0.01, so no single nearby flow explains the score.
+> ## Why it was flagged
+> - Score was raised by: the destination port 50800; bytes sent from destination back to source (0 bytes).  
+> - Score was lowered by: the shortest packet in the flow being 44 bytes; the destination port range being an ephemeral port (49,152 and above); the application protocol not being identified.  
+> - About 31% of the decision rested on the flow's own measurements, and 69% on the activity of the hosts around it.  
+> - None of the 50 nearby flows tested (of 3,480 sharing a host with this one) changed the score by more than 0.01 when removed; the influence of surrounding activity is spread across many flows, and no single nearby flow explains the score.  
 > 
-> **What to do next**  
-> - Enable upstream volumetric filtering or scrubbing.  
-> - Apply per‑source rate limits at the edge.  
-> - Confirm autoscaling and failover behaviour for the targeted service.
+> ## What to do next
+> - Standard mitigation: rate-limit and alert on hosts contacting an unusual number of distinct destinations.  
+> - Standard mitigation: restrict east-west traffic with network segmentation.  
+> - Standard mitigation: ensure exposed services are inventoried and patched.
 
 ### ollama / nemotron-3-super
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 226 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 1.0 · 211 words
 
-> ## What happened
-> The detector flagged a TCP flow from 192.168.1.36 (source port 32998) to 192.168.1.194 (destination port 80, HTTP). The flow carried 737 bytes in 5 packets from source to destination (average 147 bytes/packet) and 454 bytes in 3 packets back (average 151 bytes/packet). Packet sizes ranged 52–521 bytes. The source set TCP flags SYN+RST+PSH+ACK; the destination returned SYN+PSH+ACK. The detector’s score was 0.92783, exceeding the alert threshold of 0.87139 by 0.0564 (a moderate margin). The most likely attack category is ddos with high confidence (0.99623), and no other category was plausible.
+> ## What happened  
+> The detector flagged a TCP flow from 192.168.1.32 (source port 42303) to 192.168.1.195 (destination port 50800). The source sent one 44‑byte packet with the SYN flag; the destination returned no traffic. The flow’s score was 0.8852, exceeding the alert threshold of 0.87139 by 0.0138 (a moderate margin). The most likely attack category is scanning, reported with high confidence (0.98373).
 > 
-> ## Why it was flagged
-> - Raised the score: source port range (registered port 1,024–49,151).  
-> - Raised the score: destination port range (well‑known port <1,024).  
-> - Raised the score: FTP server’s reply code not recorded for this flow.  
-> - Raised the score: TCP flags the destination sent (SYN+PSH+ACK).  
-> - Lowered the score: bytes sent from source to destination (737 bytes).  
-> About 58% of the decision rested on the flow’s own measurements and 42% on host‑surrounding activity; removing any single nearby flow changed the score by no more than 0.01.
+> ## Why it was flagged  
+> - **Score raised:** destination port 50800.  
+> - **Score raised:** bytes sent from destination back to source = 0 bytes.  
+> - **Score lowered:** shortest packet in the flow = 44 bytes.  
+> - **Score lowered:** destination port range is ephemeral (49,152 and above).  
+> - **Score lowered:** application protocol not identified.  
+> - About 31 % of the decision came from the flow’s own measurements and 69 % from the activity of surrounding hosts; none of the 50 nearby flows altered the score by more than 0.01 when removed, indicating the influence is spread across many flows.
 > 
-> ## What to do next
-> - Enable upstream volumetric filtering or scrubbing.  
-> - Apply per‑source rate limits at the edge.  
-> - Confirm autoscaling and failover behaviour for the targeted service.  
-> - Note that flow duration and transfer rates are not known in this dataset.
+> ## What to do next  
+> - Apply rate‑limiting and alerting on hosts that contact an unusual number of distinct destinations.  
+> - Restrict east‑west traffic through network segmentation.  
+> - Ensure any exposed services are inventoried and patched.  
+> - Note that the flow’s duration and transfer rates are not known in this dataset.
 
 ### ollama / nemotron-3-ultra
 
-groundedness **0.9583** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 242 words
-
-Not in the evidence: `0.05644`
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.5 · 245 words
 
 > ## What happened
-> The detector flagged a TCP/HTTP flow from 192.168.1.36 (source port 32998) to 192.168.1.194 (destination port 80). Score: 0.92783 against a 0.87139 threshold, clearing it by 0.05644 — a moderate margin. The most likely category is ddos with high confidence (0.99623); no other category was plausible. This is a clear detection.
-> 
-> Flow details: source→destination 737 bytes in 5 packets (avg 147 bytes/packet); destination→source 454 bytes in 3 packets (avg 151 bytes/packet). Source flags: SYN+RST+PSH+ACK. Destination flags: SYN+PSH+ACK. Packet sizes 52–521 bytes. Flow duration and transfer rates are not known (recorded duration is zero or a counter overflow).
-> 
-> Background: the source started 65 flows to 3 distinct addresses on 4 ports (1.5× typical distinct addresses). The destination received 681 flows from 3 distinct addresses on 535 distinct ports (3× typical distinct sources). Period covers 10,000 flows among 19 hosts.
+> The detector flagged a TCP flow from 192.168.1.32 (source port 42303) to 192.168.1.195 (destination port 50800). Score: 0.8852 against a 0.87139 threshold, clearing it by 0.0138 (moderate margin). Most likely category is scanning with high confidence (0.98373); no other category was plausible. The flow carried 44 bytes in 1 packet from source to destination (SYN flags only); zero bytes and zero packets returned. Application protocol was not identified. Flow duration and transfer rates are not known (recorded duration is zero or a counter overflow and is not used by the detector).
 > 
 > ## Why it was flagged
-> Score-raising factors: source port in the registered range (1,024–49,151); destination port in the well-known range (<1,024); FTP server reply code not recorded; destination TCP flags SYN+PSH+ACK. Score-lowering factor: 737 bytes sent source→destination. About 58% of the decision rested on the flow’s own measurements, 42% on surrounding host activity. None of 50 nearby flows tested changed the score by more than 0.01; influence is spread across many flows.
+> Score-raising factors: destination port 50800; zero bytes returned from destination. Score-lowering factors: shortest packet 44 bytes; destination port in the ephemeral range (49,152+); application protocol not identified. Approximately 31% of the decision weight came from the flow’s own measurements, 69% from surrounding host activity. Of 50 nearby flows tested (from 3,480 sharing a host), none changed the score by more than 0.01 when removed; influence is spread across many flows.
+> 
+> Background context (not scoring reasons): the source host opened 2,865 flows to 219 distinct addresses on 715 distinct ports (109.5× typical); the destination received 381 flows from 8 distinct addresses on 73 distinct ports (4× typical). Period covers 10,000 flows among 261 hosts.
 > 
 > ## What to do next
-> - Enable upstream volumetric filtering or scrubbing.
-> - Apply per-source rate limits at the edge.
-> - Confirm autoscaling and failover behavior for the targeted service.
+> - Rate-limit and alert on hosts contacting an unusual number of distinct destinations.
+> - Restrict east-west traffic with network segmentation.
+> - Ensure exposed services are inventoried and patched.
 
 ### stub / template-v1
 
-groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.6 · 169 words
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.5 · 164 words
 
 > ## Incident summary
 > 
 > A network flow was flagged by the detection system. The evidence supplied is reproduced below without interpretation.
 > 
-> - The detector flagged the flow from 192.168.1.36 (the source) to 192.168.1.194 (the destination).
-> - Its score was 0.92783 against an alert threshold of 0.87139: it cleared the threshold by 0.0564, a moderate margin.
-> - The most likely attack category is ddos, with high confidence (0.99623).
+> - The detector flagged the flow from 192.168.1.32 (the source) to 192.168.1.195 (the destination).
+> - Its score was 0.8852 against an alert threshold of 0.87139: it cleared the threshold by 0.0138, a moderate margin.
+> - The most likely attack category is scanning, with high confidence (0.98373).
 > - No other category was plausible.
 > - This is a clear detection: a moderate margin and a category held with high confidence.
 > - Transport protocol: TCP.
-> - Application protocol: HTTP.
-> - Source port 32998; destination port 80 (HTTP).
-> - From source to destination: 737 bytes in 5 packets, an average of 147 bytes per packet.
-> - From destination back to source: 454 bytes in 3 packets, an average of 151 bytes per packet.
-> - The source sent these TCP flags: SYN+RST+PSH+ACK.
-> - The destination sent these TCP flags: SYN+PSH+ACK.
+> - Application protocol: not identified.
+> - Source port 42303; destination port 50800.
+> - From source to destination: 44 bytes in 1 packet, an average of 44 bytes per packet.
+> - From destination back to source: 0 bytes in 0 packets.
+> - The source sent these TCP flags: SYN.
+> - The destination sent these TCP flags: no TCP flags.
 > 
 > ## Recommended action
 > 
@@ -454,6 +563,28 @@ REFERENCE GUIDANCE FOR DOS (a fixed lookup by category, not specific to this flo
 
 Write the incident note.
 
+### ollama / deepseek-v4-pro:0813
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 214 words
+
+> ## What happened
+> A UDP flow from 192.168.1.31:52340 to 192.168.1.1:53 (DNS) was flagged. It consisted of 1 packet of 50 bytes from source to destination and 1 packet of 50 bytes back; every packet was 50 bytes. DNS query type was 1 (A). Application protocol was not identified. Flow duration and transfer rates are not known.
+> 
+> ## Why it was flagged
+> Detector score 0.89731, above threshold 0.87139 by 0.0259 (moderate margin). Most likely attack category is dos with moderate confidence 0.78271, but ddos is also plausible (0.19225); the category is uncertain and the detection is borderline.
+> 
+> Reasons for the score:
+> - Raised: destination port range is a well-known port (below 1,024).
+> - Lowered: TCP flags sent by source were none, as this is not a TCP flow.
+> - Lowered: DNS query type was recorded.
+> - Lowered: TCP flags seen in the flow were none, as this is not a TCP flow.
+> - Lowered: transport protocol UDP.
+> 
+> About 5% of the decision rested on the flow’s own measurements and 95% on activity of hosts around it. No single nearby flow explains the score.
+> 
+> ## What to do next
+> Treat as possible DoS, but note the category is uncertain. Standard mitigation: rate-limit the source at the network edge; review the targeted service’s connection and resource limits.
+
 ### ollama / gemma4:31b
 
 groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 181 words
@@ -474,6 +605,22 @@ groundedness **1.0** · fabricated addresses 0 · names the predicted category: 
 > Based on the dos category:
 > - Rate-limit the source at the network edge.
 > - Review the targeted service's connection and resource limits.
+
+### ollama / glm-5.3
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 264 words
+
+> ## What happened
+> 
+> Detection 91cd5bda-66ed-4e63-b80a-8b038db9ffb8: a UDP flow from 192.168.1.31 to 192.168.1.1 was flagged — destination port 53 (DNS), source port 52340, 50 bytes in 1 packet each way. DNS query type 1 (A); no application protocol identified. The score, 0.89731, cleared the 0.87139 threshold by 0.0259 — a moderate margin. The most likely category is DoS (moderate confidence, 0.78271), but DDoS was also plausible (0.19225), so the category is uncertain. This is a borderline detection; report it as such.
+> 
+> ## Why it was flagged
+> 
+> The well-known destination port (below 1,024) raised the score; the absence of TCP flags (not a TCP flow), the recorded DNS query type, and the UDP transport lowered it. About 95% of the decision rested on surrounding host activity, 5% on the flow's own measurements. No single nearby flow explains the score: none of the 50 tested (of 1,742 sharing a host) changed it by more than 0.01 when removed. Context, not reasons for the score: the source host started 871 flows to 4 addresses on 4 ports (2 times the typical distinct addresses); the destination received 1,659 flows from 3 addresses on 3 ports (3 times the typical distinct sources).
+> 
+> ## What to do next
+> 
+> DoS guidance (a fixed lookup for that category, not specific to this flow) describes single-source traffic intended to exhaust a target service or host (MITRE ATT&CK T1499). Mitigations: rate-limit the source at the network edge; review the targeted service's connection and resource limits. The flow's duration and transfer rates are not known (recorded duration is zero or a counter overflow, not a measurement).
 
 ### ollama / gpt-oss:120b
 
@@ -520,6 +667,19 @@ groundedness **1.0** · fabricated addresses 0 · names the predicted category: 
 > - No duration or transfer‑rate data are available for this flow.  
 > 
 > *Reference*: Mitigation for DOS (T1499) – rate‑limit source, review service limits.
+
+### ollama / mistral-large-4
+
+groundedness **1.0** · fabricated addresses 0 · names the predicted category: True · attributed features cited: 0.8 · 274 words
+
+> ## What happened
+> The detector flagged a UDP flow from 192.168.1.31 (source port 52340) to 192.168.1.1 (destination port 53, DNS). The flow carried 50 bytes in 1 packet in each direction; every packet was 50 bytes. The DNS query type was 1 (A). The score was 0.89731 against an alert threshold of 0.87139, clearing it by 0.0259, a moderate margin. The most likely attack category is dos with moderate confidence (0.78271), though ddos (0.19225) is also plausible, making the category uncertain. This is a borderline detection. The flow's duration and transfer rates are not known: the recorded duration is either zero or a counter overflow.
+> 
+> ## Why it was flagged
+> The score was raised by the destination port range, a well-known port (below 1,024). It was lowered by the TCP flags the source sent (none, as this is not a TCP flow), the DNS query type being recorded for this flow, the TCP flags seen in the flow (none, as this is not a TCP flow), and the transport protocol (UDP). About 5% of the decision rested on the flow's own measurements and 95% on the activity of the hosts around it. None of the 50 nearby flows tested (of 1,742 sharing a host with this one) changed the score by more than 0.01 when removed; the influence of the surrounding activity is spread across many flows.
+> 
+> ## What to do next
+> Treat this as a borderline dos detection. Standard mitigations for dos (single-source traffic intended to exhaust a target service or host, MITRE ATT&CK T1499) are to rate-limit the source at the network edge and review the targeted service's connection and resource limits.
 
 ### ollama / nemotron-3-nano:30b
 

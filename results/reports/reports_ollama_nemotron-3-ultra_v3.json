@@ -9,10 +9,13 @@
     "n": 200,
     "n_ok": 200,
     "n_failed": 0,
+    "n_degenerate": 0,
+    "reports_with_reasoning_leaked": 0,
     "groundedness_mean": 0.9996,
     "reports_with_fabricated_addresses": 0,
     "reports_with_jargon": 0,
     "report_words_mean": 256.225,
+    "classification_names_predicted_rate": 1.0,
     "classification_faithful_rate": 1.0,
     "classification_substituted_rate": 0.0,
     "attribution_coverage_mean": 0.661,
@@ -31,7 +34,7 @@
     "direction_errors_total": 5,
     "borderline_detections": 24,
     "borderline_conveyed_rate": 1.0,
-    "scoring_version": "2026-10-17",
+    "scoring_version": "2026-10-18",
     "determinism": {
       "temperature": 0,
       "seed": 42,
@@ -233,7 +236,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7ab36514-3d83-4279-8236-d02fd907bdc3",
@@ -322,7 +327,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "66ba7f9d-4648-4848-aa84-79cc5ba2f662",
@@ -411,7 +418,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "4641104c-77d6-46bd-9539-0cb73faafb3c",
@@ -500,7 +509,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "91cd5bda-66ed-4e63-b80a-8b038db9ffb8",
@@ -601,7 +612,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "27c7541c-3b64-422e-aeba-8211af98e3de",
@@ -705,7 +718,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "867783a6-c146-4592-bef3-4561c507672c",
@@ -808,7 +823,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "b6b35583-fb71-41f4-bb52-5013e3f9b0ce",
@@ -896,7 +913,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2b28086a-b5e8-4719-80a3-03435b2b2330",
@@ -985,7 +1004,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "93298a70-2647-4c6a-a016-dd2d5e798b79",
@@ -1074,7 +1095,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "cc8a4642-ce17-43d8-a0df-d2fda0768c5d",
@@ -1178,7 +1201,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "75bdc23c-1f16-4269-807f-be4569806df3",
@@ -1267,7 +1292,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "94eaa235-a05b-4866-a8a7-c01bc59d4af0",
@@ -1356,7 +1383,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d02536ab-d976-4213-a9c5-390ad63d7e3d",
@@ -1457,7 +1486,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "14bf98ec-d5ce-4af4-b87e-081ac4f68501",
@@ -1558,7 +1589,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c99ac181-3d0b-437e-9961-6249cbe9da10",
@@ -1647,7 +1680,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e6cb2dfa-dc8a-4e54-ae27-a381738b2c76",
@@ -1736,7 +1771,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "00a91f79-44b9-4455-a223-2098b411c9cc",
@@ -1825,7 +1862,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e8a7c20c-ebf5-4966-b40a-368245bbed04",
@@ -1920,7 +1959,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "4b2730a4-fe91-420a-b427-abbed079a9f2",
@@ -2016,7 +2057,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2ac89d28-2a8c-4527-acbf-03d46145ccac",
@@ -2104,7 +2147,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9c96688a-3c64-4a00-ab6c-35b85ccca048",
@@ -2193,7 +2238,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "47bebcbd-3279-480f-a664-5f1ecec6a13d",
@@ -2281,7 +2328,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d6d2c075-8cfb-4ebc-b1aa-13b308ed048c",
@@ -2370,7 +2419,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9a66d507-e75e-4ac1-8184-1bdb532762bf",
@@ -2471,7 +2522,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9f46920b-d642-44f7-b325-5f119cbcd7a7",
@@ -2560,7 +2613,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2957dca7-34fb-408a-9455-023ae74b9f7f",
@@ -2649,7 +2704,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "71fa72c1-fbb1-45b9-a002-71f9688b8952",
@@ -2745,7 +2802,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "fe5666e3-62d4-4e62-aaeb-994189a2eddd",
@@ -2840,7 +2899,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "408b7d60-27c0-44bc-aa98-f89b120df2a2",
@@ -2929,7 +2990,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "26eb36a0-5cd7-4fce-9c42-f609ea9ac118",
@@ -3017,7 +3080,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "af68429e-5278-42c1-b443-bac6c435f8d4",
@@ -3105,7 +3170,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7a1d2e7a-ac2c-4aa2-a8aa-4d06188a0538",
@@ -3194,7 +3261,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "89708b9e-61ef-4fde-948a-61e5eba81e1c",
@@ -3282,7 +3351,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "08833db8-7c36-4ee7-bef9-0973b608e52d",
@@ -3371,7 +3442,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "fd61c834-1f4e-461d-b917-b0c994b6958d",
@@ -3460,7 +3533,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "3466eee7-e246-4212-a25c-58c91ecf7d6b",
@@ -3556,7 +3631,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "b2159668-0a28-455b-b310-eb0870847a05",
@@ -3651,7 +3728,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9765665a-a41f-4b44-bd5a-b8273bc1cc3a",
@@ -3742,7 +3821,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "77e95681-2286-44cb-b27a-f6e5becfc07b",
@@ -3831,7 +3912,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 0
+      "session": 0,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9fd87543-041c-493e-9506-5c8486a25d5a",
@@ -3919,7 +4002,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c65a5334-3fb8-41bc-819c-63bf87683d97",
@@ -4008,7 +4093,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ff78ab2f-9999-4ca6-93a5-df19860faadb",
@@ -4096,7 +4183,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c70575f2-3df0-417a-83e2-019a9b89f846",
@@ -4185,7 +4274,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "67ff74fd-be13-4e28-9825-3774c9401627",
@@ -4274,7 +4365,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d44f651d-5943-4d22-b251-0e8adcfe0783",
@@ -4362,7 +4455,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c4882a36-2ef5-4bb9-b75a-4ba923119946",
@@ -4451,7 +4546,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "00d7a388-2451-4d3a-bb61-2d7c458c3af9",
@@ -4554,7 +4651,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "63d0bd03-af56-4fa5-8d68-d5c4ca01d677",
@@ -4643,7 +4742,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e056b39c-7490-448c-918b-4b0dc113f42d",
@@ -4731,7 +4832,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d7678f50-0ab1-4e82-b648-fcf1cf1ac7d2",
@@ -4820,7 +4923,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "cb303d2f-7ad5-4bef-96a3-39164ffda40f",
@@ -4909,7 +5014,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "af528f52-299c-415f-9256-568784fd2097",
@@ -4998,7 +5105,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "72e94565-a9a2-4f51-9543-3cf41c88a3cd",
@@ -5087,7 +5196,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "11c48ea3-d6cf-4ed3-ae34-210ec40a1218",
@@ -5176,7 +5287,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "136371ec-c9fa-4540-b2e9-86fbf0826cf2",
@@ -5265,7 +5378,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "66e35781-262a-46e8-a2e6-92e4c9938e55",
@@ -5354,7 +5469,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "070db282-be5d-4b93-8cb3-04afaf3f3583",
@@ -5443,7 +5560,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9e788b3b-568f-4115-a5b3-b53451fc6c05",
@@ -5531,7 +5650,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a156ed18-eda6-41dc-bc5d-9576fcf6f719",
@@ -5619,7 +5740,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "cad7a359-3957-4118-a0b4-1b480d6e58b5",
@@ -5708,7 +5831,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2a457f65-672e-4949-9502-6194d83322be",
@@ -5796,7 +5921,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "5b2f9ace-6c2f-43c1-b6c8-5625ff785c6a",
@@ -5885,7 +6012,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "63b15476-7a58-4f41-84a1-ee1311d6dfe4",
@@ -5974,7 +6103,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f667b373-db7b-473b-bf9f-aca1ed9d5903",
@@ -6062,7 +6193,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2889b2b7-4f89-467b-a258-c9d48f4f5b7b",
@@ -6151,7 +6284,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d967ff65-5e99-4cdf-86bd-eb49842d41f3",
@@ -6240,7 +6375,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2c343e4a-5283-45c3-83e3-2542b23c978e",
@@ -6335,7 +6472,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "cba1588b-8558-4551-b5b7-20a3fe6ea57a",
@@ -6424,7 +6563,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "1b539963-0d21-477a-a899-3359ca64ea55",
@@ -6513,7 +6654,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "275960fc-9304-4fb5-9851-0ba52c8d6bd5",
@@ -6602,7 +6745,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a9ad2d55-8fdc-4239-8e23-49c1d5362c99",
@@ -6691,7 +6836,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "1178beec-2c37-43fe-9d51-24fa436f53c2",
@@ -6780,7 +6927,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "947316c8-e38e-4029-a5f8-e29fc237d719",
@@ -6868,7 +7017,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "5b0cb8aa-18eb-4e23-8d1e-1022d4fa5a3d",
@@ -6957,7 +7108,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "44d3f760-907b-4e18-ba70-b89c44338b4f",
@@ -7046,7 +7199,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a9216b7d-c440-41e4-ba89-fc20da1505b1",
@@ -7141,7 +7296,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9c3c3222-e26c-483f-91ba-4f68ca2755a4",
@@ -7230,7 +7387,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d66c081f-5451-4ba2-9540-64574918a6f9",
@@ -7318,7 +7477,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e6044ddb-c66f-4428-bf49-f4c43a3b2912",
@@ -7407,7 +7568,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 1
+      "session": 1,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "239862d6-0257-40fc-ba69-178b9527bc48",
@@ -7496,7 +7659,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7533055b-d190-45b3-874a-d2ee427e7f3c",
@@ -7585,7 +7750,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "618a5f94-8146-426d-a27d-675b531402eb",
@@ -7673,7 +7840,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "febeb58a-1b73-46e4-a000-ff62f142eafa",
@@ -7768,7 +7937,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "40d32ef7-8414-4590-8245-296567d8d77c",
@@ -7857,7 +8028,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a52d8184-9015-4d1f-848b-f80dbb4caeee",
@@ -7952,7 +8125,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c6069fdb-e69e-41cf-bfa0-fcaabd216b71",
@@ -8041,7 +8216,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a8b53c4b-5fd2-4004-aed1-0dcf0fdf4391",
@@ -8129,7 +8306,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ef2d6d23-62a3-4f66-9f88-54965fdd9330",
@@ -8218,7 +8397,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ee025a7d-2bc4-4830-a491-185aa4e32d17",
@@ -8307,7 +8488,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "194a48e9-49cf-4b54-bcd7-cb2e8cdf3043",
@@ -8395,7 +8578,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "8cee2e89-2b4b-403b-8cc3-8bd83d347bcc",
@@ -8484,7 +8669,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "5aa5f101-8fb4-4eb3-978c-5ba0a3d2de8b",
@@ -8572,7 +8759,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "93e64c57-0ed2-41b9-9867-87e1db5be886",
@@ -8667,7 +8856,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "267c7b56-5f58-4810-923e-7a0320a26827",
@@ -8756,7 +8947,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e61a950a-0567-4a16-94b0-6c77feabda5e",
@@ -8851,7 +9044,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0017524c-49cf-4f51-bd9e-214b6ff9d43a",
@@ -8939,7 +9134,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "98d9f865-ad2c-4734-8466-3ad49421500b",
@@ -9027,7 +9224,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "411aff91-3d4e-4d52-bd7c-0468673bc3dd",
@@ -9116,7 +9315,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9678a180-7312-42c6-adaf-aa9e0ee1997e",
@@ -9204,7 +9405,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "040e6dfe-7a15-49dd-8d34-2dcfdf11ee02",
@@ -9293,7 +9496,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "aa27ddcc-f8b0-4fd8-93a6-86c99df02a33",
@@ -9381,7 +9586,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0ebc8446-feb8-439e-b24c-9a4eabef9165",
@@ -9470,7 +9677,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "936adc6a-2cb6-4e4a-a78d-a476c23d41b4",
@@ -9558,7 +9767,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "6145ed3f-4ffa-435f-9365-4af97e19e971",
@@ -9646,7 +9857,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9a6a3b9c-390d-426c-89d3-468b67da9200",
@@ -9735,7 +9948,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "3d09e516-a884-479d-b4c8-2be6b67969e8",
@@ -9823,7 +10038,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "4c72978e-c3e1-437d-be23-5930b6a454f4",
@@ -9911,7 +10128,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "39229894-9efe-4f6d-9332-720b350eefa0",
@@ -10000,7 +10219,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ca1a5eca-f2e2-4b84-b572-f6385b3f2bc4",
@@ -10089,7 +10310,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "010e5b69-0ec1-42e9-ad3e-73fba626036d",
@@ -10178,7 +10401,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "97973e8a-866b-4916-832f-35777a9cb5bc",
@@ -10267,7 +10492,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0e49bcfe-bc2e-4f00-ad35-0627af682d3a",
@@ -10355,7 +10582,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "091599dd-fa56-42d4-bfff-04632abf58ae",
@@ -10449,7 +10678,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "13dfe85a-18b3-4916-84c2-ef1a5e59bca0",
@@ -10538,7 +10769,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f95398b8-c151-486a-8218-6a3481a0a27c",
@@ -10626,7 +10859,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "dd0f8350-7153-43a1-b121-bed6767fe261",
@@ -10715,7 +10950,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "72d00313-d9b4-431e-a6bd-2939b5abefb3",
@@ -10804,7 +11041,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "6627d9a7-f475-443f-9208-4cd53e62a005",
@@ -10893,7 +11132,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "52c4ab90-abda-403b-b3c7-4f31a1a58b85",
@@ -10982,7 +11223,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 2
+      "session": 2,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f175d5db-1ee2-489a-9608-77224aa4e59f",
@@ -11071,7 +11314,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "790f34ba-d3a7-401d-be12-83e99de08d06",
@@ -11160,7 +11405,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "52abb59d-20b3-4660-9499-998ae8a6da67",
@@ -11249,7 +11496,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d95a1443-3459-4900-94e1-b510be83f1f2",
@@ -11338,7 +11587,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f8303d4c-220d-4dd6-a07a-0873802503f8",
@@ -11426,7 +11677,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0e77c930-ef09-458d-88d0-c176f5d12cdb",
@@ -11514,7 +11767,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e25506bf-8dc5-41a9-b52b-547f1e7030a3",
@@ -11602,7 +11857,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7ae6fc59-ca22-4993-b6c3-eb98014834e9",
@@ -11691,7 +11948,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e613e08a-d7c1-41b0-8c44-98bc34a40beb",
@@ -11780,7 +12039,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "39853e41-ea01-4300-aa7b-8b5f72f7e656",
@@ -11869,7 +12130,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a7d6a0a1-8376-472b-b0b0-6e1bc40c0c0c",
@@ -11958,7 +12221,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0fcad9c0-046d-4ba2-9703-2eed074b7af6",
@@ -12047,7 +12312,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f1fadeec-b7bb-433a-95c6-fc3e262a6957",
@@ -12136,7 +12403,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a9883c22-d829-4552-a888-b1e1c07ec849",
@@ -12225,7 +12494,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e51062e2-69f7-4895-8c82-4902e152fda0",
@@ -12314,7 +12585,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a0eb7ad9-8897-483e-9009-a3ea954f9b18",
@@ -12402,7 +12675,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f99c0897-75dd-4019-bd06-95ec6d0b7171",
@@ -12491,7 +12766,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "b18d8e1b-15a7-4434-9a39-41acb5371b81",
@@ -12580,7 +12857,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7c751526-79cb-4a02-b1c3-68fb2d43bd91",
@@ -12669,7 +12948,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e74fbbe8-1a52-4412-a729-bbcb41b1b29e",
@@ -12758,7 +13039,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "26c88845-3313-4f27-9ea1-8b4145f0ca14",
@@ -12845,7 +13128,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c96740e4-01e5-4f00-95f1-5fdb552a0c30",
@@ -12940,7 +13225,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "aa638212-5059-436b-b559-2141793f6a02",
@@ -13029,7 +13316,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "b5f667c8-d947-4d1d-81e0-5f9ca3970dcd",
@@ -13117,7 +13406,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f4da4b5b-ca81-4c7b-a42b-8b5b841c23fa",
@@ -13206,7 +13497,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f19599fb-e7c7-4c98-8ef8-5fdfc223d9cf",
@@ -13294,7 +13587,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "39fdf775-79a4-4c07-8e2b-c4987ddb0ce8",
@@ -13383,7 +13678,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "40119f5f-c73d-4d7c-8566-627b5fea8f57",
@@ -13471,7 +13768,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d846fb30-d655-466d-ae1a-8fd6bf182d16",
@@ -13560,7 +13859,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f59314ed-5a6f-4af4-9ab2-2ab4945d57a3",
@@ -13649,7 +13950,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "7b2c1779-9dc8-4d98-a4f3-3aa76824c662",
@@ -13738,7 +14041,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "b28a76cd-e8cc-4660-9955-ddc1148c764e",
@@ -13827,7 +14132,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "0c48fd67-3b46-43e6-a78a-bdb5875dd988",
@@ -13916,7 +14223,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "cb3b30f8-5e66-4e22-8ba4-ac88ab33f647",
@@ -14007,7 +14316,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "6f7c674e-9027-4af1-9e1c-1b8a319943c1",
@@ -14096,7 +14407,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "4aac1bfd-c4f8-49cc-bcb2-2ffa0400ed45",
@@ -14185,7 +14498,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2e0f330f-f2d1-4909-a566-a850e269ce07",
@@ -14274,7 +14589,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "8bcb17b9-a81e-4480-adee-87a3326608df",
@@ -14363,7 +14680,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "3416fe04-e82a-4a56-8756-18b8c8878b66",
@@ -14452,7 +14771,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "e7a6f97e-2231-4e76-b252-9323036ebf68",
@@ -14541,7 +14862,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 3
+      "session": 3,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "fa3b809d-c91d-424d-83eb-aa5cf18d65a4",
@@ -14630,7 +14953,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "6c26b765-1817-490e-968e-d1bf5020b09e",
@@ -14719,7 +15044,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f70b930b-12db-4627-8d80-98fb7d745769",
@@ -14808,7 +15135,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "08641eb7-7a1a-49bd-8e14-375879c26c90",
@@ -14896,7 +15225,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "f3f2e997-675b-424a-9819-1b3b9f985073",
@@ -14984,7 +15315,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2419f28e-b377-4841-a5c6-a6c606545c51",
@@ -15079,7 +15412,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ab758845-ba2f-4e79-ad08-fc5a837c84a9",
@@ -15167,7 +15502,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9335e990-27a2-4ba7-9dbf-aa3af2aa27b3",
@@ -15271,7 +15608,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "2b14c269-17aa-42ef-8edd-73b2befc83b8",
@@ -15360,7 +15699,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "9d363409-6c30-41e7-8545-c9d6cefc7353",
@@ -15449,7 +15790,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "5da62fb5-1462-4599-9210-6392df73f1c2",
@@ -15537,7 +15880,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ea4b9b94-8c60-4192-9063-3047a98cdc51",
@@ -15626,7 +15971,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ce2443ee-c632-454a-9fb3-6e86e88058ba",
@@ -15715,7 +16062,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "bc933c51-911d-423a-9ff2-d6f5ddf9c911",
@@ -15803,7 +16152,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "1c690004-1a6d-48f2-b245-bf8ed087ee66",
@@ -15892,7 +16243,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "1264ef45-5398-4612-8dfc-a817c29e7cc5",
@@ -15980,7 +16333,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "5c55f8c5-0462-450a-bc06-8a115e72ab40",
@@ -16076,7 +16431,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "75d3b93d-8faf-40e8-b576-324914de1f0c",
@@ -16165,7 +16522,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "099148e9-6e30-45c0-a408-45eec8339c11",
@@ -16260,7 +16619,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d93fdff7-c2fc-4327-9f73-c6b5c4bf4496",
@@ -16349,7 +16710,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "27e44f82-3d4d-42e1-bc60-a54d631d1d34",
@@ -16438,7 +16801,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a85dafd3-1e62-4cca-86a8-57cbe8f5ac57",
@@ -16527,7 +16892,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "564cf7cd-86f2-4409-9f43-a02b5867314c",
@@ -16616,7 +16983,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "6e078964-3d00-4645-98d8-e37533fd259d",
@@ -16705,7 +17074,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "ba8b3fc7-9380-4f91-b404-7887a0bb4f6c",
@@ -16794,7 +17165,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "41c297db-2d07-4e5a-939e-0a910bdeebf8",
@@ -16883,7 +17256,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "13c3367d-9af8-4378-9e07-e7541bcbc717",
@@ -16972,7 +17347,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "506b661e-0dd3-4126-88f5-a25267edee3d",
@@ -17061,7 +17438,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "82820ee0-9de2-47f6-90b7-e46c676f9571",
@@ -17150,7 +17529,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "3982928b-9ec1-45b9-aef5-7af7f476bbad",
@@ -17238,7 +17619,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "c2b83b09-4b4c-4b75-8594-20bf60755b26",
@@ -17327,7 +17710,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "be192be9-b7c0-4d4a-bb6b-7fbc3a162878",
@@ -17416,7 +17801,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "13ce8ea1-d639-44d0-8f5c-b2b388e7be5f",
@@ -17504,7 +17891,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "8d29c6d7-d348-4833-aa1e-cda81db74871",
@@ -17593,7 +17982,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "1aab634b-6f98-41c0-8d1f-d1f3a9cd92f8",
@@ -17681,7 +18072,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "a2d42016-5117-483f-8048-48f9a0632eef",
@@ -17770,7 +18163,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "850731fd-a2a0-457d-8f54-2c71946a4f0f",
@@ -17871,7 +18266,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "685919f8-1368-4fb4-9fd0-303755b81aa4",
@@ -17966,7 +18363,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "d6431245-cf17-4526-9a16-182be6e1d951",
@@ -18054,7 +18453,9 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     },
     {
       "detection_id": "792f7abf-56e0-423c-a57c-be0e995c4958",
@@ -18143,7 +18544,10 @@
         "supported": true,
         "note": "requested; on the hosted service repeated calls returned different text (measured 2026-10-12)"
       },
-      "session": 4
+      "session": 4,
+      "degenerate": false,
+      "reasoning_leaked": false
     }
-  ]
+  ],
+  "rescored_at": "2026-10-18T06:12:24.680134+00:00"
 }
