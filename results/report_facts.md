@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-18T06:16:20 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-18T06:18:36 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -456,6 +456,7 @@ Failed reports by model (empty after the output limit, network, or error) and de
 - The stub is a template with no language model: the control arm.
 - The direction check reads a reason's direction from clause-level wording and skips any clause it cannot read, so its error count is a lower bound.
 - "Borderline" is decided by the facts layer by fixed rules: margin over the threshold below a tenth of the room above it, category confidence below 0.6, or a second category at 0.05 or more.
+- Of the 30 false-positive packs, 5 are borderline by these rules (of 24 borderline packs in all). On the other 25 the detector was wrong with a clear margin, so the evidence a model reads gives it no reason to doubt the detection.
 - Groundedness measures "invented nothing", not "reasoned correctly".
 - The class and feature checks are lexical: they match names and phrases, are blind to negation, and are generous about what counts as citing a feature.
 - "Class faithful" means the report names the predicted category and no category the detector gave below 0.05. It is lexical: "may be scanning" or naming injection beside cross-site scripting (a kind of injection) counts against it. "Substitutes class" -- another category named instead of the prediction -- is the failure the study looks for.

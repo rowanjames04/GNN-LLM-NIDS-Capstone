@@ -24,10 +24,12 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "src"))
 RESULTS = REPO_ROOT / "results"
 PRIMARY, SECONDARY = "NF-ToN-IoT-v2", "NF-UNSW-NB15-v2"
 BASELINE_SCHEMA = "dual-prevalence-v1"
@@ -440,6 +442,26 @@ def _list_price_total() -> list[str]:
             f"call actually cost is unknown."]
 
 
+def _false_positive_margins() -> list[str]:
+    """How many of the false-positive packs the facts layer marks borderline.
+    On the rest the detector was confidently wrong, and a faithful translator
+    has nothing in its input to say otherwise."""
+    path = RESULTS / "evidence" / f"evidence_{PRIMARY}.json"
+    if not path.exists():
+        return []
+    from gnnids.llm.facts import borderline
+    packs = json.loads(path.read_text())
+    fps = [pk for pk in packs if pk["flow"].get("true_label") == "Benign"]
+    if not fps:
+        return []
+    n_bl = sum(1 for pk in fps if borderline(pk))
+    n_all = sum(1 for pk in packs if borderline(pk))
+    return [f"- Of the {len(fps)} false-positive packs, {n_bl} are borderline by these "
+            f"rules (of {n_all} borderline packs in all). On the other {len(fps) - n_bl} "
+            f"the detector was wrong with a clear margin, so the evidence a model reads "
+            f"gives it no reason to doubt the detection."]
+
+
 def _hidden_output() -> list[str]:
     """How much each model generated beyond the note. The hosted service bills
     reasoning as output tokens but the adapter keeps only the note, so the
@@ -536,6 +558,7 @@ def sec_llm() -> list[str]:
             "- \"Borderline\" is decided by the facts layer by fixed rules: margin over "
             "the threshold below a tenth of the room above it, category confidence "
             "below 0.6, or a second category at 0.05 or more.",
+            *_false_positive_margins(),
             "- Groundedness measures \"invented nothing\", not \"reasoned correctly\".",
             "- The class and feature checks are lexical: they match names and "
             "phrases, are blind to negation, and are generous about what counts as "
