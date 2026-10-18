@@ -478,7 +478,18 @@ def fig_confusion(smoke: bool):
 
 
 HOSTING = {"stub": "template, no model", "anthropic": "cloud", "gemini": "cloud",
-           "openai": "cloud", "ollama": "self-hosted"}
+           "openai": "cloud"}
+
+
+def hosting(row: dict) -> str:
+    """Where a run was served. An Ollama run is labelled from its recorded
+    sessions: the study used Ollama's hosted service, which must never be
+    described as self-hosted."""
+    if row["provider"] != "ollama":
+        return HOSTING.get(row["provider"], row["provider"])
+    served = {((s.get("model") or {}).get("served_by") or "")
+              for s in row.get("sessions") or []}
+    return "Ollama hosted service" if "ollama cloud" in served else "local Ollama"
 
 
 def fig_llm(smoke: bool, rows: list[dict] | None = None):
@@ -495,7 +506,7 @@ def fig_llm(smoke: bool, rows: list[dict] | None = None):
     if stub:
         ax.axvline(stub["groundedness"], color=INK_2, lw=0.8, zorder=1)
         ax.annotate("template\ncontrol", (stub["groundedness"], -0.55),
-                    xytext=(-3, 0), textcoords="offset points", ha="right",
+                    xytext=(6, 0), textcoords="offset points", ha="left",
                     va="bottom", fontsize=8, color=INK_2)
     xs = []
     for i, r in enumerate(models):
@@ -509,7 +520,7 @@ def fig_llm(smoke: bool, rows: list[dict] | None = None):
     if stub:
         xs.append(stub["groundedness"])
     ax.set_yticks(range(len(models)),
-                  [f"{r['model']}\n{HOSTING.get(r['provider'], r['provider'])}, "
+                  [f"{r['model']}\n{hosting(r)}, "
                    f"n = {r['n_ok']}" for r in models])
     lo = min(xs)
     ax.set_xlim(max(0.0, lo - 0.25 * (1 - lo) - 0.01), 1.0 + 0.02 * (1 - lo) + 0.004)
@@ -527,7 +538,9 @@ def fig_llm(smoke: bool, rows: list[dict] | None = None):
                "false-positive arm, where the detector was wrong. The line is the "
                "template control, which invents nothing by construction. n is the "
                "number of reports scored. Groundedness measures whether a report "
-               "invented anything, not whether its reasoning is correct.")
+               "invented anything, not whether its reasoning is correct. The axis is "
+               f"zoomed: the lowest point is {lo:.4f}, so every model is within "
+               f"{1 - lo:.4f} of the control.")
     sources = sorted((RESULTS / "reports").glob(f"reports_*_{MAIN_PROMPT}.json"))
     return fig, caption, sources
 

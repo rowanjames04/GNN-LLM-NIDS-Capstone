@@ -373,43 +373,46 @@ def sec_explainability() -> list[str]:
 
 
 def _prompt_sensitivity() -> list[str]:
-    """v3 against v4 on the packs EVERY v4 run reached (D46 makes that a
-    balanced subset). The free allowance ran out during v4, so a per-file mean
-    would compare prompts over different packs."""
+    """v3 against v4, each model against itself on the packs it answered under
+    BOTH prompts. A per-file mean would compare prompts over different packs:
+    deepseek-v4-pro was capped at 40 packs on v4 (D51) and lost some to the
+    output limit, so its pairing is smaller than the others'."""
     import statistics
     rep = RESULTS / "reports"
     runs = {}
     for f in sorted(rep.glob("reports_ollama_*_v[34].json")):
         d = json.loads(f.read_text())
-        runs[(d["model"], d["prompt_version"])] = {r["detection_id"]: r for r in d["reports"]}
-    v4 = [ids for (m, v), ids in runs.items() if v == "v4"]
-    if not v4:
+        runs[(d["model"], d["prompt_version"])] = {
+            r["detection_id"]: r for r in d["reports"]
+            if r.get("ok") and not r.get("degenerate")}
+    pairs = {m: set(runs[(m, "v3")]) & set(runs[(m, "v4")])
+             for m in sorted({m for m, _ in runs})
+             if (m, "v3") in runs and (m, "v4") in runs}
+    if not pairs:
         return []
-    common = set.intersection(*(set(ids) for ids in v4))
     out = ["", "### Prompt sensitivity: v3 against v4 on the same packs", "",
-           f"The free usage allowance ran out during prompt v4, so v4 covers only the "
-           f"first packs of the balanced order. This table compares the two prompts on "
-           f"the {len(common)} packs that every v4 run reached; v3 numbers here are "
-           f"therefore not the 200-pack headline above.", "",
+           "Each model is compared with itself, on the packs it answered under both "
+           "prompts (failed and degenerate reports left out on either side). "
+           "deepseek-v4-pro:0813 was capped at 40 packs on v4 after runaway "
+           "generations (D51), so its pairing is small.", "",
            "| Model | Prompt | Packs | Groundedness | Direction faithful | Borderline "
-           "conveyed | Names predicted class | Mean words |", "|---|---|---|---|---|---|---|---|"]
-    def stat(rows, fn):
+           "conveyed | Uncertainty conveyed | Names predicted class | Mean words |",
+           "|---|---|---|---|---|---|---|---|---|"]
+    def stat(rows, fn, nd=4):
         vals = [fn(r) for r in rows]
         vals = [v for v in vals if v is not None]
-        return f"{statistics.mean(vals):.4f}" if vals else "n/a"
-    for model in sorted({m for m, _ in runs}):
+        return f"{statistics.mean(vals):.{nd}f}" if vals else "n/a"
+    for model, common in pairs.items():
         for v in ("v3", "v4"):
-            ids = runs.get((model, v))
-            if not ids:
-                continue
-            rows = [ids[i] for i in common if i in ids and ids[i].get("ok")]
+            rows = [runs[(model, v)][i] for i in sorted(common)]
             out.append(
                 f"| {model} | {v} | {len(rows)} | "
                 f"{stat(rows, lambda r: (r.get('scores') or {}).get('groundedness'))} | "
                 f"{stat(rows, lambda r: None if not (r.get('direction') or {}).get('n_checked') else float(r['direction']['direction_faithful']))} | "
                 f"{stat(rows, lambda r: None if not r.get('borderline') else float(r['borderline']['borderline_conveyed']))} | "
+                f"{stat(rows, lambda r: None if not r.get('uncertainty') else float(r['uncertainty']['uncertainty_conveyed']))} | "
                 f"{stat(rows, lambda r: None if not r.get('classification') else float(r['classification']['names_predicted']))} | "
-                f"{stat(rows, lambda r: (r.get('scores') or {}).get('report_words'))} |")
+                f"{stat(rows, lambda r: (r.get('scores') or {}).get('report_words'), 0)} |")
     return out
 
 
@@ -431,16 +434,16 @@ def sec_llm() -> list[str]:
             "`scripts/summarise_llm_study.py`.*", "",
             "| Model | Prompt | Reports | Failed | Groundedness | Fabricated-address "
             "reports | Groundedness on false positives | Names predicted class | "
-            "Substitutes class | Attributed features cited | Cites none | "
+            "Class faithful | Substitutes class | Attributed features cited | Cites none | "
             "Latency p50 / p95 (s) | Charged (USD) | List price (USD) |",
-            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     money = lambda v: f"{v:.4f}" if isinstance(v, (int, float)) else "unknown"   # noqa: E731
     for r in sorted(rows, key=lambda x: (x["prompt"] or "", x["model"] or "")):
         out.append(
             f"| {r['provider']}/{r['model']} | {r['prompt']} | {r['n_ok']} | "
             f"{r['n_failed']} | {f(r['groundedness'])} | {r['fabricated_addr_reports']} | "
             f"{f(r['groundedness_on_fp'])} (n = {r['n_false_positive']}) | "
-            f"{f(r['class_faithful'])} | {f(r['class_substituted'])} | "
+            f"{f(r['class_named'])} | {f(r['class_faithful'])} | {f(r['class_substituted'])} | "
             f"{f(r['attr_coverage'])} | {f(r['attr_cites_none'])} | "
             f"{f(r['latency_p50'], 2)} / {f(r['latency_p95'], 2)} | "
             f"{money(r['cost'])} | {money(r['reference_cost'])} |")
@@ -480,16 +483,26 @@ def sec_llm() -> list[str]:
             "- The class and feature checks are lexical: they match names and "
             "phrases, are blind to negation, and are generous about what counts as "
             "citing a feature.",
+            "- \"Class faithful\" means the report names the predicted category and no "
+            "category the detector gave below 0.05. It is lexical: \"may be scanning\" "
+            "or naming injection beside cross-site scripting (a kind of injection) "
+            "counts against it. \"Substitutes class\" -- another category named "
+            "instead of the prediction -- is the failure the study looks for.",
             "- Latency is response time from a hosted service; it is not model speed.",
             "- A cost of \"unknown\" is not zero.", ""]
     for r in real:
         sess = r.get("sessions") or []
         model = (sess[-1].get("model") or {}) if sess else {}
         if model.get("digest"):
-            gpus = {g["name"] for s in sess for g in (s.get("gpus") or [])} or {"none"}
-            out.append(f"- {r['model']}: digest `{model['digest'][:19]}`, "
-                       f"{model.get('parameter_size')}, {model.get('quantization_level')}, "
-                       f"GPU {', '.join(sorted(gpus))}, {len(sess)} session(s)")
+            gpus = {g["name"] for s in sess for g in (s.get("gpus") or [])}
+            size = model.get("parameter_size")
+            size = (f"{int(size) / 1e9:,.1f}B parameters" if str(size).isdigit()
+                    else size or "size not reported")
+            hw = (f"GPU {', '.join(sorted(gpus))}" if gpus
+                  else "hardware not disclosed by the hosted service")
+            out.append(f"- {r['model']} ({r['prompt']}): digest `{model['digest'][:19]}`, "
+                       f"{size}, {model.get('quantization_level') or 'quantisation not reported'}, "
+                       f"{hw}, {len(sess)} session(s)")
     return out + [""]
 
 

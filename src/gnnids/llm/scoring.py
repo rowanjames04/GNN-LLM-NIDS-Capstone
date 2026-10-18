@@ -20,7 +20,7 @@ from .groundedness import (check_borderline_conveyed, check_no_jargon,
                            check_uncertainty_conveyed, is_degenerate,
                            reasoning_leaked, score_report)
 
-SCORING_VERSION = "2026-10-17"      # bumped when a score's meaning changes
+SCORING_VERSION = "2026-10-18"      # bumped when a score's meaning changes (C37, C38)
 
 
 def score_all(pack: dict, text: str, ok: bool = True) -> dict:
@@ -102,6 +102,7 @@ def summarise(rows: list[dict]) -> dict:
         "report_words_mean": mean("report_words"),
         # Classification fidelity: the report names the predicted category and
         # no category the evidence did not offer.
+        "classification_names_predicted_rate": rate("classification", "names_predicted"),
         "classification_faithful_rate": rate("classification", "faithful"),
         "classification_substituted_rate": rate("classification", "substituted"),
         # Attribution fidelity: share of the attributed features a report cites,

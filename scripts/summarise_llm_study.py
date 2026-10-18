@@ -59,6 +59,7 @@ def rows() -> list[dict]:
             "direction_errors": s.get("direction_errors_total"),
             "borderline_n": s.get("borderline_detections"),
             "borderline_conveyed": s.get("borderline_conveyed_rate"),
+            "class_named": s.get("classification_names_predicted_rate"),
             "class_faithful": s.get("classification_faithful_rate"),
             "class_substituted": s.get("classification_substituted_rate"),
             "attr_coverage": s.get("attribution_coverage_mean"),
@@ -99,11 +100,11 @@ def main() -> None:
               f"{fmt(r['latency'], '.2f'):>7} {money(r['cost']):>8} "
               f"{money(r['reference_cost']):>8}")
 
-    print(f"\n  {'model':<30} {'FP packs':>9} {'grounded on FPs':>17} "
+    print(f"\n  {'model':<30} {'prompt':<7} {'FP packs':>9} {'grounded on FPs':>17} "
           f"{'uncertainty conveyed':>22} {'failed':>7}")
-    for r in sorted(data, key=lambda x: x["model"] or ""):
+    for r in sorted(data, key=lambda x: (x["model"] or "", x["prompt"] or "")):
         name = f"{r['provider']}/{r['model']}"
-        print(f"  {name:<30} {r['n_false_positive']:>9} "
+        print(f"  {name:<30} {r['prompt'] or '-':<7} {r['n_false_positive']:>9} "
               f"{fmt(r['groundedness_on_fp']):>17} {fmt(r['uncertainty_rate']):>22} "
               f"{r['n_failed']:>7}")
 
@@ -119,12 +120,13 @@ def main() -> None:
 
     # Did the report relay the detector's conclusions? Lexical checks -- see
     # src/gnnids/llm/fidelity.py for what they cannot see.
-    print(f"\n  {'model':<30} {'prompt':<7} {'names class':>12} {'substitutes':>12} "
+    print(f"\n  {'model':<30} {'prompt':<7} {'names class':>12} {'faithful':>9} {'substitutes':>12} "
           f"{'feat. cited':>12} {'cites none':>11} {'p50(s)':>7} {'p95(s)':>7} "
           f"{'tok/s':>7}")
-    for r in sorted(data, key=lambda x: x["model"] or ""):
+    for r in sorted(data, key=lambda x: (x["model"] or "", x["prompt"] or "")):
         name = f"{r['provider']}/{r['model']}"
-        print(f"  {name:<30} {r['prompt'] or '-':<7} {fmt(r['class_faithful']):>12} "
+        print(f"  {name:<30} {r['prompt'] or '-':<7} {fmt(r['class_named']):>12} "
+              f"{fmt(r['class_faithful']):>9} "
               f"{fmt(r['class_substituted']):>12} {fmt(r['attr_coverage']):>12} "
               f"{fmt(r['attr_cites_none']):>11} {fmt(r['latency_p50'], '.2f'):>7} "
               f"{fmt(r['latency_p95'], '.2f'):>7} "
@@ -133,14 +135,15 @@ def main() -> None:
         print("  n/a = written before these checks existed; run "
               "scripts/rescore_reports.py (free, no model calls).")
 
-    print(f"\n  {'model':<30} {'determinism applied':<24} note")
+    print(f"\n  {'model':<30} {'prompt':<7} {'determinism applied':<24} note")
     applied_seen = set()
-    for r in sorted(data, key=lambda x: x["model"] or ""):
+    for r in sorted(data, key=lambda x: (x["model"] or "", x["prompt"] or "")):
         d = r["determinism"]
         applied = ("temperature+seed" if d.get("temperature") is not None and d.get("seed") is not None
                    else "temperature" if d.get("temperature") is not None
                    else "seed" if d.get("seed") is not None else "none")
-        print(f"  {r['provider']}/{r['model']:<24} {applied:<24} {d.get('note', '')}")
+        name = f"{r['provider']}/{r['model']}"
+        print(f"  {name:<30} {r['prompt'] or '-':<7} {applied:<24} {d.get('note', '')}")
         if r["provider"] != "stub":
             applied_seen.add(applied)
     if len(applied_seen) > 1:
@@ -170,19 +173,19 @@ def main() -> None:
 def _print_provenance(data: list[dict]) -> None:
     """What each run executed on (D35). A self-hosted result is quoted by its
     digest and quantisation, and its latency only beside the GPU it ran on."""
-    print(f"\n  {'model':<30} {'sessions':>8}  {'digest':<19} {'quant':<8} "
+    print(f"\n  {'model':<30} {'prompt':<7} {'sessions':>8}  {'digest':<19} {'quant':<8} "
           f"{'params':<7} {'gpu':<22} commit")
-    for r in sorted(data, key=lambda x: x["model"] or ""):
+    for r in sorted(data, key=lambda x: (x["model"] or "", x["prompt"] or "")):
         ss = r["sessions"]
         if not ss:
-            print(f"  {r['provider']}/{r['model']:<24} {'-':>8}  (no provenance -- "
+            print(f"  {r['provider'] + '/' + r['model']:<30} {r['prompt'] or '-':<7} {'-':>8}  (no provenance -- "
                   f"generated before D35)")
             continue
         m = ss[-1].get("model") or {}
         gpus = {g["name"] for s in ss for g in (s.get("gpus") or [])} or {"none"}
         commits = {(s.get("git") or {}).get("commit") for s in ss} - {None}
         dirty = any((s.get("git") or {}).get("dirty") for s in ss)
-        print(f"  {r['provider']}/{r['model']:<24} {len(ss):>8}  "
+        print(f"  {r['provider'] + '/' + r['model']:<30} {r['prompt'] or '-':<7} {len(ss):>8}  "
               f"{(m.get('digest') or '-')[:19]:<19} "
               f"{m.get('quantization_level') or '-':<8} "
               f"{m.get('parameter_size') or '-':<7} {', '.join(sorted(gpus)):<22} "
