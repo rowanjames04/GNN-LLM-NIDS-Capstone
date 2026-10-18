@@ -28,7 +28,7 @@ def rows() -> list[dict]:
             continue
         d = json.loads(f.read_text())
         s, reports = d.get("summary", {}), d.get("reports", [])
-        ok = [r for r in reports if r.get("ok")]
+        ok = [r for r in reports if r.get("ok") and not r.get("degenerate")]   # C37
         fp = [r for r in ok if r.get("true_label") == "Benign"]
 
         def mean(rs, key):
