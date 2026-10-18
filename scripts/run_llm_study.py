@@ -225,6 +225,9 @@ def main() -> None:
                   flush=True)
             jobs = []
             for entry in roster:
+                cap = (entry.get("max_packs") or {}).get(v)
+                if cap is not None and target > cap:
+                    continue                      # D51: this version capped for this model
                 cmd = [sys.executable, str(REPO_ROOT / "scripts" / "generate_reports.py"),
                        "--provider", entry["provider"], "--prompt-version", v,
                        "--packs", str(packs_path), "-n", str(target),
@@ -240,6 +243,7 @@ def main() -> None:
                 # dead server): not a failure of the model, and not finished.
                 state = {0: "complete", 75: "stopped_resumable"}.get(rc, "failed")
                 key = (entry["provider"], entry.get("model"), v)
+                cap = (entry.get("max_packs") or {}).get(v)
                 rec = status.setdefault(key, {
                     "provider": entry["provider"], "model": entry.get("model"),
                     "billing": billing(entry), "prompt_version": v,
@@ -247,7 +251,9 @@ def main() -> None:
                 if rc == 0:
                     rec["packs_completed"] = target
                 rec["status"] = state
-                rec["ok"] = rc == 0 and target == len(packs)
+                rec["ok"] = rc == 0 and target == min(len(packs), cap or len(packs))
+                if cap is not None:
+                    rec["max_packs"] = cap
                 print(f"===== {label} -- to {target} packs: {state}"
                       + ("" if rc in (0, 75) else f" (exit {rc})"), flush=True)
                 if state == "stopped_resumable":

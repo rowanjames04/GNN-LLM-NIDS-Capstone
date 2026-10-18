@@ -76,7 +76,11 @@ roster:
   # cost). No official Qwen model is in the hosted catalogue (qwen3.5:397b was
   # retired 2026-09-25); community re-uploads are excluded (unknown provenance,
   # possible baked-in system prompts).
-  - {provider: ollama, model: "deepseek-v4-pro:0813", billing: paid, enabled: true}  # DeepSeek, 1.65T, FP8
+  # `max_packs` caps one prompt version for one model (D51): on v4 this model
+  # reasoned to the 65,536-token output limit without answering on 13 of its
+  # first 38 packs (2% on v3). 40 balanced packs establish that; 200 would
+  # spend ~$18 of credit repeating it.
+  - {provider: ollama, model: "deepseek-v4-pro:0813", billing: paid, enabled: true, max_packs: {v4: 40}}  # DeepSeek, 1.65T, FP8
   - {provider: ollama, model: "glm-5.3", billing: paid, enabled: true}               # Zhipu, 753B, FP8
   - {provider: ollama, model: "mistral-large-4", billing: paid, enabled: true}       # Mistral, 1.05T
   # Considered for a tenth slot; enabling one is this edit.
