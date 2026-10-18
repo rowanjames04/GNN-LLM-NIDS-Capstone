@@ -213,6 +213,27 @@ def is_degenerate(report: str) -> bool:
     return words / len(tokens) < 0.4 or report.count(".") / max(1, len(report)) > 0.2
 
 
+_LEAK = None
+
+
+def reasoning_leaked(report: str) -> bool:
+    """The model's own working-out reached the report (C38).
+
+    Found 2026-10-18: a gpt-oss:20b report on prompt v4 opened "We need to
+    produce an incident note. Must use only technical details from findings."
+    Matched only on phrases a model uses about its own task, never on ones a
+    note might use to a colleague ("let me know", "we need to isolate").
+    """
+    import re
+    global _LEAK
+    if _LEAK is None:
+        _LEAK = re.compile(
+            r"<think>|</think>|\bthe user (wants|asks|is asking)\b|"
+            r"\bwe need to (write|produce|output|draft) (an?|the) (incident )?(note|report)\b|"
+            r"\blet me (think|draft|write the)\b|\bmust not calculate\b", re.I)
+    return bool(_LEAK.search(report or ""))
+
+
 def check_no_jargon(report: str) -> dict:
     """The output side of the no-jargon rule.
 

@@ -17,7 +17,8 @@ import numpy as np
 from .fidelity import (check_attribution_fidelity, check_classification_fidelity,
                        check_direction_fidelity)
 from .groundedness import (check_borderline_conveyed, check_no_jargon,
-                           check_uncertainty_conveyed, is_degenerate, score_report)
+                           check_uncertainty_conveyed, is_degenerate,
+                           reasoning_leaked, score_report)
 
 SCORING_VERSION = "2026-10-17"      # bumped when a score's meaning changes
 
@@ -28,7 +29,8 @@ def score_all(pack: dict, text: str, ok: bool = True) -> dict:
     if not ok:
         return {"scores": {}, "jargon": {}, "uncertainty": None,
                 "classification": None, "attribution": None,
-                "direction": None, "borderline": None, "degenerate": False}
+                "direction": None, "borderline": None, "degenerate": False,
+                "reasoning_leaked": False}
     return {
         "scores": score_report(pack, text),
         "jargon": check_no_jargon(text),
@@ -38,6 +40,7 @@ def score_all(pack: dict, text: str, ok: bool = True) -> dict:
         "direction": check_direction_fidelity(pack, text),
         "borderline": check_borderline_conveyed(pack, text),
         "degenerate": is_degenerate(text),
+        "reasoning_leaked": reasoning_leaked(text),
     }
 
 
@@ -91,6 +94,7 @@ def summarise(rows: list[dict]) -> dict:
     return {
         "n": len(rows), "n_ok": len(ok), "n_failed": len(rows) - len(ok) - len(degenerate),
         "n_degenerate": len(degenerate),
+        "reports_with_reasoning_leaked": sum(1 for r in ok if r.get("reasoning_leaked")),
         "groundedness_mean": mean("groundedness"),
         "reports_with_fabricated_addresses": sum(
             1 for r in ok if r["scores"]["fabricated_addresses"]),

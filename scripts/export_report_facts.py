@@ -457,6 +457,10 @@ def sec_llm() -> list[str]:
             f"{r.get('direction_errors')} | {r.get('borderline_n')} | "
             f"{f(r.get('borderline_conveyed'))} |")
     degen = [(r["model"], r["prompt"], r.get("n_degenerate")) for r in rows if r.get("n_degenerate")]
+    leaked = [(r["model"], r["prompt"], r.get("reasoning_leaked")) for r in rows if r.get("reasoning_leaked")]
+    if leaked:
+        out += ["", "Reports that opened with the model's own working-out instead of the "
+                "note (C38): " + "; ".join(f"{m} {v}: {n}" for m, v, n in leaked) + "."]
     failed = [(r["model"], r["prompt"], r["n_failed"]) for r in rows if r["n_failed"]]
     if failed or degen:
         out += ["", "Failed reports by model (empty after the output limit, network, or "

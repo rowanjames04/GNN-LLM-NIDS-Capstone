@@ -240,3 +240,13 @@ def test_a_collapsed_generation_is_a_failure_not_a_fabrication():
     s = summarise(rows)
     assert s["n_degenerate"] == 1 and s["groundedness_mean"] == 1.0
     assert s["reports_with_fabricated_addresses"] == 0
+
+
+def test_a_models_own_working_out_is_caught_but_a_polite_closing_is_not():
+    """C38."""
+    from gnnids.llm.groundedness import reasoning_leaked
+
+    assert reasoning_leaked("We need to produce an incident note. Must use only the findings.")
+    assert reasoning_leaked("<think>ok</think> What happened")
+    assert not reasoning_leaked("Please let me know if you need further details.")
+    assert not reasoning_leaked("We need to isolate the host and review the logs.")
