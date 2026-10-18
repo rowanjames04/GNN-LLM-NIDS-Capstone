@@ -196,6 +196,23 @@ def check_borderline_conveyed(pack: dict, report: str) -> dict | None:
     return {"words_found": found, "borderline_conveyed": bool(found)}
 
 
+def is_degenerate(report: str) -> bool:
+    """A generation that collapsed into repetition instead of prose (C37).
+
+    One nemotron-3-nano report on 2026-10-18 was pages of dots and zeros; the
+    entity extractor read "0.0.0.0" in it as an invented address and scored it
+    groundedness 0. That is a failed report, not a fabrication. Calibrated on
+    all 2,621 reports then on disk: that one report had 3% real words, the next
+    lowest 72%, so the bounds below sit far from any genuine report.
+    """
+    import re
+    tokens = report.split()
+    if not tokens:
+        return False
+    words = len(re.findall(r"[A-Za-z]{2,}", report))
+    return words / len(tokens) < 0.4 or report.count(".") / max(1, len(report)) > 0.2
+
+
 def check_no_jargon(report: str) -> dict:
     """The output side of the no-jargon rule.
 

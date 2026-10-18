@@ -456,6 +456,15 @@ def sec_llm() -> list[str]:
             f"{r.get('direction_checked')} | {f(r.get('direction_faithful'))} | "
             f"{r.get('direction_errors')} | {r.get('borderline_n')} | "
             f"{f(r.get('borderline_conveyed'))} |")
+    degen = [(r["model"], r["prompt"], r.get("n_degenerate")) for r in rows if r.get("n_degenerate")]
+    failed = [(r["model"], r["prompt"], r["n_failed"]) for r in rows if r["n_failed"]]
+    if failed or degen:
+        out += ["", "Failed reports by model (empty after the output limit, network, or "
+                "error) and degenerate reports (collapsed into repeated characters, C37; "
+                "kept out of every quality mean): "
+                + "; ".join(f"{m} {v}: {n} failed" for m, v, n in failed)
+                + ("; " if failed and degen else "")
+                + "; ".join(f"{m} {v}: {n} degenerate" for m, v, n in degen) + "."]
     out += ["", "- The stub is a template with no language model: the control arm.",
             "- The direction check reads a reason's direction from clause-level "
             "wording and skips any clause it cannot read, so its error count is a "

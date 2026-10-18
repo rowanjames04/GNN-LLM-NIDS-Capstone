@@ -221,3 +221,22 @@ def test_withheld_timing_and_failed_checks_become_stated_notes():
     assert q["notes"][0] == ev.TIMING_NOTE
     assert "in_bytes_below_20_per_packet" in q["failed_checks"]
     assert any("fewer than an IP header" in n for n in q["notes"])
+
+
+def test_a_collapsed_generation_is_a_failure_not_a_fabrication():
+    """C37."""
+    from gnnids.llm.groundedness import is_degenerate
+    from gnnids.llm.scoring import summarise
+
+    junk = ". . .. .. 0.000.0.0.0.0.0.0 . . . .. ..0e. The . . . " * 20
+    assert is_degenerate(junk)
+    assert not is_degenerate("The detector flagged the flow from 192.168.1.30. It is a scan.")
+    rows = [{"ok": True, "degenerate": True, "scores": {"groundedness": 0.0,
+             "fabricated_addresses": ["0.0.0.0"], "report_words": 9}, "jargon": {"clean": True},
+             "latency_seconds": 1.0, "cost_usd": None, "reference_cost_usd": 0.0},
+            {"ok": True, "degenerate": False, "scores": {"groundedness": 1.0,
+             "fabricated_addresses": [], "report_words": 200}, "jargon": {"clean": True},
+             "latency_seconds": 1.0, "cost_usd": None, "reference_cost_usd": 0.0}]
+    s = summarise(rows)
+    assert s["n_degenerate"] == 1 and s["groundedness_mean"] == 1.0
+    assert s["reports_with_fabricated_addresses"] == 0

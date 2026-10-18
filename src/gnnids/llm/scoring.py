@@ -17,7 +17,7 @@ import numpy as np
 from .fidelity import (check_attribution_fidelity, check_classification_fidelity,
                        check_direction_fidelity)
 from .groundedness import (check_borderline_conveyed, check_no_jargon,
-                           check_uncertainty_conveyed, score_report)
+                           check_uncertainty_conveyed, is_degenerate, score_report)
 
 SCORING_VERSION = "2026-10-17"      # bumped when a score's meaning changes
 
@@ -28,7 +28,7 @@ def score_all(pack: dict, text: str, ok: bool = True) -> dict:
     if not ok:
         return {"scores": {}, "jargon": {}, "uncertainty": None,
                 "classification": None, "attribution": None,
-                "direction": None, "borderline": None}
+                "direction": None, "borderline": None, "degenerate": False}
     return {
         "scores": score_report(pack, text),
         "jargon": check_no_jargon(text),
@@ -37,6 +37,7 @@ def score_all(pack: dict, text: str, ok: bool = True) -> dict:
         "attribution": check_attribution_fidelity(pack, text),
         "direction": check_direction_fidelity(pack, text),
         "borderline": check_borderline_conveyed(pack, text),
+        "degenerate": is_degenerate(text),
     }
 
 
@@ -55,7 +56,11 @@ def summarise(rows: list[dict]) -> dict:
     is reported beside it -- a model whose errored runs were dropped would look
     better than one that returned a flawed report, which is backwards.
     """
-    ok = [r for r in rows if r["ok"]]
+    # A degenerate generation (C37) is a failed report: it is counted on its
+    # own and kept out of every quality mean, so garbled text is never scored
+    # as a fabrication or averaged in as groundedness 0.
+    degenerate = [r for r in rows if r["ok"] and r.get("degenerate")]
+    ok = [r for r in rows if r["ok"] and not r.get("degenerate")]
 
     def total(key):
         # C21: an unknown cost is unknown, not zero. Summing None as 0.0 printed
@@ -84,7 +89,8 @@ def summarise(rows: list[dict]) -> dict:
                   if (r.get("timing") or {}).get("generation_seconds") is not None
                   and r.get("output_tokens")]
     return {
-        "n": len(rows), "n_ok": len(ok), "n_failed": len(rows) - len(ok),
+        "n": len(rows), "n_ok": len(ok), "n_failed": len(rows) - len(ok) - len(degenerate),
+        "n_degenerate": len(degenerate),
         "groundedness_mean": mean("groundedness"),
         "reports_with_fabricated_addresses": sum(
             1 for r in ok if r["scores"]["fabricated_addresses"]),

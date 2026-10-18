@@ -40,6 +40,7 @@ def rows() -> list[dict]:
             "provider": d.get("provider"), "model": d.get("model"),
             "prompt": d.get("prompt_version"),
             "n": len(reports), "n_ok": len(ok), "n_failed": len(reports) - len(ok),
+            "n_degenerate": s.get("n_degenerate", 0),
             "groundedness": s.get("groundedness_mean"),
             "fabricated_addr_reports": s.get("reports_with_fabricated_addresses"),
             "jargon_reports": s.get("reports_with_jargon"),
