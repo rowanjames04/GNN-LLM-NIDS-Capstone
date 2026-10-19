@@ -103,26 +103,36 @@ python scripts/train_gnn.py --ablation full --n-gnn-layers 3     # a tagged vari
 
 ### 3. Language-model study
 
-The study compares open-weight models, called through Ollama's hosted service
-(ollama.com) on its free usage credits. A template with no model is the
-control arm. The evidence packs are sent to that service, so this is not an
-on-premises run; the packs are derived from a public benchmark.
+The study compares nine models called through Ollama's hosted service
+(ollama.com): eight open-weight models, and mistral-large-4, whose weights had
+been announced but not published when the study ran. Every model reads the
+same 200 evidence packs through the same prompt; prompt v3 is the study and v4
+the prompt-sensitivity arm. A template with no model is the control arm. The
+packs are sent to that service, so this is not an on-premises run; they are
+derived from a public benchmark.
 
 ```bash
-python scripts/run_llm_study.py --estimate               # projected cost, calls nothing
+python scripts/run_llm_study.py --estimate --prompt-versions v3 v4   # list price, calls nothing
 ```
+
+The estimate assumes a note-length answer. Most of these models reason before
+answering and were billed for several times that output, so the real sweep's
+list-price equivalent was about seven times the estimate
+(`results/report_facts.md`, Section 9).
 
 ```bash
 set -a; source .env; set +a                              # OLLAMA_API_KEY
-python scripts/run_llm_study.py --only ollama
+python scripts/run_llm_study.py --only ollama --prompt-versions v3 v4 --confirm-spend
 ```
 
-No entry marked `billing: paid` is called without `--confirm-spend`. Adapters for Anthropic, OpenAI
-and Gemini exist and are disabled in `configs/llm.yaml`, as is a roster of
-smaller models for a local Ollama server (`notebooks/colab_self_hosted_arm.ipynb`
-runs those on a Colab GPU). Report generation is resumable, and
-`python scripts/rescore_reports.py` re-applies the scoring to saved reports
-without calling any model.
+The study ran on the service's free allowance and then a paid subscription, so
+the roster entries are `billing: paid` and nothing is called without
+`--confirm-spend`. The sweep runs in balanced rounds of 40 packs, three models
+at a time; a stopped run continues where it left off and calls nothing for
+finished work. Adapters for Anthropic, OpenAI and Gemini exist and are disabled
+in `configs/llm.yaml`, as is a roster of smaller models for a local Ollama
+server. `python scripts/rescore_reports.py` re-applies the scoring to saved
+reports without calling any model.
 
 ### 4. Tables, figures and the demo
 
