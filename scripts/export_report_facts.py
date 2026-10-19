@@ -617,11 +617,67 @@ def sec_figures() -> list[str]:
     return out + [""]
 
 
+def _runs(entry: dict) -> int:
+    return len(entry.get("runs") or []) or int(entry.get("n_seeds") or 0)
+
+
 def sec_process() -> list[str]:
+    """What the project generated and kept. The Methodology Execution criterion
+    asks for original data, recorded accurately and stored with the evidence
+    of how it was collected; these counts are read from the files, not typed."""
+    import subprocess
     tests = sum(src.read_text().count("\ndef test_")
                 for src in (REPO_ROOT / "tests").glob("test_*.py"))
+    m = RESULTS / "metrics"
+    gnn = sum(_runs(v) for ds in (PRIMARY, SECONDARY)
+              for v in ((read(f"metrics/gnn/gnn_{ds}.json") or {}).get("results") or {}).values())
+    zd = sum(_runs(v) for v in ((read(f"metrics/zeroday/zeroday_{PRIMARY}.json") or {})
+                                .get("results") or {}).values())
+    base = sum(_runs(v) for ds in (PRIMARY, SECONDARY)
+               for v in ((read(f"metrics/baselines/baselines_{ds}.json") or {}).get("results") or {}).values())
+    transfer = 0
+    for f in (m / "transfer").glob("transfer_*.json"):
+        d = json.loads(f.read_text())
+        transfer += len(d.get("runs") or []) or 1
+    packs = RESULTS / "evidence" / f"evidence_{PRIMARY}.json"
+    n_packs = len(json.loads(packs.read_text())) if packs.exists() else 0
+    model_reports = model_done = stub_reports = 0
+    for f in (RESULTS / "reports").glob("reports_*.json"):
+        rs = json.loads(f.read_text()).get("reports") or []
+        if f.name.startswith("reports_stub_"):
+            stub_reports += len(rs)
+        else:
+            model_reports += len(rs)
+            model_done += sum(1 for r in rs if r.get("ok") and not r.get("degenerate"))
+    archived = sum(1 for f in (RESULTS / "superseded").rglob("*") if f.is_file()) \
+        if (RESULTS / "superseded").exists() else 0
+    def git(*a):
+        try:
+            return subprocess.run(["git", *a], cwd=REPO_ROOT, capture_output=True,
+                                  text=True, check=True).stdout.strip()
+        except Exception:                                   # noqa: BLE001
+            return None
+    commits, first = git("rev-list", "--count", "HEAD"), git("log", "--reverse",
+                                                               "--format=%as", "--max-parents=0")
     return ["## 12. Process", "",
+            "*Counted from the results files and the repository by "
+            "`scripts/export_report_facts.py`.*", "",
             f"- Automated tests in the repository: {tests}",
+            f"- Graph-model training runs behind the reported results (both datasets, "
+            f"all three variants, every seed): {gnn}",
+            f"- Leave-one-attack-out training runs: {zd}",
+            f"- Baseline model fits (every model, feature set and seed, both datasets): {base}",
+            f"- Cross-dataset transfer evaluations, controls included: {transfer}",
+            f"- Evidence packs generated for the language-model study: {n_packs}",
+            f"- Incident reports requested from language models: {model_reports}, of "
+            f"which {model_done} completed and were scored ({model_reports - model_done} "
+            f"failed); written by the template control: {stub_reports}",
+            f"- Result files archived rather than deleted when superseded: {archived}",
+            f"- Commits in the project repository: {commits or 'unknown'}"
+            + (f", the first on {first.splitlines()[0]}" if first else ""),
+            "- Every result file records the configuration that produced it and the "
+            "version of the data it was computed on; a loader refuses a result whose "
+            "data version does not match.",
             "- Counts of logged decisions and defects are kept in the project notes "
             "(Decision Register, Defect Register), not in this file.", ""]
 
