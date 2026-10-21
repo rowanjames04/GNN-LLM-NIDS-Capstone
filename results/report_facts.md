@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-19T08:05:58 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-21T22:53:36 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -102,29 +102,29 @@ PR-AUC at 4% prevalence (floor 0.04). "All" is the headline; "novel only" drops 
 
 ### What the duration artefact was worth (D47)
 
-"With" is the archived run (`results/superseded/2026-10-10_duration_artefact/`), which saw the seven artefact columns; "without" is the current run. The rows are identical and in the same order, so the feature list is the only difference on NF-ToN-IoT-v2. On NF-UNSW-NB15-v2 the earlier preprocessing also lacked the outlier clip, so that comparison has two differences.
+"With" is the archived run (`results/superseded/2026-10-10_duration_artefact/`), which saw the seven artefact columns; "without" is the current run. The rows are identical and in the same order, the training configuration is identical, and both sides are averaged over the same seeds (n), so the feature list is the only difference on NF-ToN-IoT-v2. On NF-UNSW-NB15-v2 the earlier preprocessing also lacked the outlier clip, so that comparison has two differences.
 
-| Dataset | Model | PR-AUC with the artefact | PR-AUC without | Difference |
-|---|---|---|---|---|
-| NF-ToN-IoT-v2 | GNN channel1_only | 0.9804 | 0.9518 | -0.0286 |
-| NF-ToN-IoT-v2 | GNN channel2_only | 0.9729 | 0.9694 | -0.0036 |
-| NF-ToN-IoT-v2 | GNN full | 0.9922 | 0.9883 | -0.0039 |
-| NF-ToN-IoT-v2 | logreg::flow | 0.9748 | 0.9579 | -0.0169 |
-| NF-ToN-IoT-v2 | logreg::flow+host | 0.9833 | 0.9824 | -0.0009 |
-| NF-ToN-IoT-v2 | mlp::flow | 0.9832 | 0.9696 | -0.0136 |
-| NF-ToN-IoT-v2 | mlp::flow+host | 0.9833 | 0.9853 | +0.0020 |
-| NF-ToN-IoT-v2 | random_forest::flow | 0.9710 | 0.9537 | -0.0173 |
-| NF-ToN-IoT-v2 | random_forest::flow+host | 0.9753 | 0.9703 | -0.0050 |
-| NF-ToN-IoT-v2 | xgboost::flow | 0.9860 | 0.9743 | -0.0117 |
-| NF-ToN-IoT-v2 | xgboost::flow+host | 0.9809 | 0.9793 | -0.0015 |
-| NF-UNSW-NB15-v2 | GNN channel1_only | 0.9903 | 0.9884 | -0.0019 |
-| NF-UNSW-NB15-v2 | GNN full | 0.9914 | 0.9892 | -0.0022 |
-| NF-UNSW-NB15-v2 | logreg::flow | 0.9870 | 0.9839 | -0.0031 |
-| NF-UNSW-NB15-v2 | logreg::flow+host | 0.9887 | 0.9839 | -0.0049 |
-| NF-UNSW-NB15-v2 | mlp::flow | 0.9890 | 0.9875 | -0.0015 |
-| NF-UNSW-NB15-v2 | mlp::flow+host | 0.9888 | 0.9866 | -0.0022 |
-| NF-UNSW-NB15-v2 | random_forest::flow | 0.9899 | 0.9850 | -0.0049 |
-| NF-UNSW-NB15-v2 | random_forest::flow+host | 0.9743 | 0.9809 | +0.0065 |
+| Dataset | Model | n | PR-AUC with the artefact | PR-AUC without | Difference |
+|---|---|---|---|---|---|
+| NF-ToN-IoT-v2 | GNN channel1_only | 3 | 0.9804 | 0.9561 | -0.0243 |
+| NF-ToN-IoT-v2 | GNN channel2_only | 3 | 0.9729 | 0.9694 | -0.0036 |
+| NF-ToN-IoT-v2 | GNN full | 3 | 0.9922 | 0.9882 | -0.0040 |
+| NF-ToN-IoT-v2 | logreg::flow | 3 | 0.9748 | 0.9579 | -0.0169 |
+| NF-ToN-IoT-v2 | logreg::flow+host | 3 | 0.9833 | 0.9824 | -0.0009 |
+| NF-ToN-IoT-v2 | mlp::flow | 3 | 0.9832 | 0.9696 | -0.0136 |
+| NF-ToN-IoT-v2 | mlp::flow+host | 3 | 0.9833 | 0.9853 | +0.0020 |
+| NF-ToN-IoT-v2 | random_forest::flow | 3 | 0.9710 | 0.9537 | -0.0173 |
+| NF-ToN-IoT-v2 | random_forest::flow+host | 3 | 0.9753 | 0.9703 | -0.0050 |
+| NF-ToN-IoT-v2 | xgboost::flow | 3 | 0.9860 | 0.9743 | -0.0117 |
+| NF-ToN-IoT-v2 | xgboost::flow+host | 3 | 0.9809 | 0.9793 | -0.0015 |
+| NF-UNSW-NB15-v2 | GNN channel1_only | 3 | 0.9903 | 0.9884 | -0.0019 |
+| NF-UNSW-NB15-v2 | GNN full | 3 | 0.9914 | 0.9892 | -0.0022 |
+| NF-UNSW-NB15-v2 | logreg::flow | 3 | 0.9870 | 0.9839 | -0.0031 |
+| NF-UNSW-NB15-v2 | logreg::flow+host | 3 | 0.9887 | 0.9839 | -0.0048 |
+| NF-UNSW-NB15-v2 | mlp::flow | 3 | 0.9890 | 0.9875 | -0.0015 |
+| NF-UNSW-NB15-v2 | mlp::flow+host | 3 | 0.9888 | 0.9866 | -0.0022 |
+| NF-UNSW-NB15-v2 | random_forest::flow | 3 | 0.9899 | 0.9850 | -0.0049 |
+| NF-UNSW-NB15-v2 | random_forest::flow+host | 3 | 0.9743 | 0.9809 | +0.0065 |
 
 Leave-one-attack-out recall on NF-ToN-IoT-v2, with and without the artefact:
 
@@ -518,7 +518,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 - Evidence packs generated for the language-model study: 200
 - Incident reports requested from language models: 3440, of which 3420 completed and were scored (20 failed); written by the template control: 800
 - Result files archived rather than deleted when superseded: 43
-- Commits in the project repository: 99, the first on 2026-07-27
+- Commits in the project repository: 103, the first on 2026-07-27
 - Every result file records the configuration that produced it and the version of the data it was computed on; a loader refuses a result whose data version does not match.
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

@@ -17,7 +17,7 @@ source:
   # addresses, which makes them unusable for a graph.
   kaggle: "shahidabbas76/nf-ton-iot-v2-full-dataset"
   filename: NF-ToN-IoT-v2.csv
-  sha256: null # recorded on first run of scripts/download_data.py
+  sha256: "7751fb955ca50a2c113ec455eddd39ca23fcfa99eb1ab488c4526c43c2a20081" # the file every result was built from, pinned 2026-10-22
 
 paths:
   raw: data/raw

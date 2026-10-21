@@ -740,18 +740,17 @@ def fig09_topology_ablation(out: Path) -> None:
 
 
 def _artefact_rows() -> list[tuple[str, str, float, float]]:
-    """(name, colour, with the artefact, without) on PRIMARY, as in
-    export_report_facts.sec_step_back."""
+    """(name, colour, with the artefact, without) on PRIMARY, over the seeds both
+    runs share, as in export_report_facts.sec_step_back."""
+    matched = script("export_report_facts")._matched_pr_auc
     rows = []
     old, new = gnn(PRIMARY, ARCHIVE / "metrics")["results"], gnn(PRIMARY)["results"]
     for v in ("full", "channel1_only"):
-        rows.append((VARIANT_NAME[v], VARIANT_COLOUR[v], old[v]["aggregate"]["pr_auc"]["mean"],
-                     new[v]["aggregate"]["pr_auc"]["mean"]))
+        rows.append((VARIANT_NAME[v], VARIANT_COLOUR[v], *matched(old[v], new[v])[:2]))
     ob, nb = baselines(PRIMARY, ARCHIVE / "metrics"), baselines(PRIMARY)
     for k in sorted(ob):
         if k in nb:
-            rows.append((baseline_name(k), TREE, ob[k]["aggregate"]["pr_auc"]["mean"],
-                         nb[k]["aggregate"]["pr_auc"]["mean"]))
+            rows.append((baseline_name(k), TREE, *matched(ob[k], nb[k])[:2]))
     return rows
 
 

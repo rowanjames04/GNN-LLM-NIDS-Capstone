@@ -68,6 +68,17 @@ def pm(stat: dict | None, places: int = 4) -> str:
     return bare(FACTS.pm(stat, places))
 
 
+def runs_pm(entry: dict, metric: str, key: str = "at_4%", places: int = 4) -> str:
+    """mean ± population sd from the per-seed runs, as Table 10 and the facts
+    file compute it. The stored aggregate is already rounded to five places,
+    so rounding it again to four can differ in the last digit (0.00485 ->
+    0.0049 where the runs give 0.004846 -> 0.0048)."""
+    v = [r[key][metric] for r in entry["runs"] if isinstance(r[key].get(metric), (int, float))]
+    if not v:
+        return "n/a"
+    return f"{statistics.mean(v):.{places}f} ± {statistics.pstdev(v):.{places}f}"
+
+
 def model_name(key: str) -> str:
     """`xgboost::flow+host` -> `XGBoost (flow+host)`; `gnn::full` -> graph model."""
     model, _, feats = key.partition("::")
@@ -186,7 +197,8 @@ def table_05() -> tuple[str, str]:
                      weights, m["digest"][:12]])
         n_models += 1
     stub = need(FACTS.read("reports/reports_stub_template-v1_v3.json"), "stub v3 reports")
-    rows.append([f"{stub['model']} (control)", "None (fixed template)", "—", "—", "—", "—"])
+    rows.append([f"{stub['model']} (control)", "None (fixed template)", "n/a", "n/a", "n/a",
+                 "n/a"])
     n_open = n_models - sum(1 for r in rows[:n_models] if r[0] in WEIGHTS_NOT_RELEASED)
     note = (f"All {words(n_models)} models were called through Ollama's hosted service, "
             f"which reports each model's parameter count (in billions), quantisation and "
@@ -195,8 +207,11 @@ def table_05() -> tuple[str, str]:
             f"{words(n_open).capitalize()} of the {words(n_models)} models have published "
             f"weights; "
             f"mistral-large-4's weights had been announced but not released when the study "
-            f"ran. The template control writes every report from a fixed template with no "
-            f"language model.")
+            f"ran. Quantisation is the number format the weights were served in: BF16 is "
+            f"16-bit brain floating point (unquantised), FP8 is 8-bit floating point, and "
+            f"MXFP4 and NVFP4 are 4-bit block-scaled floating-point formats. The template "
+            f"control writes every report from a fixed template with no language model "
+            f"(n/a: not applicable).")
     return "Table 05 - Language model roster.md", apa(
         5, "Language Models Compared, With the Template Control",
         ["Model", "Developer", "Parameters (B)", "Quantisation", "Published weights",
@@ -253,13 +268,13 @@ def table_07() -> tuple[str, str]:
     on_path = {k: v for k, v in d["results"].items() if v.get("schema") == FACTS.BASELINE_SCHEMA}
     if len(on_path) != len(d["results"]):
         raise SystemExit(f"stale baselines in {p}: {set(d['results']) - set(on_path)}")
+    prev = next(iter(on_path.values()))["reported_at_prevalence"]
+    key = f"at_{prev:.0%}"
     rows = []
     for k, v in sorted(on_path.items()):
-        a = v["aggregate"]
         model, _, feats = k.partition("::")
-        rows.append([BASELINE_NAMES[model], feats, v["n_seeds"], pm(a.get("pr_auc")),
-                     pm(a.get("f1")), pm(a.get("fpr_at_95_recall"), 5)])
-    prev = next(iter(on_path.values()))["reported_at_prevalence"]
+        rows.append([BASELINE_NAMES[model], feats, len(v["runs"]), runs_pm(v, "pr_auc", key),
+                     runs_pm(v, "f1", key), runs_pm(v, "fpr_at_95_recall", key, 5)])
     n_host = len(d.get("host_feature_names") or [])
     note = (f"Mean ± standard deviation over n seeds, reported at {floor_text(prev)}. "
             f"FPR at 95% recall is the false-positive rate at the threshold that catches 95% "
@@ -326,9 +341,8 @@ def table_09() -> tuple[str, str]:
     rows = []
 
     def add(name, o, n):
-        a, b = o["aggregate"]["pr_auc"], n["aggregate"]["pr_auc"]
-        rows.append([name, f"{a['n_seeds']} / {b['n_seeds']}", f"{a['mean']:.4f}",
-                     f"{b['mean']:.4f}", f"{b['mean'] - a['mean']:+.4f}"])
+        a, b, k = FACTS._matched_pr_auc(o, n)
+        rows.append([name, str(k), f"{a:.4f}", f"{b:.4f}", f"{b - a:+.4f}"])
     for v in GNN_ORDER:
         if v in old_g and v in new_g:
             add(GNN_NAMES[v], old_g[v], new_g[v])
@@ -341,12 +355,13 @@ def table_09() -> tuple[str, str]:
     note = (f"Mean PR-AUC over seeds at {floor_text(prev)}. \"With\" is the archived run, "
             f"whose inputs included the {words(len(cols))} duration and throughput columns later "
             f"removed as an artefact; \"without\" is the current run. The rows and their order "
-            f"are identical, so the feature list is the only difference. Difference = without "
-            f"minus with, from the unrounded means. Seeds: n for the archived and the "
-            f"current run.")
+            f"are identical, the training configuration is identical, and both columns are "
+            f"averaged over the same seeds, so the feature list is the only difference. "
+            f"Difference = without minus with, from the unrounded means. Seeds = the number "
+            f"of seeds both runs share.")
     return "Table 09 - Effect of the duration artefact.md", apa(
         9, f"Effect of the Duration Artefact on PR-AUC, {PRIMARY}",
-        ["Model", "Seeds (with / without)", "PR-AUC with artefact", "PR-AUC without",
+        ["Model", "Seeds", "PR-AUC with artefact", "PR-AUC without",
          "Difference"], rows, note,
         [rel(pg_old), rel(pb_old), rel(pg_new), rel(pb_new)])
 
@@ -452,7 +467,7 @@ def table_14() -> tuple[str, str]:
     d = need(FACTS.read(p), p)
     s = d["summary"]
     feats = s["features_shown_to_the_model"]
-    rows = [[r["feature"], r["packs"], f"{r['share_of_packs']:.0%}", r["raises_suspicion"],
+    rows = [[r["feature"], r["packs"], f"{r['share_of_packs']:.1%}", r["raises_suspicion"],
              r["lowers_suspicion"]] for r in feats["ranked"][:10]]
     note = (f"Over {s['n_packs']} evidence packs ({s['n_true_attacks']} true attacks, "
             f"{s['n_false_positives']} false positives) from the graph model "

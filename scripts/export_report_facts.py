@@ -700,6 +700,24 @@ def _gnn_variants(doc: dict | None) -> dict:
     return (doc or {}).get("results", {})
 
 
+def _matched_pr_auc(old: dict, new: dict) -> tuple[float, float, int]:
+    """Mean PR-AUC at 4% of an archived and a current entry over the runs both
+    have: (with, without, n). The archived GNN ran 3 seeds and the current one
+    10, so comparing their aggregate means would fold a seed effect into the
+    artefact effect. GNN runs pair by seed; baseline runs carry no seed field
+    (both files ran seeds 0..n-1 in order), so they pair by position."""
+    import statistics
+    o, n = old.get("runs", []), new.get("runs", [])
+    if all("seed" in r for r in o + n):
+        by_seed = {r["seed"]: r for r in n}
+        pairs = [(r, by_seed[r["seed"]]) for r in o if r["seed"] in by_seed]
+    else:
+        pairs = list(zip(o, n))
+    a = [p[0]["at_4%"]["pr_auc"] for p in pairs]
+    b = [p[1]["at_4%"]["pr_auc"] for p in pairs]
+    return statistics.mean(a), statistics.mean(b), len(pairs)
+
+
 def sec_step_back() -> list[str]:
     """D47 and D48: the data-quality findings, the duplicate-flow evaluation, and
     what the duration artefact was worth to each model."""
@@ -766,25 +784,27 @@ def sec_step_back() -> list[str]:
     out += ["### What the duration artefact was worth (D47)", "",
             f"\"With\" is the archived run (`results/{ARCHIVE}/`), which saw the seven "
             "artefact columns; \"without\" is the current run. The rows are identical "
-            "and in the same order, so the feature list is the only difference on "
-            f"{PRIMARY}. On {SECONDARY} the earlier preprocessing also lacked the "
-            "outlier clip, so that comparison has two differences.", "",
-            "| Dataset | Model | PR-AUC with the artefact | PR-AUC without | Difference |",
-            "|---|---|---|---|---|"]
+            "and in the same order, the training configuration is identical, and "
+            "both sides are averaged over the same seeds (n), so the feature list is "
+            f"the only difference on {PRIMARY}. "
+            f"On {SECONDARY} the earlier preprocessing also lacked the outlier clip, "
+            "so that comparison has two differences.", "",
+            "| Dataset | Model | n | PR-AUC with the artefact | PR-AUC without | Difference |",
+            "|---|---|---|---|---|---|"]
     rows = 0
     for ds in (PRIMARY, SECONDARY):
         old = _gnn_variants(read(f"{ARCHIVE}/metrics/gnn/gnn_{ds}.json"))
         new = _gnn_variants(read(f"metrics/gnn/gnn_{ds}.json"))
         for name in old:
             if name in new:
-                a = old[name]["aggregate"]["pr_auc"]["mean"]; b_ = new[name]["aggregate"]["pr_auc"]["mean"]
-                out.append(f"| {ds} | GNN {name} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
+                a, b_, n = _matched_pr_auc(old[name], new[name])
+                out.append(f"| {ds} | GNN {name} | {n} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
         ob = (read(f"{ARCHIVE}/metrics/baselines/baselines_{ds}.json") or {}).get("results", {})
         nb = (read(f"metrics/baselines/baselines_{ds}.json") or {}).get("results", {})
         for key in sorted(ob):
             if key in nb and ob[key].get("schema") == BASELINE_SCHEMA:
-                a = ob[key]["aggregate"]["pr_auc"]["mean"]; b_ = nb[key]["aggregate"]["pr_auc"]["mean"]
-                out.append(f"| {ds} | {key} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
+                a, b_, n = _matched_pr_auc(ob[key], nb[key])
+                out.append(f"| {ds} | {key} | {n} | {a:.4f} | {b_:.4f} | {b_ - a:+.4f} |"); rows += 1
     oz = (read(f"{ARCHIVE}/metrics/zeroday/zeroday_{PRIMARY}.json") or {}).get("results", {})
     nz = (read(f"metrics/zeroday/zeroday_{PRIMARY}.json") or {}).get("results", {})
     if oz and nz:
