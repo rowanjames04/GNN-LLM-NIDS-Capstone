@@ -42,7 +42,7 @@ actual:
   - label: Data-quality audit + full retrain
     start: 2026-10-17
     end: 2026-10-18
-  - label: Report and video
+  - label: Final report
     start: 2026-10-19
     end: 2026-11-06
 

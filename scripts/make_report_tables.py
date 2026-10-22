@@ -69,7 +69,7 @@ def pm(stat: dict | None, places: int = 4) -> str:
 
 
 def runs_pm(entry: dict, metric: str, key: str = "at_4%", places: int = 4) -> str:
-    """mean ± population sd from the per-seed runs, as Table 10 and the facts
+    """mean ± population sd from the per-seed runs, as the novel-only table and the facts
     file compute it. The stored aggregate is already rounded to five places,
     so rounding it again to four can differ in the last digit (0.00485 ->
     0.0049 where the runs give 0.004846 -> 0.0048)."""
@@ -99,8 +99,51 @@ def floor_text(prev: float) -> str:
     return f"{prev:.0%} prevalence (PR-AUC of a random model: {prev:.2f})"
 
 
+# Report table numbers. The functions keep the numbers the tables had in the first
+# draft (table_03 ...); the report later dropped two front tables, so each is printed
+# under its number in reading order. Hand-written tables are numbered in their files.
+RENUMBER = {3: 1, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9, 12: 10, 13: 11, 14: 12,
+            15: 13, 16: 14}
+SOURCES_TABLE = 23          # the appendix table that lists every results file
+SOURCES: dict[int, tuple[str, list[str]]] = {}   # report number -> (title, files)
+
+# The results files each figure in Sections 5 and 6 reads, as make_report_figures.py
+# reads them. Paths are relative to results/.
+FIGURE_SOURCES = {
+    8: ("Number of Flows in Each Class for Both Datasets",
+        ["metrics/preprocess_NF-ToN-IoT-v2.json (and the processed data it points to)",
+         "metrics/preprocess.json", "metrics/audit_NF-UNSW-NB15-v2-selfcheck.json"]),
+    9: ("PR-AUC of Each Model Variant by Seed on NF-ToN-IoT-v2",
+        ["metrics/gnn/gnn_NF-ToN-IoT-v2.json"]),
+    10: ("Change in PR-AUC After Removing the Artefact Columns",
+         ["superseded/2026-10-10_duration_artefact/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
+          "superseded/2026-10-10_duration_artefact/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
+          "metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
+    11: ("Drop in PR-AUC When Duplicated Test Flows Are Removed",
+         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
+    12: ("The Graph Model Against XGBoost on PR-AUC and F1",
+         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
+    13: ("Topology Gain and the Share of Each Decision Given to the Neighbourhood, by Dataset",
+         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/gnn/gnn_NF-UNSW-NB15-v2.json"]),
+    14: ("Recall and PR-AUC on Each Attack Family When It Was Removed From Training",
+         ["metrics/zeroday/zeroday_NF-ToN-IoT-v2.json"]),
+    15: ("In-Dataset Controls Against Cross-Dataset Results",
+         ["metrics/transfer/transfer_*.json (pooled by scripts/summarise_transfer.py)"]),
+    16: ("Share of Each Decision Given to the Neighbourhood, by True Class",
+         ["metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json"]),
+    17: ("Groundedness of Each Model on All Reports and on False Positives",
+         ["reports/reports_*_v3.json (pooled by scripts/summarise_llm_study.py)"]),
+    18: ("Direction Kept and Note Length Under Prompts v3 and v4",
+         ["reports/reports_ollama_*_v3.json", "reports/reports_ollama_*_v4.json"]),
+    19: ("Output Tokens Produced per Word of the Final Note, by Model",
+         ["reports/reports_ollama_*_v3.json"]),
+}
+
+
 def apa(number: int, title: str, header: list[str], rows: list[list], note: str,
         sources: list[str]) -> str:
+    number = RENUMBER.get(number, number)
+    SOURCES[number] = (title, sources)
     def cell(v) -> str:
         s = str(v)
         if "\n" in s:
@@ -112,9 +155,27 @@ def apa(number: int, title: str, header: list[str], rows: list[list], note: str,
         if len(r) != len(header):
             raise ValueError(f"Table {number}: row {r} does not match header {header}")
         lines.append("| " + " | ".join(cell(c) for c in r) + " |")
-    src = "; ".join(f"`{s}`" for s in sources)
-    lines += ["", f"*Note.* {note} Source: {src}."]
+    # The results files are listed in the sources appendix (sources_table), not here.
+    lines += ["", f"*Note.* {note}"]
     return "\n".join(lines) + "\n"
+
+
+def sources_table() -> tuple[str, str]:
+    """Appendix table: the results file behind every table and figure in Sections 5
+    and 6, so the notes under them stay short."""
+    rows = [[f"Table {n}", t, "; ".join(f"`{x}`" for x in files)]       # already results/...
+            for n, (t, files) in sorted(SOURCES.items())]
+    rows += [[f"Figure {n}", t, "; ".join(f"`results/{x}`" for x in files)]
+             for n, (t, files) in sorted(FIGURE_SOURCES.items())]
+    head = [f"**Table {SOURCES_TABLE}**", "", "*Results Files Behind the Tables and Figures "
+            "in Sections 5 and 6*", "", "| Item | Title | Results file |", "|---|---|---|"]
+    body = ["| " + " | ".join(c.replace("|", "\\|") for c in r) + " |" for r in rows]
+    note = ("*Note.* Paths are relative to the root of the code repository (Appendix VI). "
+            "Each results file also records the configuration that produced it. A `*` "
+            "matches every model or seed, and a file pooled by a script is read through "
+            "that script.")
+    return (f"Table {SOURCES_TABLE:02d} - Sources of results.md",
+            "\n".join(head + body + ["", note]) + "\n")
 
 
 def need(doc, what: str):
@@ -597,8 +658,13 @@ def main() -> None:
     args.out.mkdir(parents=True, exist_ok=True)
     for build in TABLES:
         name, text = build()
+        old = int(re.match(r"Table (\d+)", name).group(1))
+        name = re.sub(r"^Table \d+", f"Table {RENUMBER.get(old, old):02d}", name)
         (args.out / name).write_text(text)
         print(f"written -> {name}")
+    name, text = sources_table()
+    (args.out / name).write_text(text)
+    print(f"written -> {name}")
 
 
 if __name__ == "__main__":
