@@ -115,6 +115,8 @@ SOURCES: dict[int, tuple[str, list[str]]] = {}   # report number -> (title, file
 # The results files each figure in Sections 5 and 6 reads, as make_report_figures.py
 # reads them, under the figure's number in the report. Paths are relative to results/.
 FIGURE_SOURCES = {
+    2: ("Share of Flows With a Wrapped Flow-Duration Value, by Class, on NF-ToN-IoT-v2",
+        ["metrics/data_quality_NF-ToN-IoT-v2.json"]),
     4: ("PR-AUC of Each Model Variant by Seed on NF-ToN-IoT-v2",
         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json"]),
     5: ("Topology Gain and the Share of Each Decision Given to the Neighbourhood, by Dataset",
@@ -123,6 +125,7 @@ FIGURE_SOURCES = {
         ["metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json"]),
     7: ("Direction Kept and Note Length Under Prompts v3 and v4",
         ["reports/reports_ollama_*_v3.json", "reports/reports_ollama_*_v4.json"]),
+    8: ("Planned and Actual Project Timeline", ["configs/report_timeline.yaml"]),
 }
 
 
@@ -147,14 +150,16 @@ def apa(number: int, title: str, header: list[str], rows: list[list], note: str,
 
 
 def sources_table() -> tuple[str, str]:
-    """Appendix table: the results file behind every table and figure in Sections 5
-    and 6, so the notes under them stay short."""
+    """Appendix table: the file behind every data table and figure in the report, so
+    the notes under them stay short. Figures 1 and 3 are diagrams and Table 6 is
+    written by hand, so they have no source file."""
     rows = [[f"Table {n}", t, "; ".join(f"`{x}`" for x in files)]       # already results/...
             for n, (t, files) in sorted(SOURCES.items())]
-    rows += [[f"Figure {n}", t, "; ".join(f"`results/{x}`" for x in files)]
+    rows += [[f"Figure {n}", t, "; ".join(f"`{x}`" if x.startswith("configs/") else f"`results/{x}`"
+                                          for x in files)]
              for n, (t, files) in sorted(FIGURE_SOURCES.items())]
-    head = [f"**Table {SOURCES_TABLE}**", "", "*Results Files Behind the Tables and Figures "
-            "in Sections 5 and 6*", "", "| Item | Title | Results file |", "|---|---|---|"]
+    head = [f"**Table {SOURCES_TABLE}**", "", "*Files Behind the Data Tables and Figures*",
+            "", "| Item | Title | Source file |", "|---|---|---|"]
     body = ["| " + " | ".join(c.replace("|", "\\|") for c in r) + " |" for r in rows]
     note = ("*Note.* Paths are relative to the root of the code repository (Appendix VI). "
             "Each results file also records the configuration that produced it. A `*` "
@@ -484,8 +489,9 @@ def table_12() -> tuple[str, str]:
         rows.append([f"{name}{mark}", f"{r['test_positives']:,}", pm(a.get("recall")),
                      pm(a.get("pr_auc"))])
     n = one_n([r for _, r in items])
-    skipped = " ".join(f"{k.capitalize()} could not be tested: {why.split(';')[0]}."
-                       for k, why in d.get("skipped", {}).items())
+    # the reason and its counts are given in Section 5.2
+    skipped = " ".join(f"{k.capitalize()} could not be tested (Section 5.2)."
+                       for k in d.get("skipped", {}))
     note = (f"Full graph model, mean ± standard deviation over {words(n)} seeds; PR-AUC at "
             f"{floor_text(prev)}. Recall is measured on the held-out family's flows in the "
             f"test split. {THIN} Fewer than {thin:,} test flows. {skipped}")
