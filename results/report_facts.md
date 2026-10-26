@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-21T22:53:36 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-26T03:14:57 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -290,7 +290,7 @@ PR-AUC of a random model at this prevalence: 0.04.
 
 ## 8. Explainability (over the evidence packs)
 
-*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-18T06:07:33 UTC.*
+*Source: `results/metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json`, generated 2026-10-26T03:14:50 UTC.*
 
 200 evidence packs: 170 true attacks and 30 false positives (benign flows the detector flagged). Checkpoint: NF-ToN-IoT-v2_full_seed0.pt. The packs are a stratified sample of *flagged* flows, not of traffic.
 
@@ -331,6 +331,7 @@ A feature and its encoded variants (a port and its port bucket) count as one fea
 
 - Correct for 0.8765 of 170 true attacks in the sample
 - False positives were named as: {'scanning': 23, 'ddos': 7}
+- mitm: 0 of 21 named correctly (named as {'dos': 21})
 - Ambiguous packs (confidence below 0.9): 9
 
 ### Influence of single neighbouring flows
@@ -510,7 +511,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 
 *Counted from the results files and the repository by `scripts/export_report_facts.py`.*
 
-- Automated tests in the repository: 290
+- Automated tests in the repository: 291
 - Graph-model training runs behind the reported results (both datasets, all three variants, every seed): 32
 - Leave-one-attack-out training runs: 24
 - Baseline model fits (every model, feature set and seed, both datasets): 48
@@ -518,7 +519,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 - Evidence packs generated for the language-model study: 200
 - Incident reports requested from language models: 3440, of which 3420 completed and were scored (20 failed); written by the template control: 800
 - Result files archived rather than deleted when superseded: 43
-- Commits in the project repository: 103, the first on 2026-07-27
+- Commits in the project repository: 106, the first on 2026-07-27
 - Every result file records the configuration that produced it and the version of the data it was computed on; a loader refuses a result whose data version does not match.
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

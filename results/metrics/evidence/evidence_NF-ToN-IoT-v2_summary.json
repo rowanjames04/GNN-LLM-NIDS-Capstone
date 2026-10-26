@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T06:07:33.042467+00:00",
+  "generated_at": "2026-10-26T03:14:50.639091+00:00",
   "packs_source": "evidence_NF-ToN-IoT-v2.json",
   "checkpoint": "NF-ToN-IoT-v2_full_seed0.pt",
   "threshold": 0.87139,
@@ -425,6 +425,64 @@
       "false_positives_named_as": {
         "scanning": 23,
         "ddos": 7
+      },
+      "by_true_family": {
+        "backdoor": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "backdoor": 21
+          }
+        },
+        "ddos": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "ddos": 21
+          }
+        },
+        "dos": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "dos": 21
+          }
+        },
+        "injection": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "injection": 21
+          }
+        },
+        "mitm": {
+          "correct": 0,
+          "n": 21,
+          "named_as": {
+            "dos": 21
+          }
+        },
+        "password": {
+          "correct": 23,
+          "n": 23,
+          "named_as": {
+            "password": 23
+          }
+        },
+        "scanning": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "scanning": 21
+          }
+        },
+        "xss": {
+          "correct": 21,
+          "n": 21,
+          "named_as": {
+            "xss": 21
+          }
+        }
       },
       "ambiguous_packs": 9
     },

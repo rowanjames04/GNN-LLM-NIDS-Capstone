@@ -90,6 +90,13 @@ def summarise(packs: list[dict], sampling: dict | None = None,
                 for p in group]
     right = named_right(true_pos)
     fp_called = Counter(p["detection"]["predicted_class"] for p in false_pos)
+    # The sample is stratified by family, so the pooled share above weights a
+    # rare family as heavily as a common one; this shows where the misses are.
+    by_family_named = {
+        fam: {"correct": int(sum(named_right(group))), "n": len(group),
+              "named_as": dict(Counter(p["detection"]["predicted_class"]
+                                       for p in group).most_common())}
+        for fam, group in sorted(by_family.items()) if fam != benign}
 
     out = {
         "n_packs": len(packs),
@@ -117,6 +124,7 @@ def summarise(packs: list[dict], sampling: dict | None = None,
                 round(float(np.mean(right)), 4) if right else None),
             "n_true_attacks": len(right),
             "false_positives_named_as": dict(fp_called.most_common()),
+            "by_true_family": by_family_named,
             "ambiguous_packs": sum(
                 1 for p in packs
                 if p["detection"]["class_confidence"] < AMBIGUOUS_BELOW),
@@ -188,6 +196,9 @@ def show(s: dict) -> None:
     print(f"\n  Attack family named in the pack is the true one: "
           f"{m['correct_on_true_attacks']} of {m['n_true_attacks']} true attacks")
     print(f"  false positives were named as: {m['false_positives_named_as']}")
+    for fam, r in m.get("by_true_family", {}).items():
+        if r["correct"] < r["n"]:
+            print(f"  {fam}: {r['correct']} of {r['n']} named correctly, named as {r['named_as']}")
     print(f"  ambiguous packs (confidence < {AMBIGUOUS_BELOW}): {m['ambiguous_packs']}")
 
     o = s["neighbour_occlusion"]

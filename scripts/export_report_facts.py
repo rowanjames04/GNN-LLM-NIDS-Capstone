@@ -354,6 +354,8 @@ def sec_explainability() -> list[str]:
             f"- Correct for {f(m['correct_on_true_attacks'])} of "
             f"{m['n_true_attacks']} true attacks in the sample",
             f"- False positives were named as: {m['false_positives_named_as']}",
+            *[f"- {fam}: {r['correct']} of {r['n']} named correctly (named as {r['named_as']})"
+              for fam, r in m.get("by_true_family", {}).items() if r["correct"] < r["n"]],
             f"- Ambiguous packs (confidence below 0.9): {m['ambiguous_packs']}", "",
             "### Influence of single neighbouring flows", ""]
     o = s.get("neighbour_occlusion")

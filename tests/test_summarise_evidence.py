@@ -72,6 +72,16 @@ def test_the_family_named_to_the_model_is_scored_on_true_attacks_only():
     assert m["ambiguous_packs"] == 1
 
 
+def test_the_family_named_to_the_model_is_broken_down_by_true_family():
+    """The pooled share hides which family the misses come from, and the sample
+    weights every family equally, so each family is reported on its own."""
+    by = ev.summarise(PACKS)["family_named_to_the_model"]["by_true_family"]
+
+    assert "Benign" not in by
+    assert sum(r["n"] for r in by.values()) == 2
+    assert sum(r["correct"] for r in by.values()) == 1
+
+
 def test_occlusion_is_absent_for_packs_made_before_it_was_recorded():
     assert ev.summarise(PACKS, sampling={"checkpoint": "x"})["neighbour_occlusion"] is None
 
