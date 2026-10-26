@@ -464,8 +464,7 @@ def table_detection() -> tuple[str, str]:
     note = (f"All scores at {floor_text(prev)}. PR-AUC and F1 are the mean ± standard "
             f"deviation over the seeds; the last two columns are means. Novel flows: test "
             f"flows whose model input does not appear in training. \"flow+host\" adds "
-            f"{words(n_host)} summaries of each host's activity to the flow's own features. "
-            f"MLP = multilayer perceptron.")
+            f"{words(n_host)} summaries of each host's activity (Section 5.3).")
     return "Table 02 - Detection results on NF-ToN-IoT-v2.md", apa(
         2, f"Detection Results of Every Model on {PRIMARY}",
         ["Model", "Seeds", "PR-AUC", "F1", "FPR at 95% recall", "PR-AUC on novel flows"],
@@ -621,10 +620,8 @@ def table_llm() -> tuple[str, str]:
                      f"{f(r['groundedness_on_fp'])} ({r['n_false_positive']})",
                      r["fabricated_addr_reports"], f(r["direction_faithful"]),
                      f(r["borderline_conveyed"])])
-    samp = need(FACTS.read(f"evidence/evidence_{PRIMARY}_sampling.json"), "sampling")
     bl = {r["borderline_n"] for r in real}
-    note = (f"Prompt v3, {samp['n_selected']} evidence packs per model, "
-            f"{samp['false_positives_taken']} of them false positives. Parameters in billions, "
+    note = (f"Parameters in billions, "
             f"as reported by Ollama's hosted service. The measures are defined in Section 3.8; "
             f"brackets give the number of false-positive notes scored, and borderline conveyed "
             f"is over the {'/'.join(str(x) for x in sorted(bl))} borderline packs. The template "
