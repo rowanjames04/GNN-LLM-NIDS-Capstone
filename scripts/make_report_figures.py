@@ -1,7 +1,11 @@
-"""Publication figures for the final report: Figures 1-20 and Equations 1-3.
+"""Publication figures for the final report: Figures 1-8 and Equations 1-3.
 
 Writes every figure the report text refers to by number, under the file name the
-text uses, into one folder. It exists separately from `make_figures.py` (the
+text uses, into one folder. The drawing functions keep the numbers of the first
+draft (fig09_...), which had 20 figures; REPORT_NUMBER maps the eight the report
+kept when it was shortened (2026-10-26) to their numbers in the report. The other
+twelve are still drawn, under their draft numbers, when named with --only. It
+exists separately from `make_figures.py` (the
 working figures behind `results/report_facts.md`) because the report needs a
 fixed numbering, a print style and the diagrams, which the working set has not.
 
@@ -10,10 +14,10 @@ fixed numbering, a print style and the diagrams, which the working set has not.
 `results/superseded/` -- using the same derivations as
 `scripts/export_report_facts.py`, so a figure always agrees with the facts file.
 Nothing measured is typed in here. Three inputs are not results files and are
-named where they are used: the Defect Register in the project notes (Figure 7),
-the per-class counts of the preprocessed NF-ToN-IoT-v2 subset, which only the
-processed data holds (Figure 8, cross-checked against the zero-day results), and
-`configs/report_timeline.yaml` (Figure 20).
+named where they are used: the Defect Register in the project notes (draft
+Figure 7), the per-class counts of the preprocessed NF-ToN-IoT-v2 subset, which
+only the processed data holds (draft Figure 8, cross-checked against the
+zero-day results), and `configs/report_timeline.yaml` (report Figure 8).
 
 Style, the same in every figure so they read as a set: white background, no
 title inside the image (the caption belongs to the report), 6.5 in wide at
@@ -27,8 +31,8 @@ Every PR-AUC axis states the random-model floor (the reporting prevalence).
 Error bars are one standard deviation over seeds; seeds are drawn as dots.
 
 Usage:
-    python scripts/make_report_figures.py --out <dir>
-    python scripts/make_report_figures.py --out <dir> --only 9 12 eq1
+    python scripts/make_report_figures.py --out <dir>               # the report's set
+    python scripts/make_report_figures.py --out <dir> --only 9 12 eq1  # draft numbers
 """
 
 from __future__ import annotations
@@ -41,6 +45,7 @@ import re
 import shutil
 import statistics
 import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -1267,6 +1272,8 @@ FIGURES = {
     "16": fig16_neighbourhood_by_family, "17": fig17_groundedness,
     "18": fig18_prompt_sensitivity, "19": fig19_output_beyond_note, "20": fig20_timeline,
 }
+# Draft number -> number in the report, for the figures the report kept.
+REPORT_NUMBER = {"1": 1, "3": 2, "4": 3, "9": 4, "13": 5, "16": 6, "18": 7, "20": 8}
 
 
 def main() -> None:
@@ -1274,7 +1281,8 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, required=True, help="folder to write the PNGs into")
     ap.add_argument("--only", nargs="+", metavar="N",
-                    help="figure numbers (1-20) and/or eq1 eq2 eq3")
+                    help="draft figure numbers (1-20) and/or eq1 eq2 eq3; default: the "
+                         "eight report figures and the three equations")
     ap.add_argument("--defect-register", type=Path, default=None,
                     help="the Defect Register note (Figure 7); default: "
                          "'00 - Project Management/Defect Register.md' two levels above --out")
@@ -1285,7 +1293,7 @@ def main() -> None:
     bad = [w for w in wanted if w not in valid]
     if bad:
         ap.error(f"unknown figure(s) {bad}; choose from 1-20, eq1, eq2, eq3")
-    todo = wanted or [*FIGURES, *EQUATIONS]
+    todo = wanted or [*REPORT_NUMBER, *EQUATIONS]
     register = args.defect_register or (args.out.resolve().parents[1] / "00 - Project Management"
                                         / "Defect Register.md")
 
@@ -1294,12 +1302,21 @@ def main() -> None:
     failed = []
     for key in todo:
         try:
-            if key in EQUATIONS:
-                equation(args.out, key)
-            elif key == "7":
-                fig07_defects(args.out, register)
-            else:
-                FIGURES[key](args.out)
+            # Draw into a scratch folder, then move each file under its report number
+            # (a cut figure keeps its draft number).
+            with tempfile.TemporaryDirectory(dir=args.out) as tmp:
+                tmp = Path(tmp)
+                if key in EQUATIONS:
+                    equation(tmp, key)
+                elif key == "7":
+                    fig07_defects(tmp, register)
+                else:
+                    FIGURES[key](tmp)
+                for p in tmp.glob("*.png"):
+                    name = p.name
+                    if key in REPORT_NUMBER:
+                        name = re.sub(r"^Figure \d+", f"Figure {REPORT_NUMBER[key]:02d}", name)
+                    p.replace(args.out / name)
             print(f"  drew  {key}")
         except Exception as e:                                     # noqa: BLE001
             failed.append(key)

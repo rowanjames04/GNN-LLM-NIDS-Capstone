@@ -3,11 +3,15 @@
 Every value is read from a results file when this runs; none is typed in. The
 derivations are the ones `scripts/export_report_facts.py` uses for
 `results/report_facts.md` (its helpers are imported, not copied), so a table
-and the facts file cannot disagree. Tables 1, 2, 4 and 17-24 are written by
-hand and are not produced here.
+and the facts file cannot disagree. This writes Tables 1-5 and 13 of the
+report; Tables 6-12 and 14 are written by hand and are not produced here.
+
+The tables cut from the report when it was shortened (2026-10-26) are still
+built, under the numbers they had before the cut, when --cut-out is given.
 
 Usage:
     python scripts/make_report_tables.py --out "<vault>/09 - Final Report/Tables"
+    python scripts/make_report_tables.py --out <dir> --cut-out <dir for the cut tables>
 """
 
 from __future__ import annotations
@@ -99,44 +103,26 @@ def floor_text(prev: float) -> str:
     return f"{prev:.0%} prevalence (PR-AUC of a random model: {prev:.2f})"
 
 
-# Report table numbers. The functions keep the numbers the tables had in the first
-# draft (table_03 ...); the report later dropped two front tables, so each is printed
-# under its number in reading order. Hand-written tables are numbered in their files.
-RENUMBER = {3: 1, 5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9, 12: 10, 13: 11, 14: 12,
-            15: 13, 16: 14}
-SOURCES_TABLE = 23          # the appendix table that lists every results file
+# Report table numbers. The older functions keep the numbers the tables had in the
+# first draft (table_03 ...), and each is printed under its number in the report.
+# Hand-written tables are numbered in their files.
+RENUMBER = {3: 1, 12: 3, 13: 4}
+# The numbers the cut tables had in the report before it was shortened.
+RENUMBER_CUT = {5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9, 14: 12, 15: 13, 16: 14}
+SOURCES_TABLE = 13          # the appendix table that lists every results file
 SOURCES: dict[int, tuple[str, list[str]]] = {}   # report number -> (title, files)
 
 # The results files each figure in Sections 5 and 6 reads, as make_report_figures.py
-# reads them. Paths are relative to results/.
+# reads them, under the figure's number in the report. Paths are relative to results/.
 FIGURE_SOURCES = {
-    8: ("Number of Flows in Each Class for Both Datasets",
-        ["metrics/preprocess_NF-ToN-IoT-v2.json (and the processed data it points to)",
-         "metrics/preprocess.json", "metrics/audit_NF-UNSW-NB15-v2-selfcheck.json"]),
-    9: ("PR-AUC of Each Model Variant by Seed on NF-ToN-IoT-v2",
+    4: ("PR-AUC of Each Model Variant by Seed on NF-ToN-IoT-v2",
         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json"]),
-    10: ("Change in PR-AUC After Removing the Artefact Columns",
-         ["superseded/2026-10-10_duration_artefact/metrics/gnn/gnn_NF-ToN-IoT-v2.json",
-          "superseded/2026-10-10_duration_artefact/metrics/baselines/baselines_NF-ToN-IoT-v2.json",
-          "metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
-    11: ("Drop in PR-AUC When Duplicated Test Flows Are Removed",
-         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
-    12: ("The Graph Model Against XGBoost on PR-AUC and F1",
-         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/baselines/baselines_NF-ToN-IoT-v2.json"]),
-    13: ("Topology Gain and the Share of Each Decision Given to the Neighbourhood, by Dataset",
-         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/gnn/gnn_NF-UNSW-NB15-v2.json"]),
-    14: ("Recall and PR-AUC on Each Attack Family When It Was Removed From Training",
-         ["metrics/zeroday/zeroday_NF-ToN-IoT-v2.json"]),
-    15: ("In-Dataset Controls Against Cross-Dataset Results",
-         ["metrics/transfer/transfer_*.json (pooled by scripts/summarise_transfer.py)"]),
-    16: ("Share of Each Decision Given to the Neighbourhood, by True Class",
-         ["metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json"]),
-    17: ("Groundedness of Each Model on All Reports and on False Positives",
-         ["reports/reports_*_v3.json (pooled by scripts/summarise_llm_study.py)"]),
-    18: ("Direction Kept and Note Length Under Prompts v3 and v4",
-         ["reports/reports_ollama_*_v3.json", "reports/reports_ollama_*_v4.json"]),
-    19: ("Output Tokens Produced per Word of the Final Note, by Model",
-         ["reports/reports_ollama_*_v3.json"]),
+    5: ("Topology Gain and the Share of Each Decision Given to the Neighbourhood, by Dataset",
+        ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/gnn/gnn_NF-UNSW-NB15-v2.json"]),
+    6: ("Share of Each Decision Given to the Neighbourhood, by True Class",
+        ["metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json"]),
+    7: ("Direction Kept and Note Length Under Prompts v3 and v4",
+        ["reports/reports_ollama_*_v3.json", "reports/reports_ollama_*_v4.json"]),
 }
 
 
@@ -205,28 +191,16 @@ def table_03() -> tuple[str, str]:
         row("Flows in the source file", lambda x: f"{x['load']['source_rows']:,}"),
         row("Flows used", lambda x: f"{x['n_rows']:,}"),
         row("Attack families", lambda x: f"{len(x['attack_families']) - 1} (plus Benign)"),
-        row("Graph window (flows)", lambda x: f"{x['config']['graph']['window_size']:,}"),
         row("Split method", lambda x: SPLIT_LABELS[x["split_method"]]),
-        row("Split proportions (train / val / test)",
-            lambda x: " / ".join(f"{x['config']['split'][k]:.0%}"
-                                 for k in ("train", "val", "test"))),
-        row("Rows purged between splits", lambda x: f"{x.get('rows_purged', 0):,}"),
     ]
     for s in ("train", "val", "test"):
         rows.append(row(f"{names[s]} flows (attack rate)",
                         lambda x, s=s: f"{x['splits'][s]['n_rows']:,} "
                                        f"({x['split_attack_rates'][s]:.2%})"))
     capped = [ds for ds, _ in docs if d[ds]["load"].get("capped")]
-    gnn = need(FACTS.read(f"metrics/gnn/gnn_{PRIMARY}.json"), "gnn results")
-    prev = gnn["config"]["eval"]["target_prevalence"]
-    note = ("Attack rate is the share of flows in a split labelled as an attack, at the "
-            f"native prevalence of the capture (every model is scored at {prev:.0%} "
-            "prevalence). "
-            + (f"{', '.join(capped)} was capped for memory; every attack family is "
-               f"represented. " if capped else "")
-            + f"The {PRIMARY} capture is ordered by scenario rather than time, so whole graph "
-            f"windows are assigned to splits at random; {SECONDARY} is split contiguously, "
-            f"with rows purged at each boundary so that no window straddles two splits.")
+    note = ("Attack rate is the share of the flows in a split that are labelled as attacks. "
+            + (f"{', '.join(capped)} was cut down to fit in memory, keeping every attack "
+               f"family." if capped else ""))
     return "Table 03 - Datasets and splits.md", apa(
         3, "Datasets, Flows Used and Splits",
         ["Characteristic", PRIMARY, SECONDARY], rows, note, [rel(p) for _, p in docs])
@@ -456,6 +430,48 @@ def table_10() -> tuple[str, str]:
         [rel(pg), rel(pb), rel(f"metrics/preprocess_{PRIMARY}.json")])
 
 
+def table_detection() -> tuple[str, str]:
+    """Report Table 2: every model on NF-ToN-IoT-v2 in one table. It merges the old
+    baseline, ablation and novel-only tables (cut tables 3, 4 and 6)."""
+    pg, pb = f"metrics/gnn/gnn_{PRIMARY}.json", f"metrics/baselines/baselines_{PRIMARY}.json"
+    gdoc, bdoc = need(FACTS.read(pg), pg), need(FACTS.read(pb), pb)
+    g = gdoc["results"]
+    b = {k: v for k, v in bdoc["results"].items() if v.get("schema") == FACTS.BASELINE_SCHEMA}
+    if len(b) != len(bdoc["results"]):
+        raise SystemExit(f"stale baselines in {pb}: {set(bdoc['results']) - set(b)}")
+    if g["full"]["runs"][0].get("selection") != "fixed_budget_best_val":
+        raise SystemExit(f"{pg}: runs are not on the fixed training budget")
+    prev = gdoc["config"]["eval"]["target_prevalence"]
+    key = f"at_{prev:.0%}"
+
+    def novel(entry) -> str:
+        v = [(r.get("novel_only") or {}).get(key, {}).get("pr_auc") for r in entry["runs"]]
+        if any(x is None for x in v):
+            raise SystemExit("a run has no novel-only score")
+        return f"{statistics.mean(v):.4f}"
+
+    def fpr(entry) -> str:
+        return f"{statistics.mean(r[key]['fpr_at_95_recall'] for r in entry['runs']):.5f}"
+    rows = []
+    for v in GNN_ORDER:
+        a = g[v]["aggregate"]
+        rows.append([GNN_NAMES[v], a["pr_auc"]["n_seeds"], pm(a["pr_auc"]), pm(a["f1"]),
+                     fpr(g[v]), novel(g[v])])
+    for k in sorted(b):
+        rows.append([model_name(k), len(b[k]["runs"]), runs_pm(b[k], "pr_auc", key),
+                     runs_pm(b[k], "f1", key), fpr(b[k]), novel(b[k])])
+    n_host = len(bdoc.get("host_feature_names") or [])
+    note = (f"All scores at {floor_text(prev)}. PR-AUC and F1 are the mean ± standard "
+            f"deviation over the seeds; the last two columns are means. Novel flows: test "
+            f"flows whose model input does not appear in training. \"flow+host\" adds "
+            f"{words(n_host)} summaries of each host's activity to the flow's own features. "
+            f"MLP = multilayer perceptron.")
+    return "Table 02 - Detection results on NF-ToN-IoT-v2.md", apa(
+        2, f"Detection Results of Every Model on {PRIMARY}",
+        ["Model", "Seeds", "PR-AUC", "F1", "FPR at 95% recall", "PR-AUC on novel flows"],
+        rows, note, [rel(pg), rel(pb)])
+
+
 def table_12() -> tuple[str, str]:
     p = f"metrics/zeroday/zeroday_{PRIMARY}.json"
     d = need(FACTS.read(p), p)
@@ -465,23 +481,18 @@ def table_12() -> tuple[str, str]:
     items = sorted(d["results"].items(), key=lambda kv: -kv[1]["test_positives"])
     for name, r in items:
         a = r["aggregate"]
-        named = ", ".join(f"{k} {v:.0%}" for k, v in
-                          list(r.get("held_out_mistaken_for", {}).items())[:2]) or "n/a"
         mark = f" {THIN}" if r["test_positives"] < thin else ""
         rows.append([f"{name}{mark}", f"{r['test_positives']:,}", pm(a.get("recall")),
-                     pm(a.get("pr_auc")), named])
+                     pm(a.get("pr_auc"))])
     n = one_n([r for _, r in items])
-    skipped = " ".join(f"{k.capitalize()} is not measurable: {why}."
+    skipped = " ".join(f"{k.capitalize()} could not be tested: {why.split(';')[0]}."
                        for k, why in d.get("skipped", {}).items())
-    note = (f"Graph model ({d['ablation']}). Each family was removed from training and "
-            f"validation entirely; recall is on that family's flows in the test split, and "
-            f"PR-AUC is at {floor_text(prev)}. Mean ± standard deviation over n = {n} seeds "
-            f"per family. The last column gives the two categories the family head most often "
-            f"named for the held-out flows. {THIN} Thin: fewer than {thin:,} held-out test "
-            f"flows, so quote the recall with its count. {skipped}")
+    note = (f"Full graph model, mean ± standard deviation over {words(n)} seeds; PR-AUC at "
+            f"{floor_text(prev)}. Recall is measured on the held-out family's flows in the "
+            f"test split. {THIN} Fewer than {thin:,} test flows. {skipped}")
     return "Table 12 - Leave-one-attack-out results.md", apa(
         12, f"Leave-One-Attack-Out Results on {PRIMARY}",
-        ["Held-out family", "Test flows", "Recall", "PR-AUC", "Family head named them as"],
+        ["Held-out family", "Test flows", "Recall", "PR-AUC"],
         rows, note, [rel(p)])
 
 
@@ -509,13 +520,11 @@ def table_13() -> tuple[str, str]:
     conf = "; ".join(f"{short(s)} → {short(t)}, where the worst column is {col}"
                      for (s, t), col in worst.items())
     floor = rows_in[0]["floor"]
-    note = (f"No model was retrained on the target. PR-AUC at {floor_text(floor)}; mean ± "
-            f"standard deviation over seeds, and a one-seed control has no standard "
-            f"deviation. Out-of-vocabulary is the share of target flows whose value in the "
-            f"worst-affected categorical column lies outside the source's vocabulary. "
-            f"{THIN} Confounded ({conf}): more than half the values are out of vocabulary, "
-            f"so the direction measures a degraded input as well as a different network; "
-            f"rely on the other direction. ToN-IoT = {PRIMARY}; UNSW-NB15 = {SECONDARY}.")
+    note = (f"PR-AUC at {floor_text(floor)}, mean ± standard deviation over the seeds. A "
+            f"control is trained and tested on the same dataset. Out-of-vocabulary: the share "
+            f"of target flows with a category value the source dataset never contained, in "
+            f"the worst column. {THIN} Over half out of vocabulary ({conf}), so not a fair "
+            f"test. ToN-IoT = {PRIMARY}; UNSW-NB15 = {SECONDARY}.")
     return "Table 13 - Cross-dataset transfer.md", apa(
         13, "Cross-Dataset Transfer Without Retraining",
         ["Model", "Trained → tested", "Kind", "Seeds", "PR-AUC", "Out-of-vocabulary"],
@@ -579,6 +588,54 @@ def table_15() -> tuple[str, str]:
          "Invented-address reports", "Names predicted class", "Direction kept",
          "Borderline conveyed", "Latency p50 (s)"], rows, note,
         ["results/reports/reports_*_v3.json (pooled by scripts/summarise_llm_study.py)"])
+
+
+def model_sizes() -> dict[str, str]:
+    """Parameter count (billions) of each hosted model, from its v3 session provenance."""
+    sizes = {}
+    for fp in sorted((RESULTS / "reports").glob("reports_ollama_*_v3.json")):
+        d = json.loads(fp.read_text())
+        found = {(s.get("model") or {}).get("parameter_size")
+                 for s in (d.get("provenance") or {}).get("sessions") or []}
+        if len(found) != 1:
+            raise SystemExit(f"{fp.name}: parameter size changed between sessions")
+        size = found.pop()
+        sizes[d["model"]] = f"{int(size) / 1e9:,.1f}" if str(size).isdigit() else "not reported"
+    return sizes
+
+
+def table_llm() -> tuple[str, str]:
+    """Report Table 5: the prompt-v3 results with each model's size. It replaces the
+    old roster and v3 results tables (cut tables 11 and 13)."""
+    rows_in = [r for r in FACTS.script("summarise_llm_study").rows() if r["prompt"] == "v3"]
+    real = sorted((r for r in rows_in if r["provider"] != "stub"), key=lambda r: r["model"])
+    stub = [r for r in rows_in if r["provider"] == "stub"]
+    if not real or len(stub) != 1:
+        raise SystemExit("expected the v3 language models and one v3 template control")
+    sizes = model_sizes()
+    rows = []
+    for r in real + stub:
+        is_stub = r["provider"] == "stub"
+        rows.append([f"{r['model']} (control)" if is_stub else r["model"],
+                     "n/a" if is_stub else sizes[r["model"]], f(r["groundedness"]),
+                     f"{f(r['groundedness_on_fp'])} ({r['n_false_positive']})",
+                     r["fabricated_addr_reports"], f(r["direction_faithful"]),
+                     f(r["borderline_conveyed"])])
+    samp = need(FACTS.read(f"evidence/evidence_{PRIMARY}_sampling.json"), "sampling")
+    bl = {r["borderline_n"] for r in real}
+    note = (f"Prompt v3, {samp['n_selected']} evidence packs per model, "
+            f"{samp['false_positives_taken']} of them false positives. Parameters in billions, "
+            f"as reported by Ollama's hosted service. The measures are defined in Section 3.8; "
+            f"brackets give the number of false-positive notes scored, and borderline conveyed "
+            f"is over the {'/'.join(str(x) for x in sorted(bl))} borderline packs. The template "
+            f"control writes notes from a fixed template with no language model (n/a: not "
+            f"applicable).")
+    return "Table 05 - Language model results.md", apa(
+        5, "Language Model Results on Prompt v3",
+        ["Model", "Parameters (B)", "Groundedness", "Groundedness on false positives",
+         "Invented-address reports", "Direction kept", "Borderline conveyed"], rows, note,
+        ["results/reports/reports_*_v3.json (pooled by scripts/summarise_llm_study.py)",
+         "results/reports/reports_ollama_*_v3.json (model sizes)"])
 
 
 # The same per-report readings `export_report_facts._prompt_sensitivity` averages.
@@ -646,25 +703,38 @@ def table_16() -> tuple[str, str]:
         ["results/reports/reports_ollama_*_v3.json", "results/reports/reports_ollama_*_v4.json"])
 
 
-TABLES = (table_03, table_05, table_06, table_07, table_08, table_09, table_10, table_11,
-          table_12, table_13, table_14, table_15, table_16)
+TABLES = (table_03, table_detection, table_12, table_13, table_llm)
+# Cut from the report on 2026-10-26; built only with --cut-out, under their old numbers.
+CUT_TABLES = (table_05, table_06, table_07, table_08, table_09, table_10, table_11,
+              table_14, table_15, table_16)
+
+
+def write(builds, out: Path, renumber: dict[int, int]) -> None:
+    global RENUMBER
+    RENUMBER = renumber
+    out.mkdir(parents=True, exist_ok=True)
+    for build in builds:
+        name, text = build()
+        old = int(re.match(r"Table (\d+)", name).group(1))
+        name = re.sub(r"^Table \d+", f"Table {renumber.get(old, old):02d}", name)
+        (out / name).write_text(text)
+        print(f"written -> {out.name}/{name}")
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, required=True, help="directory for the .md files")
+    ap.add_argument("--cut-out", type=Path, default=None,
+                    help="also write the tables cut from the report into this directory")
     args = ap.parse_args()
-    args.out.mkdir(parents=True, exist_ok=True)
-    for build in TABLES:
-        name, text = build()
-        old = int(re.match(r"Table (\d+)", name).group(1))
-        name = re.sub(r"^Table \d+", f"Table {RENUMBER.get(old, old):02d}", name)
-        (args.out / name).write_text(text)
-        print(f"written -> {name}")
+    write(TABLES, args.out, RENUMBER)
     name, text = sources_table()
     (args.out / name).write_text(text)
-    print(f"written -> {name}")
+    print(f"written -> {args.out.name}/{name}")
+    if args.cut_out:
+        SOURCES.clear()
+        write(CUT_TABLES, args.cut_out, RENUMBER_CUT)
 
 
 if __name__ == "__main__":
