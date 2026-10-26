@@ -251,6 +251,24 @@ def sec_vs_xgboost() -> list[str]:
     return out + [""]
 
 
+def sec_significance() -> list[str]:
+    out = ["## 4a. Are the seed-level differences larger than seed noise?", ""]
+    s = read("metrics/significance.json")
+    if not s:
+        return out + missing("Needs the significance test.",
+                             "python scripts/seed_significance.py") + [""]
+    out += [f"{s['test']} on {s['metric']}. With n seeds per side the smallest "
+            "possible p is 2 / C(n1 + n2, n1), so three seeds against three cannot "
+            "go below 0.1.", "",
+            "| Dataset | Comparison | Seeds | Mean difference (unrounded) | p | Smallest possible p |",
+            "|---|---|---|---|---|---|"]
+    for r in s["comparisons"]:
+        out.append(f"| {r['dataset']} | {r['comparison']} | {r['n'][0]} vs {r['n'][1]} | "
+                   f"{r['mean_difference']:+.5f} | {r['p_two_sided']:.2g} | "
+                   f"{r['min_possible_p']:.2g} |")
+    return out + ["", source("metrics/significance.json", s), ""]
+
+
 def sec_zeroday() -> list[str]:
     rel = f"metrics/zeroday/zeroday_{PRIMARY}.json"
     d = read(rel)
@@ -839,7 +857,7 @@ def build() -> str:
     ]
     body = (sec_datasets() + sec_step_back() + sec_baselines()
             + sec_ablation(PRIMARY, "3", f"Topology ablation on {PRIMARY}")
-            + sec_vs_xgboost()
+            + sec_vs_xgboost() + sec_significance()
             + sec_ablation(SECONDARY, "5", f"Topology ablation on {SECONDARY} "
                                            f"(the saturated dataset)")
             + sec_zeroday() + sec_transfer() + sec_explainability() + sec_llm()

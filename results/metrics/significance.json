@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-10-26T05:54:27.777833+00:00",
+  "test": "Mann-Whitney U, exact, two-sided",
+  "metric": "PR-AUC at 4% prevalence, per seed",
+  "comparisons": [
+    {
+      "dataset": "NF-ToN-IoT-v2",
+      "comparison": "full vs channel1_only",
+      "sources": [
+        "gnn/gnn_NF-ToN-IoT-v2.json::full",
+        "gnn/gnn_NF-ToN-IoT-v2.json::channel1_only"
+      ],
+      "n": [
+        10,
+        10
+      ],
+      "u": 100.0,
+      "p_two_sided": 1.082508822446903e-05,
+      "min_possible_p": 1.082508822446903e-05,
+      "ranges_separated": true,
+      "mean_difference": 0.03656
+    },
+    {
+      "dataset": "NF-UNSW-NB15-v2",
+      "comparison": "full vs channel1_only",
+      "sources": [
+        "gnn/gnn_NF-UNSW-NB15-v2.json::full",
+        "gnn/gnn_NF-UNSW-NB15-v2.json::channel1_only"
+      ],
+      "n": [
+        3,
+        3
+      ],
+      "u": 9.0,
+      "p_two_sided": 0.1,
+      "min_possible_p": 0.1,
+      "ranges_separated": true,
+      "mean_difference": 0.00082
+    },
+    {
+      "dataset": "NF-ToN-IoT-v2",
+      "comparison": "full vs xgboost::flow+host",
+      "sources": [
+        "gnn/gnn_NF-ToN-IoT-v2.json::full",
+        "baselines/baselines_NF-ToN-IoT-v2.json::xgboost::flow+host"
+      ],
+      "n": [
+        10,
+        3
+      ],
+      "u": 29.0,
+      "p_two_sided": 0.013986013986013986,
+      "min_possible_p": 0.006993006993006993,
+      "ranges_separated": false,
+      "mean_difference": 0.00901
+    }
+  ]
+}

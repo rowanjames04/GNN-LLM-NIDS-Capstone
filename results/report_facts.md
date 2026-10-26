@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-26T03:14:57 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-26T05:55:07 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -216,6 +216,18 @@ Same dataset, same prevalence, same reporting path.
 - Against the best XGBoost by PR-AUC (xgboost::flow+host): PR-AUC **+0.0090**
 - Against the best XGBoost by F1 (xgboost::flow+host): F1 **-0.0080**
 - **Both halves must be stated together.** The graph model ranks better and operates worse.
+
+## 4a. Are the seed-level differences larger than seed noise?
+
+Mann-Whitney U, exact, two-sided on PR-AUC at 4% prevalence, per seed. With n seeds per side the smallest possible p is 2 / C(n1 + n2, n1), so three seeds against three cannot go below 0.1.
+
+| Dataset | Comparison | Seeds | Mean difference (unrounded) | p | Smallest possible p |
+|---|---|---|---|---|---|
+| NF-ToN-IoT-v2 | full vs channel1_only | 10 vs 10 | +0.03656 | 1.1e-05 | 1.1e-05 |
+| NF-UNSW-NB15-v2 | full vs channel1_only | 3 vs 3 | +0.00082 | 0.1 | 0.1 |
+| NF-ToN-IoT-v2 | full vs xgboost::flow+host | 10 vs 3 | +0.00901 | 0.014 | 0.007 |
+
+*Source: `results/metrics/significance.json`, generated 2026-10-26T05:54:27 UTC.*
 
 ## 5. Topology ablation on NF-UNSW-NB15-v2 (the saturated dataset)
 
@@ -511,7 +523,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 
 *Counted from the results files and the repository by `scripts/export_report_facts.py`.*
 
-- Automated tests in the repository: 291
+- Automated tests in the repository: 294
 - Graph-model training runs behind the reported results (both datasets, all three variants, every seed): 32
 - Leave-one-attack-out training runs: 24
 - Baseline model fits (every model, feature set and seed, both datasets): 48
@@ -519,7 +531,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 - Evidence packs generated for the language-model study: 200
 - Incident reports requested from language models: 3440, of which 3420 completed and were scored (20 failed); written by the template control: 800
 - Result files archived rather than deleted when superseded: 43
-- Commits in the project repository: 106, the first on 2026-07-27
+- Commits in the project repository: 108, the first on 2026-07-27
 - Every result file records the configuration that produced it and the version of the data it was computed on; a loader refuses a result whose data version does not match.
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 
