@@ -185,30 +185,36 @@ def one_n(entries, key="n_seeds") -> int:
 # ------------------------------------------------------------------ tables
 
 def table_03() -> tuple[str, str]:
+    """Report Table 1: flows per class and split for both datasets, so the class
+    imbalance is shown rather than asserted. Counts from class_balance.json."""
     docs = [(PRIMARY, "metrics/preprocess_NF-ToN-IoT-v2.json"),
             (SECONDARY, "metrics/preprocess.json")]
     d = {ds: need(FACTS.read(p), p) for ds, p in docs}
-    names = {"train": "Training", "val": "Validation", "test": "Test"}
-
-    def row(label, fn):
-        return [label] + [fn(d[ds]) for ds, _ in docs]
-    rows = [
-        row("Flows in the source file", lambda x: f"{x['load']['source_rows']:,}"),
-        row("Flows used", lambda x: f"{x['n_rows']:,}"),
-        row("Attack families", lambda x: f"{len(x['attack_families']) - 1} (plus Benign)"),
-        row("Split method", lambda x: SPLIT_LABELS[x["split_method"]]),
-    ]
-    for s in ("train", "val", "test"):
-        rows.append(row(f"{names[s]} flows (attack rate)",
-                        lambda x, s=s: f"{x['splits'][s]['n_rows']:,} "
-                                       f"({x['split_attack_rates'][s]:.2%})"))
+    bal = need(FACTS.read("metrics/class_balance.json"), "metrics/class_balance.json")["datasets"]
+    splits = ("train", "val", "test")
+    rows = []
+    for ds, _ in docs:
+        b = bal[ds]
+        counts = b["counts"]
+        order = ["Benign"] + sorted((c for c in counts if c != "Benign"),
+                                    key=lambda c: -sum(counts[c].values()))
+        for i, c in enumerate(order):
+            rows.append([ds if i == 0 else "", c] + [f"{counts[c][s]:,}" for s in splits]
+                        + [f"{b['share_of_flows'][c]:.2%}"])
+        rows.append(["", "All flows (attack rate)"]
+                    + [f"{d[ds]['splits'][s]['n_rows']:,} ({d[ds]['split_attack_rates'][s]:.2%})"
+                       for s in splits] + ["100.00%"])
     capped = [ds for ds, _ in docs if d[ds]["load"].get("capped")]
+    purged = [ds for ds, _ in docs if d[ds].get("rows_purged")]
     note = ("Attack rate is the share of the flows in a split that are labelled as attacks. "
             + (f"{', '.join(capped)} was cut down to fit in memory, keeping every attack "
-               f"family." if capped else ""))
+               f"family. " if capped else "")
+            + (f"Shares for {', '.join(purged)} exclude the rows removed between its "
+               f"splits." if purged else ""))
     return "Table 03 - Datasets and splits.md", apa(
-        3, "Datasets, Flows Used and Splits",
-        ["Characteristic", PRIMARY, SECONDARY], rows, note, [rel(p) for _, p in docs])
+        3, "Flows per Class and Split in the Two Datasets",
+        ["Dataset", "Class", "Training", "Validation", "Test", "Share of flows"], rows,
+        note.strip(), [rel(p) for _, p in docs] + ["results/metrics/class_balance.json"])
 
 
 def table_05() -> tuple[str, str]:
@@ -610,35 +616,48 @@ def model_sizes() -> dict[str, str]:
 
 
 def table_llm() -> tuple[str, str]:
-    """Report Table 5: the prompt-v3 results with each model's size. It replaces the
-    old roster and v3 results tables (cut tables 11 and 13)."""
+    """Report Table 5: the prompt-v3 results with each model's size, and the
+    end-to-end figures (end_to_end.py) beside the quality measures. Measures that
+    were the same for every model (no invented address, every borderline detection
+    conveyed) are stated in the text instead."""
     rows_in = [r for r in FACTS.script("summarise_llm_study").rows() if r["prompt"] == "v3"]
     real = sorted((r for r in rows_in if r["provider"] != "stub"), key=lambda r: r["model"])
     stub = [r for r in rows_in if r["provider"] == "stub"]
     if not real or len(stub) != 1:
         raise SystemExit("expected the v3 language models and one v3 template control")
+    e2e_doc = need(FACTS.read(f"metrics/end_to_end_{PRIMARY}.json"),
+                   f"metrics/end_to_end_{PRIMARY}.json")
+    e2e = {r["model"]: r for r in e2e_doc["by_prompt"]["v3"]}
+    possible = e2e_doc["detection_outcomes"]["attack_right_family"]
     sizes = model_sizes()
     rows = []
     for r in real + stub:
         is_stub = r["provider"] == "stub"
+        e = e2e[r["model"]]
         rows.append([f"{r['model']} (control)" if is_stub else r["model"],
                      "n/a" if is_stub else sizes[r["model"]], f(r["groundedness"]),
-                     f"{f(r['groundedness_on_fp'])} ({r['n_false_positive']})",
-                     r["fabricated_addr_reports"], f(r["direction_faithful"]),
-                     f(r["borderline_conveyed"])])
-    bl = {r["borderline_n"] for r in real}
-    note = (f"Parameters in billions, "
-            f"as reported by Ollama's hosted service. The measures are defined in Section 3.8; "
-            f"brackets give the number of false-positive notes scored, and borderline conveyed "
-            f"is over the {'/'.join(str(x) for x in sorted(bl))} borderline packs. The template "
-            f"control writes notes from a fixed template with no language model (n/a: not "
-            f"applicable).")
+                     "n/a" if r["direction_faithful"] is None else f(r["direction_faithful"]),
+                     f"{e['passed_every_check']} of {e['completed']}",
+                     e["correct_and_faithful"], e["median_note_words"],
+                     "n/a" if is_stub else f"{e['median_latency_seconds']:.2f}",
+                     "n/a" if is_stub else f"{1000 * e['list_price_per_note_usd']:.2f}"])
+    note = (f"Parameters in billions, as reported by Ollama's hosted service. The measures "
+            f"are defined in Section 3.9. Passed every check counts completed notes with "
+            f"nothing ungrounded, no invented address, the predicted family named and none "
+            f"substituted, no direction error, and the detector's doubt passed on where the "
+            f"facts layer marked it. Correct and faithful counts those among them whose "
+            f"detection was a real attack named as the right family, at most {possible} of "
+            f"the {e2e_doc['packs']} packs. Response time is the hosted service's median, and "
+            f"list price is per 1,000 completed notes in US dollars, including failed "
+            f"attempts. The template control, the baseline, writes notes from a fixed "
+            f"template with no language model (n/a: not applicable).")
     return "Table 05 - Language model results.md", apa(
         5, "Language Model Results on Prompt v3",
-        ["Model", "Parameters (B)", "Groundedness", "Groundedness on false positives",
-         "Invented-address reports", "Direction kept", "Borderline conveyed"], rows, note,
+        ["Model", "Parameters (B)", "Groundedness", "Direction kept", "Passed every check",
+         "Correct and faithful", "Median words", "Response (s)", "List price"], rows, note,
         ["results/reports/reports_*_v3.json (pooled by scripts/summarise_llm_study.py)",
-         "results/reports/reports_ollama_*_v3.json (model sizes)"])
+         "results/reports/reports_ollama_*_v3.json (model sizes)",
+         f"results/metrics/end_to_end_{PRIMARY}.json"])
 
 
 # The same per-report readings `export_report_facts._prompt_sensitivity` averages.

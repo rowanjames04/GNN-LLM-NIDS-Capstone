@@ -109,6 +109,28 @@ def sec_datasets() -> list[str]:
             out.append(f"| {name} | {sp[name]['n_rows']:,} | "
                        f"{d['split_attack_rates'][name]:.2%} |")
         out.append("")
+    return out + _class_balance()
+
+
+def _class_balance() -> list[str]:
+    rel = "metrics/class_balance.json"
+    d = read(rel)
+    out = ["### Flows per class and split", ""]
+    if not d:
+        return out + missing("Per-class counts.", "python scripts/class_balance.py")
+    out += [source(rel, d), ""]
+    for ds, b in d["datasets"].items():
+        out += [f"**{ds}**: {b['n_flows']:,} flows in the three splits; the largest attack "
+                f"family ({b['largest_family']}) is {b['largest_to_smallest']}x the smallest "
+                f"({b['smallest_family']}).", "",
+                "| Class | Train | Val | Test | Share of flows | Share of attacks |",
+                "|---|---|---|---|---|---|"]
+        for c, n in b["counts"].items():
+            share_a = b["share_of_attacks"].get(c)
+            out.append(f"| {c} | {n['train']:,} | {n['val']:,} | {n['test']:,} | "
+                       f"{b['share_of_flows'][c]:.2%} | "
+                       f"{'n/a' if share_a is None else f'{share_a:.2%}'} |")
+        out.append("")
     return out
 
 
@@ -391,7 +413,41 @@ def sec_explainability() -> list[str]:
     else:
         out += missing("These packs were made before neighbour occlusion was "
                        "recorded.", "python scripts/make_evidence.py")
-    return out
+    return out + _deletion()
+
+
+def _deletion() -> list[str]:
+    rel = f"metrics/evidence/deletion_{PRIMARY}.json"
+    d = read(rel)
+    out = ["### Deletion test of the stated reasons (D56)", ""]
+    if not d:
+        return out + missing("The deletion test.", "python scripts/attribution_deletion.py")
+    s = d["summary"]
+    out += [source(rel, d), "",
+            f"Each pack's top {d['reasons_per_pack']} attributions are the reasons the facts "
+            f"layer passes on. Those that raised the score were set to the "
+            f"{d['removed_to']} and the flow rescored; the same number of other features "
+            f"was removed {d['n_random']} times at random for comparison. Logit units. "
+            f"Rescored packs matched their stored score to within "
+            f"{d['max_score_mismatch_with_pack']}.", "",
+            f"- Median logit drop, stated reasons removed: "
+            f"**{s['median_logit_drop_reasons_removed']}**; random features removed: "
+            f"**{s['median_logit_drop_random_removed']}**",
+            f"- Packs where the reasons cost more than random: "
+            f"{s['share_reasons_drop_more_than_random']:.1%} of "
+            f"{s['packs_with_a_raising_reason']}",
+            f"- Still flagged after removal: {s['share_still_flagged_reasons_removed']:.1%} "
+            f"(reasons) against {s['share_still_flagged_random_removed']:.1%} (random)",
+            f"- Removing the reasons that lowered the score raised the logit by a median of "
+            f"{s['median_logit_rise_lowering_removed']}", "",
+            "| True class | Packs | Median drop (reasons) | Median drop (random) | "
+            "Reasons cost more | Still flagged (reasons) |", "|---|---|---|---|---|---|"]
+    for fam, x in d["by_true_label"].items():
+        out.append(f"| {fam} | {x['packs']} | {x['median_logit_drop_reasons_removed']} | "
+                   f"{x['median_logit_drop_random_removed']} | "
+                   f"{x['share_reasons_drop_more_than_random']:.1%} | "
+                   f"{x['share_still_flagged_reasons_removed']:.1%} |")
+    return out + [""]
 
 
 def _prompt_sensitivity() -> list[str]:
@@ -547,6 +603,7 @@ def sec_llm() -> list[str]:
     out += _prompt_sensitivity()
     out += _hidden_output()
     out += _list_price_total()
+    out += _end_to_end()
     out += ["", "### Direction of reasons, and borderline detections (D49)", "",
             "| Model | Prompt | Uncertainty conveyed (ambiguous category) | Reports with a "
             "checkable reason | Direction faithful | Direction errors | Borderline "
@@ -604,6 +661,31 @@ def sec_llm() -> list[str]:
                        f"{size}, {model.get('quantization_level') or 'quantisation not reported'}, "
                        f"{hw}, {len(sess)} session(s)")
     return out + [""]
+
+
+def _end_to_end() -> list[str]:
+    rel = f"metrics/end_to_end_{PRIMARY}.json"
+    d = read(rel)
+    out = ["", "### End to end: detection outcome and translation together", ""]
+    if not d:
+        return out + missing("The end-to-end tally.", "python scripts/end_to_end.py")
+    o = d["detection_outcomes"]
+    out += [source(rel, d), "",
+            f"Detection outcome of the {d['packs']} packs: "
+            + "; ".join(f"{k.replace('_', ' ')} {v}" for k, v in o.items()) + ". "
+            f"A note passes when it meets every check: {', '.join(d['checks'])}. "
+            f"Shares describe the stratified sample, not the alert stream.", "",
+            "| Model | Prompt | Completed | Passed every check | Correct and faithful "
+            "(of " + str(o["attack_right_family"]) + ") | Median latency (s) | Median words | "
+            "List price per 1,000 notes (USD) |", "|---|---|---|---|---|---|---|---|"]
+    for v, rows in d["by_prompt"].items():
+        for r in rows:
+            price = r["list_price_per_note_usd"]
+            out.append(f"| {r['model']} | {v} | {r['completed']} of {r['requested']} | "
+                       f"{r['passed_every_check']} | {r['correct_and_faithful']} | "
+                       f"{f(r['median_latency_seconds'], 2)} | {r['median_note_words']} | "
+                       f"{'n/a' if price is None else f'{1000 * price:.2f}'} |")
+    return out
 
 
 def sec_replay() -> list[str]:

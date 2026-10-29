@@ -1,0 +1,367 @@
+{
+  "generated_at": "2026-10-29T03:02:00.886407+00:00",
+  "dataset": "NF-ToN-IoT-v2",
+  "packs": 200,
+  "detection_outcomes": {
+    "attack_right_family": 149,
+    "attack_wrong_family": 21,
+    "false_positive_borderline": 5,
+    "false_positive_clear": 25
+  },
+  "checks": [
+    "completed",
+    "nothing ungrounded",
+    "no invented address",
+    "predicted family named",
+    "no family substituted",
+    "no direction error",
+    "borderline conveyed where borderline",
+    "uncertainty conveyed where the family is uncertain"
+  ],
+  "note": "stratified sample (D33): shares describe the sample, not the alert stream",
+  "by_prompt": {
+    "v3": [
+      {
+        "provider": "ollama",
+        "model": "deepseek-v4-pro:0813",
+        "requested": 200,
+        "completed": 196,
+        "passed_every_check": 191,
+        "passed_by_outcome": {
+          "attack_right_family": 146,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 19
+        },
+        "correct_and_faithful": 146,
+        "median_latency_seconds": 7.44,
+        "median_note_words": 195,
+        "list_price_per_note_usd": 0.01215
+      },
+      {
+        "provider": "ollama",
+        "model": "gemma4:31b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 195,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 21
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 1.61,
+        "median_note_words": 192,
+        "list_price_per_note_usd": 0.00029
+      },
+      {
+        "provider": "ollama",
+        "model": "glm-5.3",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 194,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 21.88,
+        "median_note_words": 262,
+        "list_price_per_note_usd": 0.04313
+      },
+      {
+        "provider": "ollama",
+        "model": "gpt-oss:120b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 194,
+        "passed_by_outcome": {
+          "attack_right_family": 146,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 22
+        },
+        "correct_and_faithful": 146,
+        "median_latency_seconds": 2.15,
+        "median_note_words": 240,
+        "list_price_per_note_usd": 0.00053
+      },
+      {
+        "provider": "ollama",
+        "model": "gpt-oss:20b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 196,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 22
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 8.39,
+        "median_note_words": 233,
+        "list_price_per_note_usd": 0.00043
+      },
+      {
+        "provider": "ollama",
+        "model": "mistral-large-4",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 194,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 28.23,
+        "median_note_words": 279,
+        "list_price_per_note_usd": 0.00966
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-nano:30b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 195,
+        "passed_by_outcome": {
+          "attack_right_family": 149,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 149,
+        "median_latency_seconds": 15.27,
+        "median_note_words": 260,
+        "list_price_per_note_usd": 0.00101
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-super",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 193,
+        "passed_by_outcome": {
+          "attack_right_family": 147,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 147,
+        "median_latency_seconds": 28.67,
+        "median_note_words": 242,
+        "list_price_per_note_usd": 0.00079
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-ultra",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 194,
+        "passed_by_outcome": {
+          "attack_right_family": 147,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 21
+        },
+        "correct_and_faithful": 147,
+        "median_latency_seconds": 13.63,
+        "median_note_words": 255,
+        "list_price_per_note_usd": 0.00329
+      },
+      {
+        "provider": "stub",
+        "model": "template-v1",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 200,
+        "passed_by_outcome": {
+          "attack_right_family": 149,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 25
+        },
+        "correct_and_faithful": 149,
+        "median_latency_seconds": 0.0,
+        "median_note_words": 169,
+        "list_price_per_note_usd": 0.0
+      }
+    ],
+    "v4": [
+      {
+        "provider": "ollama",
+        "model": "deepseek-v4-pro:0813",
+        "requested": 40,
+        "completed": 25,
+        "passed_every_check": 24,
+        "passed_by_outcome": {
+          "attack_right_family": 21,
+          "attack_wrong_family": 2,
+          "false_positive_borderline": 1
+        },
+        "correct_and_faithful": 21,
+        "median_latency_seconds": 20.05,
+        "median_note_words": 353,
+        "list_price_per_note_usd": 0.16385
+      },
+      {
+        "provider": "ollama",
+        "model": "gemma4:31b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 198,
+        "passed_by_outcome": {
+          "attack_right_family": 149,
+          "attack_wrong_family": 19,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 25
+        },
+        "correct_and_faithful": 149,
+        "median_latency_seconds": 2.04,
+        "median_note_words": 171,
+        "list_price_per_note_usd": 0.00029
+      },
+      {
+        "provider": "ollama",
+        "model": "glm-5.3",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 195,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 21
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 25.16,
+        "median_note_words": 433,
+        "list_price_per_note_usd": 0.022
+      },
+      {
+        "provider": "ollama",
+        "model": "gpt-oss:120b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 191,
+        "passed_by_outcome": {
+          "attack_right_family": 147,
+          "attack_wrong_family": 18,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 21
+        },
+        "correct_and_faithful": 147,
+        "median_latency_seconds": 3.71,
+        "median_note_words": 416,
+        "list_price_per_note_usd": 0.00083
+      },
+      {
+        "provider": "ollama",
+        "model": "gpt-oss:20b",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 192,
+        "passed_by_outcome": {
+          "attack_right_family": 146,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 146,
+        "median_latency_seconds": 28.49,
+        "median_note_words": 303,
+        "list_price_per_note_usd": 0.00128
+      },
+      {
+        "provider": "ollama",
+        "model": "mistral-large-4",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 193,
+        "passed_by_outcome": {
+          "attack_right_family": 147,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 147,
+        "median_latency_seconds": 25.08,
+        "median_note_words": 315,
+        "list_price_per_note_usd": 0.0074
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-nano:30b",
+        "requested": 200,
+        "completed": 199,
+        "passed_every_check": 190,
+        "passed_by_outcome": {
+          "attack_right_family": 144,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 144,
+        "median_latency_seconds": 15.03,
+        "median_note_words": 368,
+        "list_price_per_note_usd": 0.00138
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-super",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 193,
+        "passed_by_outcome": {
+          "attack_right_family": 148,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 4,
+          "false_positive_clear": 20
+        },
+        "correct_and_faithful": 148,
+        "median_latency_seconds": 42.57,
+        "median_note_words": 382,
+        "list_price_per_note_usd": 0.00125
+      },
+      {
+        "provider": "ollama",
+        "model": "nemotron-3-ultra",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 192,
+        "passed_by_outcome": {
+          "attack_right_family": 144,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 22
+        },
+        "correct_and_faithful": 144,
+        "median_latency_seconds": 13.13,
+        "median_note_words": 355,
+        "list_price_per_note_usd": 0.00431
+      },
+      {
+        "provider": "stub",
+        "model": "template-v1",
+        "requested": 200,
+        "completed": 200,
+        "passed_every_check": 200,
+        "passed_by_outcome": {
+          "attack_right_family": 149,
+          "attack_wrong_family": 21,
+          "false_positive_borderline": 5,
+          "false_positive_clear": 25
+        },
+        "correct_and_faithful": 149,
+        "median_latency_seconds": 0.0,
+        "median_note_words": 169,
+        "list_price_per_note_usd": 0.0
+      }
+    ]
+  }
+}

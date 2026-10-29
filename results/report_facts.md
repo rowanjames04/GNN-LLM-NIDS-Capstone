@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-26T05:55:07 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-29T03:04:16 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -45,6 +45,40 @@
 | train | 1,663,192 | 2.62% |
 | val | 219,027 | 6.71% |
 | test | 468,056 | 7.33% |
+
+### Flows per class and split
+
+*Source: `results/metrics/class_balance.json`, generated 2026-10-29T02:57:21 UTC.*
+
+**NF-ToN-IoT-v2**: 5,910,000 flows in the three splits; the largest attack family (scanning) is 561.6x the smallest (ransomware).
+
+| Class | Train | Val | Test | Share of flows | Share of attacks |
+|---|---|---|---|---|---|
+| backdoor | 12,311 | 0 | 4,498 | 0.28% | 0.44% |
+| Benign | 1,425,451 | 180,963 | 442,640 | 34.67% | n/a |
+| ddos | 430,241 | 68,974 | 92,066 | 10.00% | 15.31% |
+| dos | 282,291 | 33,056 | 77,328 | 6.64% | 10.17% |
+| injection | 191,566 | 20,907 | 61,648 | 4.64% | 7.10% |
+| mitm | 2,306 | 180 | 897 | 0.06% | 0.09% |
+| password | 213,937 | 31,284 | 107,086 | 5.96% | 9.12% |
+| ransomware | 2,554 | 0 | 3 | 0.04% | 0.07% |
+| scanning | 1,067,523 | 127,108 | 241,497 | 24.30% | 37.20% |
+| xss | 501,820 | 127,528 | 162,337 | 13.40% | 20.50% |
+
+**NF-UNSW-NB15-v2**: 2,350,275 flows in the three splits; the largest attack family (Exploits) is 188.1x the smallest (Worms).
+
+| Class | Train | Val | Test | Share of flows | Share of attacks |
+|---|---|---|---|---|---|
+| Analysis | 951 | 336 | 951 | 0.10% | 2.42% |
+| Backdoor | 1,023 | 344 | 754 | 0.09% | 2.29% |
+| Benign | 1,619,577 | 204,327 | 433,744 | 96.06% | n/a |
+| DoS | 2,557 | 875 | 2,220 | 0.24% | 6.10% |
+| Exploits | 14,005 | 5,156 | 11,494 | 1.30% | 33.10% |
+| Fuzzers | 10,586 | 3,673 | 7,665 | 0.93% | 23.67% |
+| Generic | 8,282 | 1,937 | 5,857 | 0.68% | 17.36% |
+| Reconnaissance | 5,504 | 2,112 | 4,795 | 0.53% | 13.40% |
+| Shellcode | 636 | 240 | 511 | 0.06% | 1.50% |
+| Worms | 71 | 27 | 65 | 0.01% | 0.18% |
 
 ## 2a. Data quality, duplicates, and the artefact comparison (D47, D48)
 
@@ -352,6 +386,29 @@ A feature and its encoded variants (a port and its port bucket) count as one fea
 - Largest change in the detection score from removing one neighbour: median 1.00e-05, 95th percentile 4.30e-04, maximum 1.98e-03
 - Packs with any neighbour above the 0.01 threshold: 0 of 200
 
+### Deletion test of the stated reasons (D56)
+
+*Source: `results/metrics/evidence/deletion_NF-ToN-IoT-v2.json`, generated 2026-10-29T03:00:21 UTC.*
+
+Each pack's top 5 attributions are the reasons the facts layer passes on. Those that raised the score were set to the integrated-gradients baseline (0 in standardised units, the mean flow) and the flow rescored; the same number of other features was removed 20 times at random for comparison. Logit units. Rescored packs matched their stored score to within 5e-06.
+
+- Median logit drop, stated reasons removed: **1.1994**; random features removed: **0.0421**
+- Packs where the reasons cost more than random: 94.5% of 200
+- Still flagged after removal: 66.5% (reasons) against 99.0% (random)
+- Removing the reasons that lowered the score raised the logit by a median of 0.2752
+
+| True class | Packs | Median drop (reasons) | Median drop (random) | Reasons cost more | Still flagged (reasons) |
+|---|---|---|---|---|---|
+| Benign | 30 | 0.95 | 0.0151 | 96.7% | 13.3% |
+| backdoor | 21 | 4.4377 | 0.0822 | 100.0% | 42.9% |
+| ddos | 21 | 2.5463 | 0.0619 | 100.0% | 71.4% |
+| dos | 21 | 0.3033 | 0.0277 | 95.2% | 100.0% |
+| injection | 21 | 1.4188 | 0.0722 | 100.0% | 85.7% |
+| mitm | 21 | 0.2324 | 0.0167 | 90.5% | 95.2% |
+| password | 23 | 2.0653 | 0.1343 | 100.0% | 78.3% |
+| scanning | 21 | 2.5296 | 0.0538 | 100.0% | 47.6% |
+| xss | 21 | 0.2758 | 0.0097 | 66.7% | 85.7% |
+
 ## 9. Language-model comparison
 
 Evidence packs: 200 (30 false positives). By true family: {'Benign': 30, 'backdoor': 21, 'ddos': 21, 'dos': 21, 'injection': 21, 'mitm': 21, 'password': 23, 'scanning': 21, 'xss': 21}.
@@ -434,6 +491,35 @@ The service counts a model's reasoning as output tokens; only the note is kept a
 | nemotron-3-ultra | v4 | 200 | 1,394 | 355 | 3.9 |
 
 List-price equivalent of every language-model call: $26.05 (v3 $14.21, v4 $11.84); $21.35 of it for reports that completed, the rest on failed or runaway generations. The calls ran first on Ollama's free allowance (D45) and then on a flat-fee subscription (D50); neither itemises per call, so what each call actually cost is unknown.
+
+### End to end: detection outcome and translation together
+
+*Source: `results/metrics/end_to_end_NF-ToN-IoT-v2.json`, generated 2026-10-29T03:02:00 UTC.*
+
+Detection outcome of the 200 packs: attack right family 149; attack wrong family 21; false positive borderline 5; false positive clear 25. A note passes when it meets every check: completed, nothing ungrounded, no invented address, predicted family named, no family substituted, no direction error, borderline conveyed where borderline, uncertainty conveyed where the family is uncertain. Shares describe the stratified sample, not the alert stream.
+
+| Model | Prompt | Completed | Passed every check | Correct and faithful (of 149) | Median latency (s) | Median words | List price per 1,000 notes (USD) |
+|---|---|---|---|---|---|---|---|
+| deepseek-v4-pro:0813 | v3 | 196 of 200 | 191 | 146 | 7.44 | 195 | 12.15 |
+| gemma4:31b | v3 | 200 of 200 | 195 | 148 | 1.61 | 192 | 0.29 |
+| glm-5.3 | v3 | 200 of 200 | 194 | 148 | 21.88 | 262 | 43.13 |
+| gpt-oss:120b | v3 | 200 of 200 | 194 | 146 | 2.15 | 240 | 0.53 |
+| gpt-oss:20b | v3 | 200 of 200 | 196 | 148 | 8.39 | 233 | 0.43 |
+| mistral-large-4 | v3 | 200 of 200 | 194 | 148 | 28.23 | 279 | 9.66 |
+| nemotron-3-nano:30b | v3 | 200 of 200 | 195 | 149 | 15.27 | 260 | 1.01 |
+| nemotron-3-super | v3 | 200 of 200 | 193 | 147 | 28.67 | 242 | 0.79 |
+| nemotron-3-ultra | v3 | 200 of 200 | 194 | 147 | 13.63 | 255 | 3.29 |
+| template-v1 | v3 | 200 of 200 | 200 | 149 | 0.00 | 169 | 0.00 |
+| deepseek-v4-pro:0813 | v4 | 25 of 40 | 24 | 21 | 20.05 | 353 | 163.85 |
+| gemma4:31b | v4 | 200 of 200 | 198 | 149 | 2.04 | 171 | 0.29 |
+| glm-5.3 | v4 | 200 of 200 | 195 | 148 | 25.16 | 433 | 22.00 |
+| gpt-oss:120b | v4 | 200 of 200 | 191 | 147 | 3.71 | 416 | 0.83 |
+| gpt-oss:20b | v4 | 200 of 200 | 192 | 146 | 28.49 | 303 | 1.28 |
+| mistral-large-4 | v4 | 200 of 200 | 193 | 147 | 25.08 | 315 | 7.40 |
+| nemotron-3-nano:30b | v4 | 199 of 200 | 190 | 144 | 15.03 | 368 | 1.38 |
+| nemotron-3-super | v4 | 200 of 200 | 193 | 148 | 42.57 | 382 | 1.25 |
+| nemotron-3-ultra | v4 | 200 of 200 | 192 | 144 | 13.13 | 355 | 4.31 |
+| template-v1 | v4 | 200 of 200 | 200 | 149 | 0.00 | 169 | 0.00 |
 
 ### Direction of reasons, and borderline detections (D49)
 
@@ -523,7 +609,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 
 *Counted from the results files and the repository by `scripts/export_report_facts.py`.*
 
-- Automated tests in the repository: 294
+- Automated tests in the repository: 297
 - Graph-model training runs behind the reported results (both datasets, all three variants, every seed): 32
 - Leave-one-attack-out training runs: 24
 - Baseline model fits (every model, feature set and seed, both datasets): 48
@@ -531,7 +617,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 - Evidence packs generated for the language-model study: 200
 - Incident reports requested from language models: 3440, of which 3420 completed and were scored (20 failed); written by the template control: 800
 - Result files archived rather than deleted when superseded: 43
-- Commits in the project repository: 108, the first on 2026-07-27
+- Commits in the project repository: 110, the first on 2026-07-27
 - Every result file records the configuration that produced it and the version of the data it was computed on; a loader refuses a result whose data version does not match.
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

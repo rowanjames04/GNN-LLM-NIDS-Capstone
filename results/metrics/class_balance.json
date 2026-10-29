@@ -1,0 +1,169 @@
+{
+  "generated_at": "2026-10-29T02:57:21.505480+00:00",
+  "datasets": {
+    "NF-ToN-IoT-v2": {
+      "data_version": "7549011bda90aa19",
+      "counts": {
+        "backdoor": {
+          "train": 12311,
+          "val": 0,
+          "test": 4498
+        },
+        "Benign": {
+          "train": 1425451,
+          "val": 180963,
+          "test": 442640
+        },
+        "ddos": {
+          "train": 430241,
+          "val": 68974,
+          "test": 92066
+        },
+        "dos": {
+          "train": 282291,
+          "val": 33056,
+          "test": 77328
+        },
+        "injection": {
+          "train": 191566,
+          "val": 20907,
+          "test": 61648
+        },
+        "mitm": {
+          "train": 2306,
+          "val": 180,
+          "test": 897
+        },
+        "password": {
+          "train": 213937,
+          "val": 31284,
+          "test": 107086
+        },
+        "ransomware": {
+          "train": 2554,
+          "val": 0,
+          "test": 3
+        },
+        "scanning": {
+          "train": 1067523,
+          "val": 127108,
+          "test": 241497
+        },
+        "xss": {
+          "train": 501820,
+          "val": 127528,
+          "test": 162337
+        }
+      },
+      "n_flows": 5910000,
+      "share_of_flows": {
+        "backdoor": 0.002844,
+        "Benign": 0.34671,
+        "ddos": 0.100048,
+        "dos": 0.066442,
+        "injection": 0.046383,
+        "mitm": 0.000572,
+        "password": 0.059612,
+        "ransomware": 0.000433,
+        "scanning": 0.243,
+        "xss": 0.133957
+      },
+      "share_of_attacks": {
+        "backdoor": 0.004354,
+        "ddos": 0.153144,
+        "dos": 0.101704,
+        "injection": 0.070998,
+        "mitm": 0.000876,
+        "password": 0.091249,
+        "ransomware": 0.000662,
+        "scanning": 0.371963,
+        "xss": 0.205049
+      },
+      "largest_family": "scanning",
+      "smallest_family": "ransomware",
+      "largest_to_smallest": 561.6
+    },
+    "NF-UNSW-NB15-v2": {
+      "data_version": "d6640047992456eb",
+      "counts": {
+        "Analysis": {
+          "train": 951,
+          "val": 336,
+          "test": 951
+        },
+        "Backdoor": {
+          "train": 1023,
+          "val": 344,
+          "test": 754
+        },
+        "Benign": {
+          "train": 1619577,
+          "val": 204327,
+          "test": 433744
+        },
+        "DoS": {
+          "train": 2557,
+          "val": 875,
+          "test": 2220
+        },
+        "Exploits": {
+          "train": 14005,
+          "val": 5156,
+          "test": 11494
+        },
+        "Fuzzers": {
+          "train": 10586,
+          "val": 3673,
+          "test": 7665
+        },
+        "Generic": {
+          "train": 8282,
+          "val": 1937,
+          "test": 5857
+        },
+        "Reconnaissance": {
+          "train": 5504,
+          "val": 2112,
+          "test": 4795
+        },
+        "Shellcode": {
+          "train": 636,
+          "val": 240,
+          "test": 511
+        },
+        "Worms": {
+          "train": 71,
+          "val": 27,
+          "test": 65
+        }
+      },
+      "n_flows": 2350275,
+      "share_of_flows": {
+        "Analysis": 0.000952,
+        "Backdoor": 0.000902,
+        "Benign": 0.960589,
+        "DoS": 0.002405,
+        "Exploits": 0.013043,
+        "Fuzzers": 0.009328,
+        "Generic": 0.00684,
+        "Reconnaissance": 0.005281,
+        "Shellcode": 0.00059,
+        "Worms": 6.9e-05
+      },
+      "share_of_attacks": {
+        "Analysis": 0.024161,
+        "Backdoor": 0.022898,
+        "DoS": 0.061019,
+        "Exploits": 0.330951,
+        "Fuzzers": 0.236691,
+        "Generic": 0.173556,
+        "Reconnaissance": 0.133989,
+        "Shellcode": 0.014974,
+        "Worms": 0.00176
+      },
+      "largest_family": "Exploits",
+      "smallest_family": "Worms",
+      "largest_to_smallest": 188.1
+    }
+  }
+}
