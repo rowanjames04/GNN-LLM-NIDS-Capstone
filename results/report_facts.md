@@ -1,6 +1,6 @@
 # Report facts
 
-*Exported 2026-10-29T03:04:16 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
+*Exported 2026-10-29T03:21:28 UTC by `scripts/export_report_facts.py`. Every number below was read from a results file at export time. None was typed in.*
 
 **For whoever drafts from this file (human or model):**
 
@@ -609,7 +609,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 
 *Counted from the results files and the repository by `scripts/export_report_facts.py`.*
 
-- Automated tests in the repository: 297
+- Automated tests in the repository: 300
 - Graph-model training runs behind the reported results (both datasets, all three variants, every seed): 32
 - Leave-one-attack-out training runs: 24
 - Baseline model fits (every model, feature set and seed, both datasets): 48
@@ -617,7 +617,7 @@ Offline replay of the held-out split. Not a real-time measurement.
 - Evidence packs generated for the language-model study: 200
 - Incident reports requested from language models: 3440, of which 3420 completed and were scored (20 failed); written by the template control: 800
 - Result files archived rather than deleted when superseded: 43
-- Commits in the project repository: 110, the first on 2026-07-27
+- Commits in the project repository: 111, the first on 2026-07-27
 - Every result file records the configuration that produced it and the version of the data it was computed on; a loader refuses a result whose data version does not match.
 - Counts of logged decisions and defects are kept in the project notes (Decision Register, Defect Register), not in this file.
 

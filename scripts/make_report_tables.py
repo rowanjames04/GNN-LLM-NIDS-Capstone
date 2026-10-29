@@ -185,36 +185,28 @@ def one_n(entries, key="n_seeds") -> int:
 # ------------------------------------------------------------------ tables
 
 def table_03() -> tuple[str, str]:
-    """Report Table 1: flows per class and split for both datasets, so the class
-    imbalance is shown rather than asserted. Counts from class_balance.json."""
-    docs = [(PRIMARY, "metrics/preprocess_NF-ToN-IoT-v2.json"),
-            (SECONDARY, "metrics/preprocess.json")]
-    d = {ds: need(FACTS.read(p), p) for ds, p in docs}
-    bal = need(FACTS.read("metrics/class_balance.json"), "metrics/class_balance.json")["datasets"]
+    """Report Table 1: flows per class and split in the primary dataset, so the class
+    imbalance is shown rather than asserted. Counts from class_balance.json; the
+    secondary dataset's families are described in the text (Section 3.2)."""
+    rel_p = "metrics/preprocess_NF-ToN-IoT-v2.json"
+    d = need(FACTS.read(rel_p), rel_p)
+    b = need(FACTS.read("metrics/class_balance.json"), "metrics/class_balance.json")["datasets"][PRIMARY]
     splits = ("train", "val", "test")
-    rows = []
-    for ds, _ in docs:
-        b = bal[ds]
-        counts = b["counts"]
-        order = ["Benign"] + sorted((c for c in counts if c != "Benign"),
-                                    key=lambda c: -sum(counts[c].values()))
-        for i, c in enumerate(order):
-            rows.append([ds if i == 0 else "", c] + [f"{counts[c][s]:,}" for s in splits]
-                        + [f"{b['share_of_flows'][c]:.2%}"])
-        rows.append(["", "All flows (attack rate)"]
-                    + [f"{d[ds]['splits'][s]['n_rows']:,} ({d[ds]['split_attack_rates'][s]:.2%})"
-                       for s in splits] + ["100.00%"])
-    capped = [ds for ds, _ in docs if d[ds]["load"].get("capped")]
-    purged = [ds for ds, _ in docs if d[ds].get("rows_purged")]
+    counts = b["counts"]
+    order = ["Benign"] + sorted((c for c in counts if c != "Benign"),
+                                key=lambda c: -sum(counts[c].values()))
+    rows = [[c] + [f"{counts[c][s]:,}" for s in splits] + [f"{b['share_of_flows'][c]:.2%}"]
+            for c in order]
+    rows.append(["All flows (attack rate)"]
+                + [f"{d['splits'][s]['n_rows']:,} ({d['split_attack_rates'][s]:.2%})"
+                   for s in splits] + ["100.00%"])
     note = ("Attack rate is the share of the flows in a split that are labelled as attacks. "
-            + (f"{', '.join(capped)} was cut down to fit in memory, keeping every attack "
-               f"family. " if capped else "")
-            + (f"Shares for {', '.join(purged)} exclude the rows removed between its "
-               f"splits." if purged else ""))
+            + (f"{PRIMARY} was cut down to fit in memory, keeping every attack family."
+               if d["load"].get("capped") else ""))
     return "Table 03 - Datasets and splits.md", apa(
-        3, "Flows per Class and Split in the Two Datasets",
-        ["Dataset", "Class", "Training", "Validation", "Test", "Share of flows"], rows,
-        note.strip(), [rel(p) for _, p in docs] + ["results/metrics/class_balance.json"])
+        3, f"Flows per Class and Split in {PRIMARY}",
+        ["Class", "Training", "Validation", "Test", "Share of flows"], rows, note.strip(),
+        [rel(rel_p), "results/metrics/class_balance.json"])
 
 
 def table_05() -> tuple[str, str]:
@@ -528,14 +520,14 @@ def table_13() -> tuple[str, str]:
         if pair in worst and worst[pair] is None:
             o = {k: v for k, v in d["out_of_vocabulary"].items() if isinstance(v, dict)}
             worst[pair] = max(o, key=lambda k: o[k]["oov_rate"])
-    conf = "; ".join(f"{short(s)} → {short(t)}, where the worst column is {col}"
-                     for (s, t), col in worst.items())
+    conf = ", ".join(sorted({col for col in worst.values() if col}))
     floor = rows_in[0]["floor"]
     note = (f"PR-AUC at {floor_text(floor)}, mean ± standard deviation over the seeds. A "
             f"control is trained and tested on the same dataset. Out-of-vocabulary: the share "
-            f"of target flows with a category value the source dataset never contained, in "
-            f"the worst column. {THIN} Over half out of vocabulary ({conf}), so not a fair "
-            f"test. ToN-IoT = {PRIMARY}; UNSW-NB15 = {SECONDARY}.")
+            f"of target flows with a category value the source never contained, in the worst "
+            f"column ({conf or 'n/a'} for {THIN}). {THIN} Over half out of vocabulary, so "
+            f"not a fair test. ToN-IoT = "
+            f"{PRIMARY}; UNSW-NB15 = {SECONDARY}.")
     return "Table 13 - Cross-dataset transfer.md", apa(
         13, "Cross-Dataset Transfer Without Retraining",
         ["Model", "Trained → tested", "Kind", "Seeds", "PR-AUC", "Out-of-vocabulary"],
@@ -641,16 +633,12 @@ def table_llm() -> tuple[str, str]:
                      e["correct_and_faithful"], e["median_note_words"],
                      "n/a" if is_stub else f"{e['median_latency_seconds']:.2f}",
                      "n/a" if is_stub else f"{1000 * e['list_price_per_note_usd']:.2f}"])
-    note = (f"Parameters in billions, as reported by Ollama's hosted service. The measures "
-            f"are defined in Section 3.9. Passed every check counts completed notes with "
-            f"nothing ungrounded, no invented address, the predicted family named and none "
-            f"substituted, no direction error, and the detector's doubt passed on where the "
-            f"facts layer marked it. Correct and faithful counts those among them whose "
-            f"detection was a real attack named as the right family, at most {possible} of "
-            f"the {e2e_doc['packs']} packs. Response time is the hosted service's median, and "
-            f"list price is per 1,000 completed notes in US dollars, including failed "
-            f"attempts. The template control, the baseline, writes notes from a fixed "
-            f"template with no language model (n/a: not applicable).")
+    note = (f"Parameters in billions, as reported by Ollama's hosted service; the measures "
+            f"are defined in Section 3.9. Correct and faithful counts notes that passed every "
+            f"check for a real attack named as the right family, at most {possible}. Response "
+            f"time is the service's median, and list price is per 1,000 completed notes in US "
+            f"dollars, including failed attempts. The template baseline uses no language model "
+            f"(n/a: not applicable).")
     return "Table 05 - Language model results.md", apa(
         5, "Language Model Results on Prompt v3",
         ["Model", "Parameters (B)", "Groundedness", "Direction kept", "Passed every check",
