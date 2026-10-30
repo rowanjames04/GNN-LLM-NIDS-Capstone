@@ -103,7 +103,7 @@ def rel(path: str) -> str:
 
 
 def floor_text(prev: float) -> str:
-    return f"{prev:.0%} prevalence (PR-AUC of a random model: {prev:.2f})"
+    return f"{prev:.0%} prevalence (random-model floor {prev:.2f})"
 
 
 # Report table numbers. The older functions keep the numbers the tables had in the
@@ -635,12 +635,11 @@ def table_llm() -> tuple[str, str]:
                      e["correct_and_faithful"], e["median_note_words"],
                      "n/a" if is_stub else f"{e['median_latency_seconds']:.2f}",
                      "n/a" if is_stub else f"{1000 * e['list_price_per_note_usd']:.2f}"])
-    note = (f"Parameters in billions, as reported by Ollama's hosted service; the measures "
-            f"are defined in Section 3.9. Correct and faithful counts output reports that passed "
-            f"every check for a real attack named as the right family, at most {possible}. Response "
-            f"time is the service's median, and list price is per 1,000 completed reports in US "
-            f"dollars, including failed attempts. The template baseline uses no language model "
-            f"(n/a: not applicable).")
+    note = (f"Parameters in billions, as reported by Ollama; the measures are defined in "
+            f"Section 3.9. Correct and faithful: output reports that passed every check for a real "
+            f"attack named as the right family (at most {possible}). Response time is the median; "
+            f"list price is US dollars per 1,000 completed reports, including failed attempts. The "
+            f"template uses no language model (n/a: not applicable).")
     return "Table 05 - Language model results.md", apa(
         5, "Language Model Results on Prompt v3",
         ["Model", "Parameters (B)", "Groundedness", "Direction kept", "Passed every check",
