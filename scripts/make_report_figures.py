@@ -377,7 +377,7 @@ def fig01_pipeline(out: Path) -> None:
             neutral, nb, x=cx[4], y=bot - 0.06, w=W, h=H),
         box("llm", html("Language\nmodel", f"{n_models} models, Ollama", "hosted service"),
             warm, wb, x=cx[3], y=bot - 0.06, w=W, h=H),
-        box("note", html("Incident\nreport", "plain-language", "note"),
+        box("note", html("Incident\nreport", "plain-language", "output"),
             warm, wb, x=cx[2], y=bot - 0.06, w=W, h=H),
         box("score", html("Automated\nscoring", "groundedness,", "fidelity, direction"),
             "white", MUTED, x=cx[1], y=bot - 0.06, w=W, h=H, dashed=True),
@@ -1109,7 +1109,7 @@ def fig18_prompt_sensitivity(out: Path) -> None:
     fig, axes = new_fig(3.5, 2, sharey=True, gridspec_kw={"width_ratios": [1.15, 1]})
     for ax, metric, xlabel, fmt in (
             (axes[0], "direction", "Share of reports whose reasons keep their direction", ".3f"),
-            (axes[1], "words", "Mean words per note", ".0f")):
+            (axes[1], "words", "Mean words per report", ".0f")):
         for y, m in enumerate(order):
             dumbbell(ax, y, pairs[m][ALT_PROMPT][metric], pairs[m][MAIN_PROMPT][metric], FULL)
         ax.set_xlabel(xlabel)

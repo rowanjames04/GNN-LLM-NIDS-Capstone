@@ -3,8 +3,10 @@
 Every value is read from a results file when this runs; none is typed in. The
 derivations are the ones `scripts/export_report_facts.py` uses for
 `results/report_facts.md` (its helpers are imported, not copied), so a table
-and the facts file cannot disagree. This writes Tables 1-5 and 13 of the
-report; Tables 6-12 and 14 are written by hand and are not produced here.
+and the facts file cannot disagree. This writes Tables 2-6 of the report;
+Tables 1 and 7-13 are written by hand and are not produced here. The list of
+the file behind every table and figure is written only with --sources-out
+(it left the report on 2026-10-30).
 
 The tables cut from the report when it was shortened (2026-10-26) are still
 built, under the numbers they had before the cut, when --cut-out is given.
@@ -12,6 +14,7 @@ built, under the numbers they had before the cut, when --cut-out is given.
 Usage:
     python scripts/make_report_tables.py --out "<vault>/09 - Final Report/Tables"
     python scripts/make_report_tables.py --out <dir> --cut-out <dir for the cut tables>
+    python scripts/make_report_tables.py --out <dir> --sources-out <dir for the sources list>
 """
 
 from __future__ import annotations
@@ -106,10 +109,9 @@ def floor_text(prev: float) -> str:
 # Report table numbers. The older functions keep the numbers the tables had in the
 # first draft (table_03 ...), and each is printed under its number in the report.
 # Hand-written tables are numbered in their files.
-RENUMBER = {3: 1, 12: 3, 13: 4}
+RENUMBER = {3: 2, 2: 3, 12: 4, 13: 5, 5: 6}
 # The numbers the cut tables had in the report before it was shortened.
 RENUMBER_CUT = {5: 3, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9, 14: 12, 15: 13, 16: 14}
-SOURCES_TABLE = 13          # the appendix table that lists every results file
 SOURCES: dict[int, tuple[str, list[str]]] = {}   # report number -> (title, files)
 
 # The results files each figure in Sections 5 and 6 reads, as make_report_figures.py
@@ -123,7 +125,7 @@ FIGURE_SOURCES = {
         ["metrics/gnn/gnn_NF-ToN-IoT-v2.json", "metrics/gnn/gnn_NF-UNSW-NB15-v2.json"]),
     6: ("Share of Each Decision Given to the Neighbourhood, by True Class",
         ["metrics/evidence/evidence_NF-ToN-IoT-v2_summary.json"]),
-    7: ("Direction Kept and Note Length Under Prompts v3 and v4",
+    7: ("Direction Kept and Report Length Under Prompts v3 and v4",
         ["reports/reports_ollama_*_v3.json", "reports/reports_ollama_*_v4.json"]),
     8: ("Planned and Actual Project Timeline", ["configs/report_timeline.yaml"]),
 }
@@ -150,22 +152,22 @@ def apa(number: int, title: str, header: list[str], rows: list[list], note: str,
 
 
 def sources_table() -> tuple[str, str]:
-    """Appendix table: the file behind every data table and figure in the report, so
-    the notes under them stay short. Figures 1 and 3 are diagrams and Table 6 is
-    written by hand, so they have no source file."""
+    """The file behind every data table and figure in the report, kept as a separate
+    note so the table notes stay short. Figures 1 and 3 are diagrams and Tables 1
+    and 7-13 are written by hand, so they have no source file."""
     rows = [[f"Table {n}", t, "; ".join(f"`{x}`" for x in files)]       # already results/...
             for n, (t, files) in sorted(SOURCES.items())]
     rows += [[f"Figure {n}", t, "; ".join(f"`{x}`" if x.startswith("configs/") else f"`results/{x}`"
                                           for x in files)]
              for n, (t, files) in sorted(FIGURE_SOURCES.items())]
-    head = [f"**Table {SOURCES_TABLE}**", "", "*Files Behind the Data Tables and Figures*",
+    head = ["*Files Behind the Data Tables and Figures*",
             "", "| Item | Title | Source file |", "|---|---|---|"]
     body = ["| " + " | ".join(c.replace("|", "\\|") for c in r) + " |" for r in rows]
     note = ("*Note.* Paths are relative to the root of the code repository (Appendix VI). "
             "Each results file also records the configuration that produced it. A `*` "
             "matches every model or seed, and a file pooled by a script is read through "
             "that script.")
-    return (f"Table {SOURCES_TABLE:02d} - Sources of results.md",
+    return ("Sources of results.md",
             "\n".join(head + body + ["", note]) + "\n")
 
 
@@ -634,9 +636,9 @@ def table_llm() -> tuple[str, str]:
                      "n/a" if is_stub else f"{e['median_latency_seconds']:.2f}",
                      "n/a" if is_stub else f"{1000 * e['list_price_per_note_usd']:.2f}"])
     note = (f"Parameters in billions, as reported by Ollama's hosted service; the measures "
-            f"are defined in Section 3.9. Correct and faithful counts notes that passed every "
-            f"check for a real attack named as the right family, at most {possible}. Response "
-            f"time is the service's median, and list price is per 1,000 completed notes in US "
+            f"are defined in Section 3.9. Correct and faithful counts output reports that passed "
+            f"every check for a real attack named as the right family, at most {possible}. Response "
+            f"time is the service's median, and list price is per 1,000 completed reports in US "
             f"dollars, including failed attempts. The template baseline uses no language model "
             f"(n/a: not applicable).")
     return "Table 05 - Language model results.md", apa(
@@ -737,11 +739,14 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True, help="directory for the .md files")
     ap.add_argument("--cut-out", type=Path, default=None,
                     help="also write the tables cut from the report into this directory")
+    ap.add_argument("--sources-out", type=Path, default=None,
+                    help="also write the list of the file behind every table and figure here")
     args = ap.parse_args()
     write(TABLES, args.out, RENUMBER)
-    name, text = sources_table()
-    (args.out / name).write_text(text)
-    print(f"written -> {args.out.name}/{name}")
+    if args.sources_out:
+        name, text = sources_table()
+        (args.sources_out / name).write_text(text)
+        print(f"written -> {args.sources_out.name}/{name}")
     if args.cut_out:
         SOURCES.clear()
         write(CUT_TABLES, args.cut_out, RENUMBER_CUT)
